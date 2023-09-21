@@ -3,7 +3,6 @@ import React from "react";
 import Layout from "../../../components/Core/Layout";
 import { Icon } from "@iconify/react";
 import Badge from "../../../components/Sellers/Store/Branches/Badge";
-import Rating from "@mui/material/Rating";
 const StoreBranches = () => {
   const rows: GridRowsProp = [
     {

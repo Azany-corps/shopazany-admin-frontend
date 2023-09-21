@@ -1,7 +1,6 @@
 import { Icon } from "@iconify/react";
 import React from "react";
 import Layout from "../../components/Core/Layout";
-import { Link } from "react-router-dom";
 
 const Tracking = () => {
   return (

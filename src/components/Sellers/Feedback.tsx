@@ -8,7 +8,6 @@ import React from "react";
 import { Icon } from '@iconify/react';
 
 const Feedback = () => {
-  const [value, setValue] = React.useState<number | null>(2);
   const rows = [
     {
       id: 1,

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import Navbar from "./Navbar";
 
@@ -11,18 +10,11 @@ type each = {
 };
 
 const Layout = ({ children }: { children: React.ReactNode | React.ReactNode[] }) => {
-  const [list, setList] = useState([]);
   const [active, setActive] = useState<each>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, ] = useState(false);
   const navigate = useNavigate();
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  
 
   const data = [
     {

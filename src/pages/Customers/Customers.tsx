@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Core/Layout";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Badge from "../../components/Customers/Badge";
-import PopUpModal from "../../components/Core/PopUp";
 import Rating from "@mui/material/Rating";
 
 const Customers = () => {

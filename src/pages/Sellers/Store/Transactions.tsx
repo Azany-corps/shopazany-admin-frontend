@@ -3,7 +3,6 @@ import Layout from "../../../components/Core/Layout";
 import { Icon } from "@iconify/react";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Badge from "../../../components/Sellers/Store/Transactions/Badge";
-import Rating from "@mui/material/Rating";
 
 const StoreTransactions = () => {
   const rows: GridRowsProp = [
