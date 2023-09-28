@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "../../components/Core/Layout";
 import { Icon } from "@iconify/react";
+import { Link } from "react-router-dom";
 
 const Product = () => {
   return (
@@ -16,7 +17,7 @@ const Product = () => {
               </div>
             </div>
             <div className="flex gap-4">
-              <button className="p-2 py-2 bg-[#E51B48] text-[white] text-[14px] rounded-sm">Add Account</button>
+              <Link to={'./add-category'} className="p-2 py-2 bg-[#E51B48] text-white text-[14px] rounded-sm">Add Category</Link>
             </div>
           </div>
           <div className="flex flex-row gap-4">

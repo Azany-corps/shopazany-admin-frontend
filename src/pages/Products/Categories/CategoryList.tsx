@@ -4,6 +4,7 @@ import { Rating } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import Badge from "../../../components/Products/Badge";
 import { Icon } from "@iconify/react";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
@@ -214,20 +215,32 @@ export default function CategoryList({}: Props) {
     },
   ];
 
+const goBack = () => {
+
+  window.history.back();
+};
+
   return (
     <>
       <Layout>
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
           <div className="flex justify-between items-center">
-            <div className="flex">
+            <div className="flex gap-3">
               <p className="text-[36px] font-bold">Product Categories</p>
-              <button className="border border-[#E51B48] tex-white p-1 px-2 rounded-sm">
-                Add Categories
-              </button>
+              <div
+                className="flex gap-2 items-center text-[#1B7CFC] cursor-pointer"
+                onClick={goBack}
+              >
+                <Icon icon="icon-park-outline:left" />
+                <p>Back to Products</p>
+              </div>
             </div>
-            <button className="border border-[#E51B48] tex-white p-1 px-2 rounded-sm">
+            <Link
+              to={"/products/categories/add-category"}
+              className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
+            >
               Add Categories
-            </button>
+            </Link>
           </div>
           <div className="flex flex-row items-center gap-4">
             <Badge badgeData={badgeData} />

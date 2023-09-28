@@ -18,6 +18,7 @@ import Customer from "./pages/Customers/Customer";
 import SupportTicket from "./pages/Messages/Support";
 import Notification from "./pages/Messages/Notification";
 import CategoryList from "./pages/Products/Categories/CategoryList";
+import AddCategory from "./pages/Products/Categories/AddCategory";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route index element={<Products />} />
           <Route path="product" element={<Product />} />
           <Route path="categories" element={<CategoryList />} />
+          <Route path="categories/add-category" element={<AddCategory />} />
         </Route>
         <Route path="/customers">
           <Route index element={<Customers />} />
