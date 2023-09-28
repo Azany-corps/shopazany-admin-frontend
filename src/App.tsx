@@ -17,6 +17,7 @@ import Product from "./pages/Products/Product";
 import Customer from "./pages/Customers/Customer";
 import SupportTicket from "./pages/Messages/Support";
 import Notification from "./pages/Messages/Notification";
+import CategoryList from "./pages/Products/Categories/CategoryList";
 
 function App() {
   return (
@@ -42,17 +43,16 @@ function App() {
         <Route path="/products">
           <Route index element={<Products />} />
           <Route path="product" element={<Product />} />
+          <Route path="categories" element={<CategoryList />} />
         </Route>
         <Route path="/customers">
           <Route index element={<Customers />} />
           <Route path="customer" element={<Customer />} />
-
         </Route>
         <Route path="/messages">
           <Route index element={<Messages />} />
           <Route path="support" element={<SupportTicket />} />
           <Route path="notification" element={<Notification />} />
-
         </Route>
       </Routes>
     </div>
