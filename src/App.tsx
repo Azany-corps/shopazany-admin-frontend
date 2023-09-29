@@ -19,6 +19,7 @@ import SupportTicket from "./pages/Messages/Support";
 import Notification from "./pages/Messages/Notification";
 import CategoryList from "./pages/Products/Categories/CategoryList";
 import AddCategory from "./pages/Products/Categories/AddCategory";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <Routes>
         <Route path="/">
           <Route index element={<Home />} />
+          <Route path="/login" element={<Login />} />
         </Route>
         <Route path="/sellers">
           <Route index element={<Sellers />} />
