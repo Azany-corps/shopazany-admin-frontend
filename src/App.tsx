@@ -19,14 +19,18 @@ import SupportTicket from "./pages/Messages/Support";
 import Notification from "./pages/Messages/Notification";
 import CategoryList from "./pages/Products/Categories/CategoryList";
 import AddCategory from "./pages/Products/Categories/AddCategory";
+import { ToastContainer } from "react-toastify";
+ import "react-toastify/dist/ReactToastify.css";
+
 import Login from "./pages/Login";
 
 function App() {
   return (
     <div>
+      <ToastContainer />
       <Routes>
         <Route path="/">
-          <Route index element={<Home />} />
+          <Route path="/dashboard" element={<Home />} />
           <Route path="/login" element={<Login />} />
         </Route>
         <Route path="/sellers">

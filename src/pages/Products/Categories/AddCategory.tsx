@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Layout from "../../../components/Core/Layout";
 import { Icon } from "@iconify/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 type Props = {};
 
@@ -18,7 +20,7 @@ export default function AddCategory({}: Props) {
     "https://img.freepik.com/free-photo/bunch-black-friday-gifts-golden-shopping-cart-with-copy-space_23-2148667040.jpg?w=1480&t=st=1695914954~exp=1695915554~hmac=dd699f3b1464daf0ef8135b0142b87174f8af4d359170d2efc997d8ec908c2e3"
   );
   const [imgFile, setImgFile] = useState<any>("");
-
+ const navigate = useNavigate();
   const handleImageChange = async (e: any) => {
     e.preventDefault();
     let reader = new FileReader();
@@ -33,7 +35,50 @@ export default function AddCategory({}: Props) {
   };
 
   const handleSubmit = () => {
-    // Implement your form submission logic here
+    let data = new FormData();
+    data.append("category", category);
+    data.append("about", categoryDescription);
+    data.append("banner", imgFile);
+    data.append("sub_category[0]", subCategory);
+    data.append("sub_category_about[0]", subCategoryDescription);
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://test.shopazany.com/api/general/products/create_store_category",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        toast.success(response.data.message, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+         navigate("/products/categories");
+      })
+      .catch((error) => {
+        toast.error(error?.response.data.message, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        console.log(error);
+      });
   };
 
   return (
@@ -51,12 +96,12 @@ export default function AddCategory({}: Props) {
                 <p>Back to Products</p>
               </div>
             </div>
-            <Link
-              to="/products/categories/add-category"
+            <button
+              onClick={handleSubmit}
               className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
             >
               Add Categories
-            </Link>
+            </button>
           </div>
           <div className="flex-1 flex flex-col gap-4 w-[90%] lgm:w-[65%]">
             <div className="flex flex-row gap-4 items-end">
@@ -109,6 +154,9 @@ export default function AddCategory({}: Props) {
               </div>
             </div>
             <div className="flex flex-col gap-4 shadow-md">
+              <p className="text-[32px] font-semibold">
+                Add Sub Category (optional)
+              </p>
               <div className="form-group flex flex-col gap-1">
                 <label htmlFor="Sub-category">Sub-category Name</label>
                 <input
@@ -119,9 +167,7 @@ export default function AddCategory({}: Props) {
                   onChange={(e) => setSubCategory(e.target.value)}
                 />
               </div>
-              <p className="text-[36px] font-bold">
-                Add Sub Category (optional)
-              </p>
+
               <div className="form-group flex flex-col gap-1">
                 <label htmlFor="sub-category-description">
                   Sub-category Description
@@ -136,10 +182,7 @@ export default function AddCategory({}: Props) {
               </div>
             </div>
             <div className="flex justify-center items-center">
-              <button
-                onClick={handleSubmit}
-                className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm"
-              >
+              <button className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm">
                 Add Sub Categories
               </button>
             </div>
