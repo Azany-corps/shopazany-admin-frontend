@@ -79,7 +79,7 @@ export default function AddCategory({}: Props) {
     let config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: "http://test.shopazany.com/api/auth/admin/store/create_store_category",
+      url: "https://test.shopazany.com/api/auth/admin/store/create_store_category",
       headers: {
         "Content-Type": "multipart/form-data",
         authorization: "Bearer " + JSON.parse(localStorage.getItem("token")!),
