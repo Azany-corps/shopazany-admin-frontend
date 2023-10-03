@@ -20,7 +20,7 @@ import Notification from "./pages/Messages/Notification";
 import CategoryList from "./pages/Products/Categories/CategoryList";
 import AddCategory from "./pages/Products/Categories/AddCategory";
 import { ToastContainer } from "react-toastify";
- import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import Login from "./pages/Login";
 
@@ -30,7 +30,7 @@ function App() {
       <ToastContainer />
       <Routes>
         <Route path="/">
-          <Route path="/dashboard" element={<Home />} />
+          <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
         </Route>
         <Route path="/sellers">

@@ -8,6 +8,7 @@ type Props = {};
 
 export default function Login({}: Props) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate()
@@ -18,7 +19,8 @@ export default function Login({}: Props) {
       method: "post",
       url: "http://test.shopazany.com/api/auth/admin_login",
       headers: {
-        "Content-Type": "multipart/form-data", // Set the appropriate content type
+        "Content-Type": "multipart/form-data", 
+       
       },
       data: {
         email: email,
@@ -28,8 +30,10 @@ export default function Login({}: Props) {
 
     try {
       const response = await axios(config);
-      console.log(JSON.stringify(response.data));
-      navigate('/dashboard')
+      console.log(response.data);
+      localStorage.clear()
+      localStorage.setItem("token", JSON.stringify(response.data.token))
+      navigate('/')
     } catch (error: any) {
       toast.error(error?.response.data.message, {
         position: "top-center",

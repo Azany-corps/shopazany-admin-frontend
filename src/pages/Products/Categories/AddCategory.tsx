@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../../components/Core/Layout";
 import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,6 +6,10 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 type Props = {};
+interface SubCategory {
+  name: string;
+  description: string;
+}
 
 export default function AddCategory({}: Props) {
   const goBack = () => {
@@ -15,12 +19,15 @@ export default function AddCategory({}: Props) {
   const [category, setCategory] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [subCategoryData, setSubCategoryData] = useState<SubCategory[]>([
+    { name: "", description: "" },
+  ]);
   const [subCategoryDescription, setSubCategoryDescription] = useState("");
   const [imgUrl, setImgUrl] = useState<any>(
     "https://img.freepik.com/free-photo/bunch-black-friday-gifts-golden-shopping-cart-with-copy-space_23-2148667040.jpg?w=1480&t=st=1695914954~exp=1695915554~hmac=dd699f3b1464daf0ef8135b0142b87174f8af4d359170d2efc997d8ec908c2e3"
   );
   const [imgFile, setImgFile] = useState<any>("");
- const navigate = useNavigate();
+  const navigate = useNavigate();
   const handleImageChange = async (e: any) => {
     e.preventDefault();
     let reader = new FileReader();
@@ -33,21 +40,49 @@ export default function AddCategory({}: Props) {
 
     reader.readAsDataURL(file);
   };
+  const handleAddSubCategories = () => {
+    const updatedSubCategoryData = [...subCategoryData];
+    updatedSubCategoryData.push({ name: "", description: "" });
+    setSubCategoryData(updatedSubCategoryData);
+  };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event:any) => {
+    event?.preventDefault()
+    if (
+      category.trim() === "" ||
+      categoryDescription.trim() === "" ||
+      imgFile === "" ||
+      subCategoryData.some((item) => item.name.trim() === "")
+    ) {
+      // Show a toast error message for validation failure
+      toast.error("Please fill in all required fields.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
     let data = new FormData();
     data.append("category", category);
     data.append("about", categoryDescription);
     data.append("banner", imgFile);
-    data.append("sub_category[0]", subCategory);
-    data.append("sub_category_about[0]", subCategoryDescription);
+
+    subCategoryData.forEach((subCategoryItem, index) => {
+      data.append(`sub_category[${index}]`, subCategoryItem.name);
+      data.append(`sub_category_about[${index}]`, subCategoryItem.description);
+    });
 
     let config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: "http://test.shopazany.com/api/general/products/create_store_category",
+      url: "http://test.shopazany.com/api/auth/admin/store/create_store_category",
       headers: {
         "Content-Type": "multipart/form-data",
+        authorization: "Bearer " + JSON.parse(localStorage.getItem("token")!),
       },
       data: data,
     };
@@ -65,7 +100,7 @@ export default function AddCategory({}: Props) {
           draggable: false,
           progress: undefined,
         });
-         navigate("/products/categories");
+        navigate("/products/categories");
       })
       .catch((error) => {
         toast.error(error?.response.data.message, {
@@ -81,10 +116,23 @@ export default function AddCategory({}: Props) {
       });
   };
 
+  const handleSubCategoryChange = (
+    index: number,
+    fieldName: keyof SubCategory,
+    value: string
+  ) => {
+    const updatedSubCategoryData = [...subCategoryData];
+    updatedSubCategoryData[index][fieldName] = value;
+    setSubCategoryData(updatedSubCategoryData);
+  };
+  useEffect(() => {
+    console.log(subCategoryData);
+  }, [subCategoryData]);
+
   return (
     <>
       <Layout>
-        <div className="flex flex-col gap-4 bg-[#F5F5F5]">
+        <form className="flex flex-col gap-4 bg-[#F5F5F5]">
           <div className="flex justify-between items-center">
             <div className="flex gap-3">
               <p className="text-[36px] font-bold">Add New Category</p>
@@ -97,7 +145,7 @@ export default function AddCategory({}: Props) {
               </div>
             </div>
             <button
-              onClick={handleSubmit}
+              onClick={(event:any) => handleSubmit(event)}
               className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
             >
               Add Categories
@@ -119,7 +167,7 @@ export default function AddCategory({}: Props) {
                   className="hidden"
                   name="logo"
                   id="logo"
-                  required={false}
+                  required={true}
                   onChange={(e) => handleImageChange(e)}
                 />
                 <div className="flex justify-center  ">
@@ -137,6 +185,7 @@ export default function AddCategory({}: Props) {
                   type="text"
                   placeholder="Enter category name"
                   value={category}
+                  required={true}
                   onChange={(e) => setCategory(e.target.value)}
                 />
               </div>
@@ -147,6 +196,7 @@ export default function AddCategory({}: Props) {
                 <textarea
                   className="p-3 border border-[#51515183] rounded-md"
                   rows={6}
+                  required={true}
                   placeholder="Enter category description"
                   value={categoryDescription}
                   onChange={(e) => setCategoryDescription(e.target.value)}
@@ -157,37 +207,58 @@ export default function AddCategory({}: Props) {
               <p className="text-[32px] font-semibold">
                 Add Sub Category (optional)
               </p>
-              <div className="form-group flex flex-col gap-1">
-                <label htmlFor="Sub-category">Sub-category Name</label>
-                <input
-                  className="p-3 border border-[#51515183] rounded-md"
-                  type="text"
-                  placeholder="Enter sub-category name"
-                  value={subCategory}
-                  onChange={(e) => setSubCategory(e.target.value)}
-                />
-              </div>
+              {subCategoryData.map((item, index) => (
+                <div key={index}>
+                  <div className="form-group flex flex-col gap-1">
+                    <label htmlFor={`sub-category-name-${index}`}>
+                      Sub-category Name
+                    </label>
+                    <input
+                      required
+                      id={`sub-category-name-${index}`}
+                      className="p-3 border border-[#51515183] rounded-md"
+                      type="text"
+                      placeholder="Enter sub-category name"
+                      value={item.name}
+                      onChange={(e) =>
+                        handleSubCategoryChange(index, "name", e.target.value)
+                      }
+                    />
+                  </div>
 
-              <div className="form-group flex flex-col gap-1">
-                <label htmlFor="sub-category-description">
-                  Sub-category Description
-                </label>
-                <textarea
-                  className="p-3 border border-[#51515183] rounded-md"
-                  rows={6}
-                  placeholder="Enter sub-category description"
-                  value={subCategoryDescription}
-                  onChange={(e) => setSubCategoryDescription(e.target.value)}
-                />
-              </div>
+                  <div className="form-group flex flex-col gap-1">
+                    <label htmlFor={`sub-category-description-${index}`}>
+                      Sub-category Description
+                    </label>
+                    <textarea
+                      id={`sub-category-description-${index}`}
+                      className="p-3 border border-[#51515183] rounded-md"
+                      rows={6}
+                      required
+                      placeholder="Enter sub-category description"
+                      value={item.description}
+                      onChange={(e) =>
+                        handleSubCategoryChange(
+                          index,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
             <div className="flex justify-center items-center">
-              <button className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm">
+              <button
+                className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm"
+                onClick={handleAddSubCategories}
+              >
                 Add Sub Categories
               </button>
             </div>
           </div>
-        </div>
+        </form>
       </Layout>
     </>
   );
