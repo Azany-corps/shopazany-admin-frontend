@@ -17,7 +17,7 @@ export default function Login({}: Props) {
     event?.preventDefault();
     let config = {
       method: "post",
-      url: "http://test.shopazany.com/api/auth/admin_login",
+      url: "https://test.shopazany.com/api/auth/admin_login",
       headers: {
         "Content-Type": "multipart/form-data", 
        
