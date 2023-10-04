@@ -16,8 +16,8 @@ export default function AuthGuard({ children }: Props) {
     }
 
     try {
-      const token = JSON.parse(tokenString);
-      setUserLoggeIn(true)
+      const token = tokenString;
+      setUserLoggeIn(true);
     } catch (error) {
       console.error("Error parsing token:", error);
       // Handle the error as needed...

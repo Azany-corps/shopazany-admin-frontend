@@ -1,15 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../../components/Core/Layout";
 import { Rating } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import Badge from "../../../components/Products/Badge";
 import { Icon } from "@iconify/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 type Props = {};
 
 export default function CategoryList({}: Props) {
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = () => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: "https://test.shopazany.com/api/auth/admin/store/fetch_store_categories",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data.data.values));
+        setCategories(response.data.data.values);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -19,107 +45,28 @@ export default function CategoryList({}: Props) {
     setIsModalOpen(false);
   };
 
-  const rows: GridRowsProp = [
-    {
-      id: 1,
-      category: "Men Leather Loafers",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: 4,
+  // about: "new category from api122";
+  // banner_url: "http://test.shopazany.com/storage/img/site_settings/store_category_banner/cateuut4yuq12322w9sq/Media_Complex,_Govt_House_Premises_1_(1)_1695748043.png";
+  // category: "cateuut4yuq12322w9sq";
+  // created_at: "2023-09-26T17:06:54.000000Z";
+  // id: 1;
+  // sub_categories: [];
+  // updated_at: "2023-09-26T17:07:23.000000Z";
+  const navigate = useNavigate();
+
+  const rows: GridRowsProp = categories.map((category: any) => {
+    return {
+      id: category.id,
+      category: category.category,
+      subCategories: category.sub_categories.length,
+      rating: Math.floor(Math.random() * 5),
       Products: Math.floor(Math.random() * 3020),
       Orders: Math.floor(Math.random() * 100),
       Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 2,
-      category: "Women's Sneakers",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 3,
-      category: "Kids Backpack",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 4,
-      category: "Women's Dress",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 5,
-      category: "Men's Watch",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 6,
-      category: "Women's Handbag",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 7,
-      category: "Men's T-Shirt",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 8,
-      category: "Women's Sandals",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-    {
-      id: 9,
-      category: "Kids Toy",
-      subCategories: Math.floor(Math.random() * 300),
-      rating: Math.floor(Math.random() * 5) + 1,
-      Products: Math.floor(Math.random() * 100),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      actions: Math.floor(Math.random() * 50),
-      onClick: () => openModal(),
-    },
-  ];
+      onClick: () => navigate(`./${category.id}`),
+      // onDelete: null,
+    };
+  });
 
   const columns: GridColDef[] = [
     { field: "category", headerName: "Category", width: 200 },
@@ -149,6 +96,7 @@ export default function CategoryList({}: Props) {
       width: 200,
       renderCell: (params) => {
         const value = params.value || 0;
+       
         return (
           <div className="flex justify-center items-center gap-3">
             <svg
@@ -174,6 +122,7 @@ export default function CategoryList({}: Props) {
             </svg>
 
             <svg
+              // onClick={() => navigate(`/categories/${params.value}`)}
               className="cursor-pointer"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -215,10 +164,9 @@ export default function CategoryList({}: Props) {
     },
   ];
 
-const goBack = () => {
-
-  window.history.back();
-};
+  const goBack = () => {
+    window.history.back();
+  };
 
   return (
     <>

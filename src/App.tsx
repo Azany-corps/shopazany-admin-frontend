@@ -23,6 +23,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Login from "./pages/Login";
+import CategoryPage from "./pages/Products/Categories/CategoryPage";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
           <Route index element={<Products />} />
           <Route path="product" element={<Product />} />
           <Route path="categories" element={<CategoryList />} />
+          <Route path="categories/:categoryId" element={<CategoryPage />} />
           <Route path="categories/add-category" element={<AddCategory />} />
         </Route>
         <Route path="/customers">

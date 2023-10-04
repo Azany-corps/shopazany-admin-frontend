@@ -32,7 +32,8 @@ export default function Login({}: Props) {
       const response = await axios(config);
       console.log(response.data);
       localStorage.clear()
-      localStorage.setItem("token", JSON.stringify(response.data.token))
+      localStorage.setItem("token", response.data.token)
+      localStorage.setItem("profile", JSON.stringify(response.data.data.values))
       navigate('/')
     } catch (error: any) {
       toast.error(error?.response.data.message, {
