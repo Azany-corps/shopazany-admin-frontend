@@ -45,6 +45,10 @@ export default function AddCategory({}: Props) {
     updatedSubCategoryData.push({ name: "", description: "" });
     setSubCategoryData(updatedSubCategoryData);
   };
+const deleteSubCategoryData = (index: number) => {
+  const updatedSubCategoryData = subCategoryData.filter((_, i) => i !== index);
+  setSubCategoryData(updatedSubCategoryData);
+};
 
   const handleSubmit = (event:any) => {
     event?.preventDefault()
@@ -145,7 +149,7 @@ export default function AddCategory({}: Props) {
               </div>
             </div>
             <button
-              onClick={(event:any) => handleSubmit(event)}
+              onClick={(event: any) => handleSubmit(event)}
               className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
             >
               Add Categories
@@ -177,7 +181,7 @@ export default function AddCategory({}: Props) {
                 </div>
               </label>
             </div>
-            <div className="flex flex-col gap-4 shadow-md">
+            <div className="flex flex-col gap-4 shadow-md p-3">
               <div className="form-group flex flex-col gap-1">
                 <label htmlFor="category">Category</label>
                 <input
@@ -203,16 +207,29 @@ export default function AddCategory({}: Props) {
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-4 shadow-md">
+            <div className="flex flex-col gap-4">
               <p className="text-[32px] font-semibold">
                 Add Sub Category (optional)
               </p>
               {subCategoryData.map((item, index) => (
-                <div key={index}>
+                <div key={index} className="shadow-md p-3 rounded-md">
                   <div className="form-group flex flex-col gap-1">
-                    <label htmlFor={`sub-category-name-${index}`}>
-                      Sub-category Name
-                    </label>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-sm  font-medium font-['Inter']">
+                          {index + 1}
+                        </p>
+                        <label htmlFor={`sub-category-name-${index}`}>
+                          Sub-category Name
+                        </label>
+                      </div>
+                      <p
+                        className="text-base font-medium font-['Inter'] text-[#E51B48] cursor-pointer"
+                        onClick={() => deleteSubCategoryData(index)}
+                      >
+                        Remove
+                      </p>
+                    </div>
                     <input
                       required
                       id={`sub-category-name-${index}`}

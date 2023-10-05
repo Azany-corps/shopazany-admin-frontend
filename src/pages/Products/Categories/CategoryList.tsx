@@ -96,7 +96,7 @@ export default function CategoryList({}: Props) {
       width: 200,
       renderCell: (params) => {
         const value = params.value || 0;
-       
+
         return (
           <div className="flex justify-center items-center gap-3">
             <svg

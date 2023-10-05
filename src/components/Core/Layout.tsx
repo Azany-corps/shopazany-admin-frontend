@@ -15,7 +15,10 @@ const Layout = ({ children }: { children: React.ReactNode | React.ReactNode[] })
   const [isModalOpen, ] = useState(false);
   const navigate = useNavigate();
 
-  
+  const handleLogout = ()=>{
+    localStorage.clear()
+    navigate("/login")
+  }
 
   const data = [
     {
@@ -93,7 +96,7 @@ const Layout = ({ children }: { children: React.ReactNode | React.ReactNode[] })
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2" onClick={handleLogout}>
                 <div className="flex flex-row items-center gap-4 hover:bg-[#D9E9FF] cursor-pointer hover:text-[#1B7CFC] p-2 px-8">
                   <Icon
                     icon="ant-design:setting-outlined"
