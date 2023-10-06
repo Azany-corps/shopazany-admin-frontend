@@ -1,23 +1,24 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/Core/Layout";
 import { Icon } from "@iconify/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 interface SubCategory {
   name: string;
-  description: string;
+  about: string;
+  
 }
 
-export default function AddCategory() {
+export default function EditCategory() {
   const goBack = () => {
     window.history.back();
   };
 
   const [category, setCategory] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
-  const [subCategoryData, setSubCategoryData] = useState<SubCategory[]>([]);
+  const [subCategoryData, setSubCategoryData] = useState<any[]>([]);
   const [imgUrl, setImgUrl] = useState<any>(
     "https://img.freepik.com/free-photo/bunch-black-friday-gifts-golden-shopping-cart-with-copy-space_23-2148667040.jpg?w=1480&t=st=1695914954~exp=1695915554~hmac=dd699f3b1464daf0ef8135b0142b87174f8af4d359170d2efc997d8ec908c2e3"
   );
@@ -35,18 +36,49 @@ export default function AddCategory() {
 
     reader.readAsDataURL(file);
   };
+   const fetchCategoryDetails = () => {
+     let config = {
+       method: "get",
+       maxBodyLength: Infinity,
+       url: "https://test.shopazany.com/api/auth/admin/store/view_store_category/5",
+       headers: {
+         authorization: `Bearer ${localStorage.getItem("token")}`,
+       },
+     };
+
+     axios
+       .request(config)
+       .then((response) => {
+         console.log(JSON.stringify(response.data));
+         setSubCategoryData(response.data.data.values[0])
+         setCategory(response.data.data.values[0].category);
+         setCategoryDescription(response.data.data.values[0].about);
+         setSubCategoryData(response.data.data.values[0].sub_categories);
+         setImgUrl(response.data.data.values[0].banner_url)
+       })
+       .catch((error) => {
+         console.log(error);
+       });
+   };
+   const { categoryId } = useParams();
+
+   useEffect(() => {
+     fetchCategoryDetails();
+   }, [categoryId]);
   const handleAddSubCategories = () => {
     const updatedSubCategoryData = [...subCategoryData];
     updatedSubCategoryData.push({ name: "", description: "" });
     setSubCategoryData(updatedSubCategoryData);
   };
-const deleteSubCategoryData = (index: number) => {
-  const updatedSubCategoryData = subCategoryData.filter((_, i) => i !== index);
-  setSubCategoryData(updatedSubCategoryData);
-};
+  const deleteSubCategoryData = (index: number) => {
+    const updatedSubCategoryData = subCategoryData.filter(
+      (_, i) => i !== index
+    );
+    setSubCategoryData(updatedSubCategoryData);
+  };
 
-  const handleSubmit = (event:any) => {
-    event?.preventDefault()
+  const handleSubmit = (event: any) => {
+    event?.preventDefault();
     if (
       category.trim() === "" ||
       categoryDescription.trim() === "" ||
@@ -81,7 +113,7 @@ const deleteSubCategoryData = (index: number) => {
       url: "https://test.shopazany.com/api/auth/admin/store/create_store_category",
       headers: {
         "Content-Type": "multipart/form-data",
-        authorization: "Bearer " + localStorage.getItem("token"),
+        authorization: "Bearer " + JSON.parse(localStorage.getItem("token")!),
       },
       data: data,
     };
@@ -134,7 +166,7 @@ const deleteSubCategoryData = (index: number) => {
         <form className="flex flex-col gap-4 bg-[#F5F5F5]">
           <div className="flex justify-between items-center">
             <div className="flex gap-3">
-              <p className="text-[36px] font-bold">Add New Category</p>
+              <p className="text-[36px] font-bold">Edit Category</p>
               <div
                 className="flex gap-2 items-center text-[#1B7CFC] cursor-pointer"
                 onClick={goBack}
@@ -147,7 +179,7 @@ const deleteSubCategoryData = (index: number) => {
               onClick={(event: any) => handleSubmit(event)}
               className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
             >
-              Add Categories
+              Update Category
             </button>
           </div>
           <div className="flex-1 flex flex-col gap-4 w-[90%] lgm:w-[65%]">
@@ -167,6 +199,7 @@ const deleteSubCategoryData = (index: number) => {
                   name="logo"
                   id="logo"
                   required={true}
+                  
                   onChange={(e) => handleImageChange(e)}
                 />
                 <div className="flex justify-center  ">
@@ -249,11 +282,11 @@ const deleteSubCategoryData = (index: number) => {
                         rows={6}
                         required
                         placeholder="Enter sub-category description"
-                        value={item.description}
+                        value={item.about}
                         onChange={(e) =>
                           handleSubCategoryChange(
                             index,
-                            "description",
+                            "about",
                             e.target.value
                           )
                         }

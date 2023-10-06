@@ -24,6 +24,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 import Login from "./pages/Login";
 import CategoryPage from "./pages/Products/Categories/CategoryPage";
+import EditCategory from "./pages/Products/Categories/EditCategory";
+import AttributeList from "./pages/Products/Attributes/AttributeList";
+import AddAttribute from "./pages/Products/Attributes/AddAttribute";
 
 function App() {
   return (
@@ -53,7 +56,13 @@ function App() {
           <Route path="product" element={<Product />} />
           <Route path="categories" element={<CategoryList />} />
           <Route path="categories/:categoryId" element={<CategoryPage />} />
+          <Route
+            path="categories/:categoryId/edit"
+            element={<EditCategory />}
+          />
           <Route path="categories/add-category" element={<AddCategory />} />
+          <Route path="categories/new-attributes" element={<AddAttribute />} />
+          <Route path="categories/attributes" element={<AttributeList />} />
         </Route>
         <Route path="/customers">
           <Route index element={<Customers />} />

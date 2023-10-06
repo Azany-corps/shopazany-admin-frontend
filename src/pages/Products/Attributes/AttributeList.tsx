@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/Core/Layout";
-import { Rating } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import Badge from "../../../components/Products/Badge";
 import { Icon } from "@iconify/react";
@@ -20,7 +19,7 @@ interface CategoryData {
   category_attributes: any[];
 }
 
-export default function CategoryList() {
+export default function AttributeList() {
   useEffect(() => {
     getCategories();
   }, []);
@@ -62,39 +61,20 @@ export default function CategoryList() {
   const rows: GridRowsProp = categories.map((category: any) => {
     return {
       id: category.id,
-      category: category.category,
-      subCategories: category.sub_categories.length,
-      rating: Math.floor(Math.random() * 5),
+      attribute: category.category,
+      items: category.sub_categories.length,
       Products: Math.floor(Math.random() * 3020),
-      Orders: Math.floor(Math.random() * 100),
+      created_at: category.created_at,
       Searches: Math.floor(Math.random() * 100),
-      // onClick: () => navigate(`./${category.id}`),
-      // onDelete: null,
+      
     };
   });
 
   const columns: GridColDef[] = [
-    { field: "category", headerName: "Category", width: 200 },
-    { field: "subCategories", headerName: "Sub-Categories", width: 120 },
-    {
-      field: "rating",
-      headerName: "Rating",
-      width: 200,
-      renderCell: (params) => {
-        const value = params.value || 0;
-        return (
-          <Rating
-            name={`rating-${params.row.id}`}
-            value={value}
-            precision={0.5}
-            readOnly
-          />
-        );
-      },
-    },
+    { field: "attribute", headerName: "Attributes", width: 300 },
+    { field: "subCategories", headerName: "items", width: 200 },
     { field: "Products", headerName: "Products", width: 200 },
-    { field: "Orders", headerName: "Orders", width: 120 },
-    { field: "Searches", headerName: "No. of Searches", width: 200 },
+    { field: "created_at", headerName: "Created", width: 200 },
     {
       field: "actions",
       headerName: "Actions",
@@ -160,29 +140,22 @@ export default function CategoryList() {
       orders: 242000,
       link: "./#",
       image: (
-        <Icon icon="carbon:categories" color="#1b7cfc" width={36} height={36} />
+        <Icon
+          icon="streamline:shopping-bag-hand-bag-1-shopping-bag-purse-goods-item-products"
+          color="#1b7cfc"
+          width={36}
+          height={36}
+        />
       ),
-      title: "Product Categories",
-    },
-    {
-      id: 2,
-      orders: 242000,
-      link: "./sub-categories",
-      image: (
-        <Icon icon="carbon:categories" color="#1b7cfc" width={36} height={36} />
-      ),
-      title: "Product Sub-Categories",
+      title: "Products Attributes",
     },
   ];
 
-  const goBack = () => {
-    window.history.back();
+  const handleDeleteCategory = async (id: any) => {
+    const categoryList = await deleteCategory(id);
+    setCategories(categoryList);
+    closeModal();
   };
-  const handleDeleteCategory =async(id:any)=>{
-   const categoryList = await deleteCategory(id);
-   setCategories(categoryList);
-   closeModal()
-  }
 
   return (
     <>
@@ -190,14 +163,8 @@ export default function CategoryList() {
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
           <div className="flex justify-between items-center">
             <div className="flex gap-3">
-              <p className="text-[36px] font-bold">Product Categories</p>
-              <div
-                className="flex gap-2 items-center text-[#1B7CFC] cursor-pointer"
-                onClick={goBack}
-              >
-                <Icon icon="icon-park-outline:left" />
-                <p>Back to Products</p>
-              </div>
+              <p className="text-[36px] font-bold">Product Attributes</p>
+             
             </div>
             <Link
               to={"/products/categories/add-category"}
@@ -222,7 +189,7 @@ export default function CategoryList() {
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
             <div className="flex flex-col gap-4 p-3">
               <div className="flex justify-between">
-                <h1>Delete Category</h1>
+                <h1>Delete Product Attribute</h1>
               </div>
               <div className="flex p-3 gap-5 bg-[#F1F4FF] items-end">
                 <div className="flex-1">
@@ -231,7 +198,7 @@ export default function CategoryList() {
                 </div>
                 <div className="flex flex-col">
                   <p>{activeCategory?.sub_categories.length}</p>
-                  <small className="text-xs">Sub categories</small>
+                  <small className="text-xs">items</small>
                 </div>
                 <div className="flex flex-col">
                   <p>102</p>
