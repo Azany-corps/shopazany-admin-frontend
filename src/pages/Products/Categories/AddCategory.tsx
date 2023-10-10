@@ -150,131 +150,145 @@ const deleteSubCategoryData = (index: number) => {
               Add Categories
             </button>
           </div>
-          <div className="flex-1 flex flex-col gap-4 w-[90%] lgm:w-[65%]">
-            <div className="flex flex-row gap-4 items-end">
-              <div className="flex flex-col">
-                <label htmlFor="image">Category Image</label>
-                <div
-                  className="rounded-lg w-[700px] h-[200px] bg-cover bg-center"
-                  style={{ backgroundImage: `url(${imgUrl})` }}
-                ></div>
-              </div>
-              <label htmlFor="logo" className="cursor-pointer rounded-full ">
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  name="logo"
-                  id="logo"
-                  required={true}
-                  onChange={(e) => handleImageChange(e)}
-                />
-                <div className="flex justify-center  ">
-                  <div className="border border-[#505050] bg-[#505050] text-[#fff] p-1 px-2 rounded-sm">
-                    change
-                  </div>
+          <div className="flex gap-4">
+            <div className="flex flex-col gap-4 w-[90%] lgm:w-[65%]">
+              <div className="flex flex-row gap-4 items-end">
+                <div className="flex flex-1 flex-col">
+                  <label htmlFor="image">Category Image</label>
+                  <div
+                    className="rounded-lg w-full h-[200px] bg-cover bg-center"
+                    style={{ backgroundImage: `url(${imgUrl})` }}
+                  ></div>
                 </div>
-              </label>
-            </div>
-            <div className="flex flex-col gap-4 shadow-md p-3">
-              <div className="form-group flex flex-col gap-1">
-                <label htmlFor="category">Category</label>
-                <input
-                  className="p-3 border border-[#51515183] rounded-md"
-                  type="text"
-                  placeholder="Enter category name"
-                  value={category}
-                  required={true}
-                  onChange={(e) => setCategory(e.target.value)}
-                />
-              </div>
-              <div className="form-group flex flex-col gap-1">
-                <label htmlFor="category-description">
-                  Category Description
-                </label>
-                <textarea
-                  className="p-3 border border-[#51515183] rounded-md"
-                  rows={6}
-                  required={true}
-                  placeholder="Enter category description"
-                  value={categoryDescription}
-                  onChange={(e) => setCategoryDescription(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <p className="text-[32px] font-semibold">
-                Add Sub Category (optional)
-              </p>
-              {subCategoryData.length > 0 ? (
-                subCategoryData.map((item, index) => (
-                  <div key={index} className="shadow-md p-3 rounded-md">
-                    <div className="form-group flex flex-col gap-1">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-sm  font-medium font-['Inter']">
-                            {index + 1}
-                          </p>
-                          <label htmlFor={`sub-category-name-${index}`}>
-                            Sub-category Name
-                          </label>
-                        </div>
-                        <p
-                          className="text-base font-medium font-['Inter'] text-[#E51B48] cursor-pointer"
-                          onClick={() => deleteSubCategoryData(index)}
-                        >
-                          Remove
-                        </p>
-                      </div>
-                      <input
-                        required
-                        id={`sub-category-name-${index}`}
-                        className="p-3 border border-[#51515183] rounded-md"
-                        type="text"
-                        placeholder="Enter sub-category name"
-                        value={item.name}
-                        onChange={(e) =>
-                          handleSubCategoryChange(index, "name", e.target.value)
-                        }
-                      />
-                    </div>
-
-                    <div className="form-group flex flex-col gap-1">
-                      <label htmlFor={`sub-category-description-${index}`}>
-                        Sub-category Description
-                      </label>
-                      <textarea
-                        id={`sub-category-description-${index}`}
-                        className="p-3 border border-[#51515183] rounded-md"
-                        rows={6}
-                        required
-                        placeholder="Enter sub-category description"
-                        value={item.description}
-                        onChange={(e) =>
-                          handleSubCategoryChange(
-                            index,
-                            "description",
-                            e.target.value
-                          )
-                        }
-                      />
+                <label htmlFor="logo" className="cursor-pointer rounded-full ">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    name="logo"
+                    id="logo"
+                    required={true}
+                    onChange={(e) => handleImageChange(e)}
+                  />
+                  <div className="flex justify-center  ">
+                    <div className="border border-[#505050] bg-[#505050] text-[#fff] p-1 px-2 rounded-sm">
+                      change
                     </div>
                   </div>
-                ))
-              ) : (
-                <p className="w-full text-center my-6 text-[#8E8E8E] text-2xl font-normal font-['Inter']">
-                  Sub Categories will
-                  <br /> appear here
+                </label>
+              </div>
+              <div className="flex flex-col gap-4 shadow-md p-3">
+                <div className="form-group flex flex-col gap-1">
+                  <label htmlFor="category">Category</label>
+                  <input
+                    className="p-3 border border-[#51515183] rounded-md"
+                    type="text"
+                    placeholder="Enter category name"
+                    value={category}
+                    required={true}
+                    onChange={(e) => setCategory(e.target.value)}
+                  />
+                </div>
+                <div className="form-group flex flex-col gap-1">
+                  <label htmlFor="category-description">
+                    Category Description
+                  </label>
+                  <textarea
+                    className="p-3 border border-[#51515183] rounded-md"
+                    rows={6}
+                    required={true}
+                    placeholder="Enter category description"
+                    value={categoryDescription}
+                    onChange={(e) => setCategoryDescription(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <p className="text-[32px] font-semibold">
+                  Add Sub Category (optional)
                 </p>
-              )}
+                {subCategoryData.length > 0 ? (
+                  subCategoryData.map((item, index) => (
+                    <div key={index} className="shadow-md p-3 rounded-md">
+                      <div className="form-group flex flex-col gap-1">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm  font-medium font-['Inter']">
+                              {index + 1}
+                            </p>
+                            <label htmlFor={`sub-category-name-${index}`}>
+                              Sub-category Name
+                            </label>
+                          </div>
+                          <p
+                            className="text-base font-medium font-['Inter'] text-[#E51B48] cursor-pointer"
+                            onClick={() => deleteSubCategoryData(index)}
+                          >
+                            Remove
+                          </p>
+                        </div>
+                        <input
+                          required
+                          id={`sub-category-name-${index}`}
+                          className="p-3 border border-[#51515183] rounded-md"
+                          type="text"
+                          placeholder="Enter sub-category name"
+                          value={item.name}
+                          onChange={(e) =>
+                            handleSubCategoryChange(
+                              index,
+                              "name",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="form-group flex flex-col gap-1">
+                        <label htmlFor={`sub-category-description-${index}`}>
+                          Sub-category Description
+                        </label>
+                        <textarea
+                          id={`sub-category-description-${index}`}
+                          className="p-3 border border-[#51515183] rounded-md"
+                          rows={6}
+                          required
+                          placeholder="Enter sub-category description"
+                          value={item.description}
+                          onChange={(e) =>
+                            handleSubCategoryChange(
+                              index,
+                              "description",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="w-full text-center my-6 text-[#8E8E8E] text-2xl font-normal font-['Inter']">
+                    Sub Categories will
+                    <br /> appear here
+                  </p>
+                )}
+              </div>
+              <div className="flex justify-center items-center">
+                <button
+                  className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm"
+                  onClick={handleAddSubCategories}
+                >
+                  Add Sub Categories
+                </button>
+              </div>
             </div>
-            <div className="flex justify-center items-center">
-              <button
-                className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm"
-                onClick={handleAddSubCategories}
-              >
-                Add Sub Categories
-              </button>
+            <div className="flex-col flex flex-1">
+              <p className="text-[32px] font-semibold">Add Product Attribute</p>
+              <div className="w-full h-44 relative bg-white rounded-lg border border-stone-300 flex-col">
+                <p className="text-center text-neutral-400 text-base font-normal font-['Inter']">
+                  Attributes will appear here
+                </p>
+              </div>
             </div>
           </div>
         </form>

@@ -27,6 +27,7 @@ import CategoryPage from "./pages/Products/Categories/CategoryPage";
 import EditCategory from "./pages/Products/Categories/EditCategory";
 import AttributeList from "./pages/Products/Attributes/AttributeList";
 import AddAttribute from "./pages/Products/Attributes/AddAttribute";
+import EditAttribute from "./pages/Products/Attributes/EditAttribute";
 
 function App() {
   return (
@@ -62,6 +63,8 @@ function App() {
           />
           <Route path="categories/add-category" element={<AddCategory />} />
           <Route path="categories/new-attributes" element={<AddAttribute />} />
+          <Route path="categories/attributes/:attributeId" element={<EditAttribute />} />
+
           <Route path="categories/attributes" element={<AttributeList />} />
         </Route>
         <Route path="/customers">

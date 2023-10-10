@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/Core/Layout";
 import { Icon } from "@iconify/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getAttributeById } from "../../../services/attribbutes.service";
+import { error } from "console";
 
-interface SubAttribute {
-  name: string;
-  description: string;
-}
-
-export default function AddAttribute() {
+export default function EditAttribute() {
   const navigate = useNavigate();
   const [attribute, setAttribute] = useState("");
   const [attributeDescription, setAttributeDescription] = useState("");
   const [inputValue, setInputValue] = useState("");
-  const [attribute_item, setattribute_item] = useState<string[]>([]);
+  const [attribute_item, setAttribute_item] = useState<string[]>([]);
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -27,91 +24,118 @@ export default function AddAttribute() {
       addWordToArray();
     }
   };
+  const { attributeId } = useParams();
+  useEffect(() => {
+    getAttributeById(String(attributeId))
+      .then((response: any) => {
+         setAttribute(response.data.data.values[0].attribute_name)
+        const items = response.data.data.values[0].attribute_items.map(
+          (item: any) => item.item_name
+        );
+        setAttribute_item(items);
+        return;
+      })
+      .catch((error) => {
+        //  console.log(error.message);
+        toast.error(error?.response?.data?.message, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return;
+      });
+  }, []);
 
   const addWordToArray = () => {
     const newWord = inputValue.trim();
     if (newWord !== "") {
-      setattribute_item([...attribute_item, newWord]);
+      setAttribute_item([...attribute_item, newWord]);
       setInputValue("");
     }
   };
 
-   const handleSubmit = (event: any) => {
-     event?.preventDefault();
-     if (
-       attribute.trim() === "" ||
-    //    attributeDescription.trim() === "" ||
-      
-       attribute_item.some((item) => item.trim() === "")
-     ) {
-       // Show a toast error message for validation failure
-       toast.error("Please fill in all required fields.", {
-         position: "top-center",
-         autoClose: 3000,
-         hideProgressBar: false,
-         closeOnClick: true,
-         pauseOnHover: true,
-         draggable: true,
-         progress: undefined,
-       });
-       return;
-     }
-     let data = new FormData();
-     data.append("attribute_name", attribute);
-     data.append("about", attributeDescription);
+  const handleSubmit = (event: any) => {
+    event?.preventDefault();
+    if (
+      attribute.trim() === "" ||
+      //    attributeDescription.trim() === "" ||
+      attribute_item.some((item) => item.trim() === "")
+    ) {
+      // Show a toast error message for validation failure
+      toast.error("Please fill in all required fields.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+    let data = new FormData();
+    data.append("attribute_name", attribute);
+    data.append("about", attributeDescription);
 
-     attribute_item.forEach((attributeItem, index) => {
-       data.append(`attribute_item[${index}]`, attributeItem);
-     });
+    attribute_item.forEach((attributeItem, index) => {
+      data.append(`attribute_item[${index}]`, attributeItem);
+    });
 
-     let config = {
-       method: "post",
-       maxBodyLength: Infinity,
-       url: "https://test.shopazany.com/api/auth/admin/store/create_attribute",
-       headers: {
-         "Content-Type": "multipart/form-data",
-         authorization: "Bearer " + localStorage.getItem("token"),
-       },
-       data: data,
-     };
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://test.shopazany.com/api/auth/admin/store/create_attribute",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      data: data,
+    };
 
-     axios
-       .request(config)
-       .then((response) => {
-         console.log(JSON.stringify(response.data));
-         toast.success(response.data.message, {
-           position: "top-center",
-           autoClose: 3000,
-           hideProgressBar: false,
-           closeOnClick: true,
-           pauseOnHover: false,
-           draggable: false,
-           progress: undefined,
-         });
-         event.target.reset()
-         navigate("/products/categories/attributes");
-       })
-       .catch((error) => {
-         toast.error(error?.response?.data?.message, {
-           position: "top-center",
-           autoClose: 3000,
-           hideProgressBar: false,
-           closeOnClick: true,
-           pauseOnHover: true,
-           draggable: true,
-           progress: undefined,
-         });
-         console.log(error);
-       });
-   };
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        toast.success(response.data.message, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        event.target.reset();
+        navigate("/products/categories/attributes");
+      })
+      .catch((error) => {
+        toast.error(error?.response?.data?.message, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        console.log(error);
+      });
+  };
 
   return (
     <>
       <Layout>
-        <form className="flex flex-col gap-4 bg-[#F5F5F5] " onSubmit={(e:any)=>handleSubmit(e)}>
+        <form
+          className="flex flex-col gap-4 bg-[#F5F5F5] "
+          onSubmit={(e: any) => handleSubmit(e)}
+        >
           <div className="flex justify-between items-center">
             <div className="flex gap-3">
-              <p className="text-[36px] font-bold">Add New Attribute</p>
+              <p className="text-[36px] font-bold">Edit Attribute</p>
             </div>
           </div>
           <div className="flex-1 flex flex-col gap-4 shadow-md w-[90%] lgm:w-[65%]">
@@ -134,7 +158,7 @@ export default function AddAttribute() {
                 <textarea
                   className="p-3 border border-[#51515183] rounded-md"
                   rows={6}
-                //   required={true}
+                  //   required={true}
                   placeholder="Enter attribute description"
                   value={attributeDescription}
                   onChange={(e) => setAttributeDescription(e.target.value)}
@@ -156,7 +180,7 @@ export default function AddAttribute() {
                           const updatedItems = attribute_item.filter(
                             (_, i) => i !== index
                           );
-                          setattribute_item(updatedItems);
+                          setAttribute_item(updatedItems);
                         }}
                       >
                         x
@@ -168,23 +192,22 @@ export default function AddAttribute() {
                   className="p-3 border border-[#51515183] rounded-md"
                   type="text"
                   placeholder="Input Items"
-                //   required={true}
+                  //   required={true}
                   value={inputValue}
                   onChange={handleInputChange}
                   onKeyDown={handleInputKeyDown}
                 />
               </div>
-            </div>
             <div className="flex justify-center items-center w-full">
               <button
                 className="border rounded-lg border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4  w-full"
                 type="submit"
               >
-                Add Attribute
+                Update Attribute
               </button>
             </div>
+            </div>
           </div>
-         
         </form>
       </Layout>
     </>
