@@ -4,6 +4,8 @@ import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Checkbox } from "@mui/material";
+import { getAttributes } from "../../../services/attribbutes.service";
 
 interface SubCategory {
   name: string;
@@ -14,10 +16,11 @@ export default function AddCategory() {
   const goBack = () => {
     window.history.back();
   };
-
+  const [attributes, setAttributes] = useState([]);
   const [category, setCategory] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
   const [subCategoryData, setSubCategoryData] = useState<SubCategory[]>([]);
+  const [selectedAttributes, setSelectedAttributes] = useState<any[]>([]);
   const [imgUrl, setImgUrl] = useState<any>(
     "https://img.freepik.com/free-photo/bunch-black-friday-gifts-golden-shopping-cart-with-copy-space_23-2148667040.jpg?w=1480&t=st=1695914954~exp=1695915554~hmac=dd699f3b1464daf0ef8135b0142b87174f8af4d359170d2efc997d8ec908c2e3"
   );
@@ -40,13 +43,15 @@ export default function AddCategory() {
     updatedSubCategoryData.push({ name: "", description: "" });
     setSubCategoryData(updatedSubCategoryData);
   };
-const deleteSubCategoryData = (index: number) => {
-  const updatedSubCategoryData = subCategoryData.filter((_, i) => i !== index);
-  setSubCategoryData(updatedSubCategoryData);
-};
+  const deleteSubCategoryData = (index: number) => {
+    const updatedSubCategoryData = subCategoryData.filter(
+      (_, i) => i !== index
+    );
+    setSubCategoryData(updatedSubCategoryData);
+  };
 
-  const handleSubmit = (event:any) => {
-    event?.preventDefault()
+  const handleSubmit = (event: any) => {
+    event?.preventDefault();
     if (
       category.trim() === "" ||
       categoryDescription.trim() === "" ||
@@ -73,6 +78,9 @@ const deleteSubCategoryData = (index: number) => {
     subCategoryData.forEach((subCategoryItem, index) => {
       data.append(`sub_category[${index}]`, subCategoryItem.name);
       data.append(`sub_category_about[${index}]`, subCategoryItem.description);
+    });
+    selectedAttributes.forEach((attribute, index) => {
+      data.append(`attribute_id[${index}]`, attribute.id);
     });
 
     let config = {
@@ -125,8 +133,28 @@ const deleteSubCategoryData = (index: number) => {
     setSubCategoryData(updatedSubCategoryData);
   };
   useEffect(() => {
-    console.log(subCategoryData);
-  }, [subCategoryData]);
+    getAttributes().then((response) =>
+      setAttributes(response.data.data.values)
+    );
+  }, []);
+
+  const handleAttributeChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    attribute: any
+  ) => {
+    const checked = event.target.checked;
+    const attributeId = attribute.id;
+    if (checked) {
+      setSelectedAttributes((prevSelectedAttributes) => [
+        ...prevSelectedAttributes,
+        attribute,
+      ]);
+    } else {
+      setSelectedAttributes((prevSelectedAttributes) =>
+        prevSelectedAttributes.filter((attr) => attr.id !== attributeId)
+      );
+    }
+  };
 
   return (
     <>
@@ -150,8 +178,8 @@ const deleteSubCategoryData = (index: number) => {
               Add Categories
             </button>
           </div>
-          <div className="flex gap-4">
-            <div className="flex flex-col gap-4 w-[90%] lgm:w-[65%]">
+          <div className="flex gap-6">
+            <div className="flex flex-col gap-4 w-[90%] lgm:w-[60%]">
               <div className="flex flex-row gap-4 items-end">
                 <div className="flex flex-1 flex-col">
                   <label htmlFor="image">Category Image</label>
@@ -282,12 +310,74 @@ const deleteSubCategoryData = (index: number) => {
                 </button>
               </div>
             </div>
-            <div className="flex-col flex flex-1">
+            <div className="flex-col gap-4 flex flex-1">
               <p className="text-[32px] font-semibold">Add Product Attribute</p>
-              <div className="w-full h-44 relative bg-white rounded-lg border border-stone-300 flex-col">
-                <p className="text-center text-neutral-400 text-base font-normal font-['Inter']">
-                  Attributes will appear here
-                </p>
+              <div className="w-full h-44 relative bg-white rounded-lg border border-stone-300 p-2 flex flex-wrap overflow-scroll gap-1">
+                {selectedAttributes?.length > 0 ? (
+                  selectedAttributes.map((selectedAttribute, index) => (
+                    <div
+                      className="p-1 bg-brand-light-blue rounded-md flex h-fit items-center"
+                      key={index}
+                    >
+                      <span className="mr-1 text-sm">
+                        {selectedAttribute.attribute_name}
+                      </span>
+                      <span
+                        className="cursor-pointer p-1"
+                        onClick={() => {
+                          const updatedItems = selectedAttributes.filter(
+                            (attribute: any, i: number) =>
+                              attribute.id !== selectedAttribute.id
+                          );
+                          setSelectedAttributes(updatedItems);
+                        }}
+                      >
+                        x
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="w-full flex-1 h-full justify-center items-center">
+                    <p className="text-center text-neutral-400 text-base font-normal font-['Inter']">
+                      {"Attributes will appear here"}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col p-3 gap-2 rounded-md shadow-md">
+                <div className="form-group flex flex-col gap-1 ">
+                  <label htmlFor="attributeList"> Product Attributes</label>
+                  <input
+                    type="search"
+                    name="attributeList"
+                    className="p-3 border border-[#51515183] rounded-md"
+                    id="attributeList"
+                  />
+                </div>
+                <div className="flex-1 flex flex-col gap-2 items-start">
+                  {attributes &&
+                    attributes.map((attribute: any) => (
+                      <div
+                        className="flex gap-2 items-center"
+                        key={attribute.id}
+                      >
+                        <Checkbox
+                          value={attribute.id}
+                          // checked={selectedAttributes.includes(
+                          //   (selectedAttribute:any) =>
+                          //     selectedAttribute.id === attribute.id
+                          // )}
+                          onChange={(event) =>
+                            handleAttributeChange(event, {
+                              id: attribute.id,
+                              attribute_name: attribute.attribute_name,
+                            })
+                          }
+                        />
+                        <span>{attribute.attribute_name}</span>
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
           </div>
