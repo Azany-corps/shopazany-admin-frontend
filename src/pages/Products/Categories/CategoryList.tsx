@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PopUpModal from "../../../components/Core/PopUp";
 import { deleteCategory } from "../../../services/categories.service";
+// import { deleteCategory } from "../../../services/categories.service";
 
 interface CategoryData {
   id: number;
