@@ -6,8 +6,6 @@ import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PopUpModal from "../../../components/Core/PopUp";
-// import { deleteCategory } from "../../../services/attributes.service";
-import { getBearerToken } from "../../../services/auth.service";
 import {
   deleteAttribute,
   getAttributes,
