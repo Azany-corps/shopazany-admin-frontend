@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { getAttributeById } from "../../../services/attribbutes.service";
+import { getAttributeById } from "../../../Services/attribbutes.service";
 import { error } from "console";
 
 export default function EditAttribute() {

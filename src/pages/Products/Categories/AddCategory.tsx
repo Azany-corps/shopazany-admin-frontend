@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Checkbox } from "@mui/material";
-import { getAttributes } from "../../../services/attribbutes.service";
+import { getAttributes } from "../../../Services/attribbutes.service";
 
 interface SubCategory {
   name: string;
@@ -160,7 +160,7 @@ export default function AddCategory() {
     <>
       <Layout>
         <form className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div className="flex gap-3">
               <p className="text-[36px] font-bold">Add New Category</p>
               <div
@@ -180,15 +180,15 @@ export default function AddCategory() {
           </div>
           <div className="flex gap-6">
             <div className="flex flex-col gap-4 w-[90%] lgm:w-[60%]">
-              <div className="flex flex-row gap-4 items-end">
-                <div className="flex flex-1 flex-col">
+              <div className="flex flex-row items-end gap-4">
+                <div className="flex flex-col flex-1">
                   <label htmlFor="image">Category Image</label>
                   <div
                     className="rounded-lg w-full h-[200px] bg-cover bg-center"
                     style={{ backgroundImage: `url(${imgUrl})` }}
                   ></div>
                 </div>
-                <label htmlFor="logo" className="cursor-pointer rounded-full ">
+                <label htmlFor="logo" className="rounded-full cursor-pointer ">
                   <input
                     type="file"
                     accept="image/*"
@@ -198,15 +198,15 @@ export default function AddCategory() {
                     required={true}
                     onChange={(e) => handleImageChange(e)}
                   />
-                  <div className="flex justify-center  ">
+                  <div className="flex justify-center ">
                     <div className="border border-[#505050] bg-[#505050] text-[#fff] p-1 px-2 rounded-sm">
                       change
                     </div>
                   </div>
                 </label>
               </div>
-              <div className="flex flex-col gap-4 shadow-md p-3">
-                <div className="form-group flex flex-col gap-1">
+              <div className="flex flex-col gap-4 p-3 shadow-md">
+                <div className="flex flex-col gap-1 form-group">
                   <label htmlFor="category">Category</label>
                   <input
                     className="p-3 border border-[#51515183] rounded-md"
@@ -217,7 +217,7 @@ export default function AddCategory() {
                     onChange={(e) => setCategory(e.target.value)}
                   />
                 </div>
-                <div className="form-group flex flex-col gap-1">
+                <div className="flex flex-col gap-1 form-group">
                   <label htmlFor="category-description">
                     Category Description
                   </label>
@@ -237,9 +237,9 @@ export default function AddCategory() {
                 </p>
                 {subCategoryData.length > 0 ? (
                   subCategoryData.map((item, index) => (
-                    <div key={index} className="shadow-md p-3 rounded-md">
-                      <div className="form-group flex flex-col gap-1">
-                        <div className="flex justify-between items-center">
+                    <div key={index} className="p-3 rounded-md shadow-md">
+                      <div className="flex flex-col gap-1 form-group">
+                        <div className="flex items-center justify-between">
                           <div>
                             <p className="text-sm  font-medium font-['Inter']">
                               {index + 1}
@@ -272,7 +272,7 @@ export default function AddCategory() {
                         />
                       </div>
 
-                      <div className="form-group flex flex-col gap-1">
+                      <div className="flex flex-col gap-1 form-group">
                         <label htmlFor={`sub-category-description-${index}`}>
                           Sub-category Description
                         </label>
@@ -301,7 +301,7 @@ export default function AddCategory() {
                   </p>
                 )}
               </div>
-              <div className="flex justify-center items-center">
+              <div className="flex items-center justify-center">
                 <button
                   className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm"
                   onClick={handleAddSubCategories}
@@ -310,20 +310,20 @@ export default function AddCategory() {
                 </button>
               </div>
             </div>
-            <div className="flex-col gap-4 flex flex-1">
+            <div className="flex flex-col flex-1 gap-4">
               <p className="text-[32px] font-semibold">Add Product Attribute</p>
-              <div className="w-full h-44 relative bg-white rounded-lg border border-stone-300 p-2 flex flex-wrap overflow-scroll gap-1">
+              <div className="relative flex flex-wrap w-full gap-1 p-2 overflow-scroll bg-white border rounded-lg h-44 border-stone-300">
                 {selectedAttributes?.length > 0 ? (
                   selectedAttributes.map((selectedAttribute, index) => (
                     <div
-                      className="p-1 bg-brand-light-blue rounded-md flex h-fit items-center"
+                      className="flex items-center p-1 rounded-md bg-brand-light-blue h-fit"
                       key={index}
                     >
                       <span className="mr-1 text-sm">
                         {selectedAttribute.attribute_name}
                       </span>
                       <span
-                        className="cursor-pointer p-1"
+                        className="p-1 cursor-pointer"
                         onClick={() => {
                           const updatedItems = selectedAttributes.filter(
                             (attribute: any, i: number) =>
@@ -337,15 +337,15 @@ export default function AddCategory() {
                     </div>
                   ))
                 ) : (
-                  <div className="w-full flex-1 h-full justify-center items-center">
+                  <div className="items-center justify-center flex-1 w-full h-full">
                     <p className="text-center text-neutral-400 text-base font-normal font-['Inter']">
                       {"Attributes will appear here"}
                     </p>
                   </div>
                 )}
               </div>
-              <div className="flex flex-col p-3 gap-2 rounded-md shadow-md">
-                <div className="form-group flex flex-col gap-1 ">
+              <div className="flex flex-col gap-2 p-3 rounded-md shadow-md">
+                <div className="flex flex-col gap-1 form-group ">
                   <label htmlFor="attributeList"> Product Attributes</label>
                   <input
                     type="search"
@@ -354,11 +354,11 @@ export default function AddCategory() {
                     id="attributeList"
                   />
                 </div>
-                <div className="flex-1 flex flex-col gap-2 items-start">
+                <div className="flex flex-col items-start flex-1 gap-2">
                   {attributes &&
                     attributes.map((attribute: any) => (
                       <div
-                        className="flex gap-2 items-center"
+                        className="flex items-center gap-2"
                         key={attribute.id}
                       >
                         <Checkbox
