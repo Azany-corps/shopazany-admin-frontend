@@ -9,11 +9,14 @@ import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import PopUpModal from "../../../components/Core/PopUp";
 import { Checkbox } from "@mui/material";
 import { deleteCategory } from "../../../Services/categories.service";
+import { getAttributes } from "../../../Services/attribbutes.service";
+
 
 interface SubCategory {
   name: string;
   description: string;
-  about?: string;
+  about: string;
+  id: string;
 }
 
 export default function CategoryPage() {
@@ -80,7 +83,7 @@ export default function CategoryPage() {
   };
   const handleAddSubCategories = () => {
     const updatedSubCategoryData = [...subCategoryData];
-    updatedSubCategoryData.push({ name: "", description: "" });
+    updatedSubCategoryData.push({ name: "", description: "", id: "", about: ""});
     setSubCategoryData(updatedSubCategoryData);
   };
   const deleteSubCategoryData = (index: number) => {
@@ -115,16 +118,17 @@ export default function CategoryPage() {
     data.append("about", categoryDescription);
     data.append("banner", imgFile);
 
-    console.log('data: ', data.values)
+    console.log('data: ', subCategoryData)
     
 
     subCategoryData.forEach((subCategoryItem, index) => {
-      data.append(`sub_category_id[${index}]`, (8 + index).toString())
+      data.append(`sub_category_id[${index}]`, subCategoryItem.id)
       data.append(`sub_category[${index}]`, subCategoryItem.name);
-      data.append(`sub_category_about[${index}]`, subCategoryItem.description);
+      data.append(`sub_category_about[${index}]`, subCategoryItem.about);
     });
+    console.log('attr: ', selectedAttributes);
     selectedAttributes.forEach((attribute, index) => {
-      data.append(`category_attr_id[${index}]`, (8 + index).toString())
+      data.append(`category_attr_id[${index}]`, attribute.id)
       data.append(`attribute_id[${index}]`, attribute.id);
     });
 
@@ -175,13 +179,14 @@ export default function CategoryPage() {
   ) => {
     const updatedSubCategoryData = [...subCategoryData];
     updatedSubCategoryData[index][fieldName] = value;
+    console.log('update: ', updatedSubCategoryData)
     setSubCategoryData(updatedSubCategoryData);
   };
-  // useEffect(() => {
-  //   getAttributes().then((response) =>
-  //     setAttributes(response.data.data.values)
-  //   );
-  // }, []);
+  useEffect(() => {
+    getAttributes().then((response) =>
+      setAttributes(response.data.data.values)
+    );
+  }, []);
 
   const handleAttributeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -545,7 +550,7 @@ export default function CategoryPage() {
                                 onChange={(e) =>
                                   handleSubCategoryChange(
                                     index,
-                                    "description",
+                                    "about",
                                     e.target.value
                                   )
                                 }
