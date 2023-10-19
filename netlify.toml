@@ -2,7 +2,7 @@
 
 [build]
   # Set the build command for your React app
-  command = "npm run build"
+  command = "CI= npm run build"
 
   # Set the directory that contains the built files
   publish = "build"
