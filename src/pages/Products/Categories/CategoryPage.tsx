@@ -126,7 +126,9 @@ export default function CategoryPage() {
       data.append(`sub_category[${index}]`, subCategoryItem.name);
       data.append(`sub_category_about[${index}]`, subCategoryItem.about);
     });
-    console.log('attr: ', selectedAttributes);
+  
+    console.log('attr: ', selectedAttributes)
+    
     selectedAttributes.forEach((attribute, index) => {
       data.append(`category_attr_id[${index}]`, attribute.id)
       data.append(`attribute_id[${index}]`, attribute.id);
