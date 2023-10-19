@@ -8,8 +8,8 @@ const Product = () => {
     <>
       <Layout>
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-8 items-center">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-8">
               <p className="text-[36px] font-bold">Products - #4567829 </p>
               <div className="flex gap-2 items-center text-[#1B7CFC]">
                 <Icon icon="icon-park-outline:left" />
@@ -25,7 +25,7 @@ const Product = () => {
               <div>
                 <img src="/images/productimage.png" alt="" />
               </div>
-              <div className="flex-col gap-2 px-2 flex">
+              <div className="flex flex-col gap-2 px-2">
                 <div>
                   <p>Samsung Galaxy A04s, 4GB/64GB Memory - Black</p>
                   <p>Category: Electronics</p>
@@ -47,7 +47,7 @@ const Product = () => {
               </div>
             </div>
             <div className="flex-col flex bg-[white] p-4 rounded-md w-full justify-between">
-              <div className="flex-row flex justify-between">
+              <div className="flex flex-row justify-between">
                 <div className="flex gap-4">
                   <div className="flex flex-col gap-1">
                     <p className="text-[12px]">Orders</p>
@@ -68,7 +68,7 @@ const Product = () => {
                   </div>
                   <div className="flex flex-col gap-1 text-[14px]">
                     <p className="font-semibold text-[16px]">Chimeze LTD</p>
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center gap-2">
                       <Icon icon="mdi:location" width="16" height="16" />
                       <p>Austin, Texas</p>
                     </div>
@@ -77,7 +77,7 @@ const Product = () => {
                 </div>
               </div>
               <div></div>
-              <div className="flex justify-between items-center gap-4">
+              <div className="flex items-center justify-between gap-4">
                 <button className="font- text-[18px] w-full py-1 border border-[#E51B48] text-[#E51B48]">Edit</button>
                 <button className="font- text-[18px] bg-[#E51B48] text-[white] w-full py-1">Delete Product</button>
               </div>{" "}
