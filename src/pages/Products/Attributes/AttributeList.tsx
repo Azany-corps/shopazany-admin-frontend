@@ -9,7 +9,7 @@ import PopUpModal from "../../../components/Core/PopUp";
 import {
   deleteAttribute,
   getAttributes,
-} from "../../../services/attribbutes.service";
+} from "../../../Services/attribbutes.service";
 
 interface AttributeData {
   id: number;

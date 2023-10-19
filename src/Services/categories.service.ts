@@ -2,7 +2,7 @@ import axios from "axios";
 import { getBearerToken } from "./auth.service";
 import { toast } from "react-toastify";
 
-const fetchCategories = async() => {
+const fetchCategories = async () => {
   let config = {
     method: "get",
     maxBodyLength: Infinity,
@@ -28,7 +28,7 @@ const deleteCategory = async (id: number | string) => {
     const config = {
       method: "delete",
       maxBodyLength: Infinity,
-      url: `https://test.shopazany.com/api/auth/admin/store/view_store_category/${id}`,
+      url: `https://test.shopazany.com/api/auth/admin/store/delete_store_category/${id}`,
       headers: {
         Authorization: getBearerToken(),
         "Content-Type": "multipart/form-data",
@@ -49,7 +49,7 @@ const deleteCategory = async (id: number | string) => {
     });
 
     return response.data.data.values;
-  } catch (error:any) {
+  } catch (error: any) {
     toast.error(error?.response?.data?.message || "An error occurred", {
       position: "top-center",
       autoClose: 3000,

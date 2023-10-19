@@ -7,7 +7,7 @@ import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PopUpModal from "../../../components/Core/PopUp";
-import { deleteCategory } from "../../../services/categories.service";
+import { deleteCategory } from "../../../Services/categories.service";
 // import { deleteCategory } from "../../../services/categories.service";
 
 interface CategoryData {
@@ -102,7 +102,7 @@ export default function CategoryList() {
       width: 200,
       renderCell: (params) => {
         return (
-          <div className="flex justify-center items-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <svg
               onClick={() => navigate(`./${params.row.id}`)}
               className="cursor-pointer"
@@ -180,6 +180,7 @@ export default function CategoryList() {
     window.history.back();
   };
   const handleDeleteCategory = async (id: any) => {
+    console.log("id: ", id);
     const categoryList = await deleteCategory(id);
     setCategories(categoryList);
     closeModal();
@@ -189,7 +190,7 @@ export default function CategoryList() {
     <>
       <Layout>
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div className="flex gap-3">
               <p className="text-[36px] font-bold">Product Categories</p>
               <div

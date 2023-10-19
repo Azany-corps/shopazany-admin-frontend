@@ -4,9 +4,20 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../../../components/Core/Layout";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import PopUpModal from "../../../components/Core/PopUp";
-import { deleteCategory } from "../../../services/categories.service";
+import { Checkbox } from "@mui/material";
+import { deleteCategory } from "../../../Services/categories.service";
+import { getAttributes } from "../../../Services/attribbutes.service";
+
+
+interface SubCategory {
+  name: string;
+  description: string;
+  about: string;
+  id: string;
+}
 
 export default function CategoryPage() {
   const goBack = () => {
@@ -17,7 +28,17 @@ export default function CategoryPage() {
   const [isSubcategoryModalOpen, setIsSubcategoryModalOpen] = useState(false);
   const [subCategory, setSubCategory] = useState("");
 
-  const fetchCategoryDetails = (id: any) => {
+  const [attributes, setAttributes] = useState([]);
+  const [category, setCategory] = useState("");
+  const [categoryDescription, setCategoryDescription] = useState("");
+  const [subCategoryData, setSubCategoryData] = useState<SubCategory[]>([]);
+  const [selectedAttributes, setSelectedAttributes] = useState<any[]>([]);
+  const [imgUrl, setImgUrl] = useState<any>(
+    "https://img.freepik.com/free-photo/bunch-black-friday-gifts-golden-shopping-cart-with-copy-space_23-2148667040.jpg?w=1480&t=st=1695914954~exp=1695915554~hmac=dd699f3b1464daf0ef8135b0142b87174f8af4d359170d2efc997d8ec908c2e3"
+  );
+  const [imgFile, setImgFile] = useState<any>("");
+
+  const fetchCategoryDetails = async (id: any) => {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
@@ -29,11 +50,17 @@ export default function CategoryPage() {
       },
     };
 
-    axios
+    await axios
       .request(config)
       .then((response) => {
-        console.log(JSON.stringify(response.data));
+        console.log((response.data.data.values));
         setCategoryDetails(response.data.data.values[0]);
+        setImgUrl(response.data.data.values[0].banner_url)
+        setCategory(response.data.data.values[0].category)
+        setCategoryDescription(response.data.data.values[0].about)
+        setSubCategoryData(response.data.data.values[0].sub_categories)
+        setSelectedAttributes(response.data.data.values[0].category_attributes)
+
       })
       .catch((error) => {
         console.log(error);
@@ -230,7 +257,7 @@ export default function CategoryPage() {
     <>
       <Layout>
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div className="flex gap-3">
               <p className="text-[36px] font-bold">
                 {categoryDetails?.category}
@@ -257,12 +284,18 @@ export default function CategoryPage() {
                 Add Sub-category
               </button>
             </div>
+            <button
+              onClick={() => navigate(`./edit`)}
+              className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
+            >
+              Edit Category
+            </button>
           </div>
           <div className="flex flex-row items-center gap-4 mb-5">
             <Badge badgeData={badgeData} />
           </div>
           <div className="bg-[white] flex flex-col gap-5 flex-1">
-            <div className="top-table flex justify-between items-center">
+            <div className="flex items-center justify-between top-table">
               <p className="flex flex-1 text-black text-xl font-semibold font-['Inter']">
                 Top products
               </p>
@@ -320,9 +353,9 @@ export default function CategoryPage() {
                   <h1>Add Sub-Category</h1>
                   <small>Create a new sub-category</small>
                 </div>
-              
+
                 <div className="flex p-3 flex-col gap-3 bg-[#F1F4FF]">
-                  <div className="flex-1 flex-col flex gap-1">
+                  <div className="flex flex-col flex-1 gap-1">
                     <label htmlFor="CategoryName" className="text-sm">
                       Category Name
                     </label>
@@ -333,7 +366,7 @@ export default function CategoryPage() {
                       className="p-3 border border-[#51515183] rounded-md"
                     />
                   </div>
-                  <div className="flex-1 flex-col flex gap-1">
+                  <div className="flex flex-col flex-1 gap-1">
                     <label htmlFor="CategoryName" className="text-sm">
                       Sub-category
                     </label>
