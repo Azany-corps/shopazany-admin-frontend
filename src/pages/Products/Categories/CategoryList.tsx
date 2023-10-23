@@ -174,6 +174,15 @@ export default function CategoryList() {
       ),
       title: "Product Sub-Categories",
     },
+    {
+      id: 2,
+      orders: 242000,
+      link: "./attributes",
+      image: (
+        <Icon icon="carbon:categories" color="#1b7cfc" width={36} height={36} />
+      ),
+      title: "Attributes",
+    }
   ];
 
   const goBack = () => {

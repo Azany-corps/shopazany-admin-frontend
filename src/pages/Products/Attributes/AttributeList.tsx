@@ -160,7 +160,7 @@ export default function AttributeList() {
               <p className="text-[36px] font-bold">Product Attributes</p>
             </div>
             <Link
-              to={"/products/attributes/new-attributes"}
+              to={"/products/categories/attributes/new-attributes"}
               className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
             >
               Add Attribute
