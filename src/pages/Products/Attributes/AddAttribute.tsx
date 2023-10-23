@@ -127,7 +127,7 @@ export default function AddAttribute() {
                   onChange={(e) => setAttribute(e.target.value)}
                 />
               </div>
-              <div className="form-group flex flex-col gap-1">
+              {/* <div className="form-group flex flex-col gap-1">
                 <label htmlFor="attribute-description">
                   Attribute Description
                 </label>
@@ -139,7 +139,7 @@ export default function AddAttribute() {
                   value={attributeDescription}
                   onChange={(e) => setAttributeDescription(e.target.value)}
                 />
-              </div>
+              </div> */}
 
               <div className="form-group flex flex-col gap-1">
                 <label htmlFor="attributeItem">Attribute Item</label>
