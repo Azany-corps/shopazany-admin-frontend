@@ -361,7 +361,7 @@ export default function EditCategory() {
                       key={index}
                     >
                       <span className="mr-1 text-sm">
-                        {selectedAttribute.attribute_name}
+                        {selectedAttribute.attribute.attribute_name}
                       </span>
                       <span
                         className="p-1 cursor-pointer"
@@ -407,7 +407,6 @@ export default function EditCategory() {
                           onChange={(event) =>
                             handleAttributeChange(event, {
                               id: attribute.id,
-                              attribute_name: attribute.attribute_name,
                             })
                           }
                         />
