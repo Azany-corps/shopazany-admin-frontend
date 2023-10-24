@@ -266,13 +266,13 @@ const AddProduct = () => {
             data.append(`image_1[${index}]`, image);
         });
         product.attributes.forEach((attribute, index) => {
-            data.append(`attribute[${index}]`, attribute.id.toString());
+            data.append(`attribute_id[${index}]`, attribute.id.toString());
         });
 
         let config = {
             method: "post",
             maxBodyLength: Infinity,
-            url: "https://test.shopazany.com/api/auth/admin/store/create_store_category",
+            url: "https://test.shopazany.com/api/auth/store/create_store_product",
             headers: {
                 "Content-Type": "multipart/form-data",
                 authorization: "Bearer " + localStorage.getItem("token"),
