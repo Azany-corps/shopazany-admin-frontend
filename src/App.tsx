@@ -7,6 +7,7 @@ import Seller from "./pages/Sellers/Seller";
 import Tracking from "./pages/Orders/Tracking";
 import Store from "./pages/Sellers/Store";
 import Products from "./pages/Products/Products";
+import AddProduct from "./pages/Products/AddProduct";
 import Customers from "./pages/Customers/Customers";
 import Messages from "./pages/Messages/Messages";
 import StoreTransactions from "./pages/Sellers/Store/Transactions";
@@ -54,6 +55,7 @@ function App() {
         </Route>
         <Route path="/products">
           <Route index element={<Products />} />
+          <Route path="add-product" element={<AddProduct />} />
           <Route path="product" element={<Product />} />
           <Route path="categories" element={<CategoryList />} />
           <Route path="categories/:categoryId" element={<CategoryPage />} />
