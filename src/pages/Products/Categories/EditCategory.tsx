@@ -88,6 +88,7 @@ export default function EditCategory() {
     getAttributes().then((response) => {
       console.log('attribute: ', response.data.data.values);
       setAttributes(response.data.data.values)
+      // setSelectedAttributes(response.data.data.values)
     });
   }, []);
 
@@ -144,7 +145,7 @@ export default function EditCategory() {
     console.log('attr: ', selectedAttributes)
     selectedAttributes.forEach((attribute, index) => {
       data.append(`category_attr_id[${index}]`, attribute.id)
-      data.append(`attribute_id[${index}]`, attribute.id);
+      data.append(`attribute_id[${index}]`, attribute.attribute_id);
     });
 
     let config = {
@@ -212,7 +213,7 @@ export default function EditCategory() {
                 onClick={goBack}
               >
                 <Icon icon="icon-park-outline:left" />
-                <p>Back to Products</p>
+                <p>Back to Category</p>
               </div>
             </div>
             <button
@@ -406,7 +407,6 @@ export default function EditCategory() {
                           onChange={(event) =>
                             handleAttributeChange(event, {
                               id: attribute.id,
-                              attribute_id: attribute.attribute_id,
                               attribute_name: attribute.attribute_name,
                             })
                           }

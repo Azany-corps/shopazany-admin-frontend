@@ -283,13 +283,13 @@ export default function CategoryPage() {
               >
                 Add Sub-category
               </button>
+              <button
+                onClick={() => navigate(`./edit`)}
+                className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
+              >
+                Edit Category
+              </button>
             </div>
-            <button
-              onClick={() => navigate(`./edit`)}
-              className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
-            >
-              Edit Category
-            </button>
           </div>
           <div className="flex flex-row items-center gap-4 mb-5">
             <Badge badgeData={badgeData} />

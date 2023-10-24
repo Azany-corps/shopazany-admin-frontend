@@ -3,10 +3,28 @@ import Layout from "../../components/Core/Layout";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Badge from "../../components/Products/Badge";
 import PopUpModal from "../../components/Core/PopUp";
+import { useNavigate, Link } from "react-router-dom";
 import ProductsPopUp from "../../components/Products/ProductsPopUp";
 import Rating from "@mui/material/Rating";
 
 const Products = () => {
+  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+
+  //   const rows: GridRowsProp = products.map((product: any) => {
+  //     return (
+  //       id: 4,
+  //       product: "Women's Dress",
+  //       price: "$49.95",
+  //       rating: Math.floor(Math.random() * 5) + 1,
+  //         location: "Abuja, Nigeria",
+  //           unitsold: Math.floor(Math.random() * 100),
+  //             orders: Math.floor(Math.random() * 100),
+  //               Returns: Math.floor(Math.random() * 50),
+  //                 onClick: () => openModal(),
+  //     )
+  // })
+
   const rows: GridRowsProp = [
     {
       id: 1,
@@ -140,7 +158,24 @@ const Products = () => {
     <>
       <Layout>
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <p className="text-[36px] font-bold">Products</p>
+          <div className="flex justify-between">
+            <p className="text-[36px] font-bold">Products</p>
+            <div className="flex gap-4">
+              <button
+                onClick={openModal}
+                className="border border-[#E51B48] bg-[#fff] text-[#E51B48] p-1 px-2 rounded-sm"
+              >
+                Reported Products
+              </button>
+              <Link
+                to={"/products/add-product"}
+                className="flex justify-center items-center border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
+              >
+                Add Product
+              </Link>
+
+            </div>
+          </div>
           <div className="flex flex-row items-center gap-4">
             <Badge />
           </div>
