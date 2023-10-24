@@ -1,6 +1,7 @@
 import axios from "axios";
-import { getBearerToken } from "./auth.service";
+// import { getBearerToken } from "./auth.service";
 import { toast } from "react-toastify";
+import { getBearerToken } from "./auth.service";
 
 const fetchCategories = async () => {
   let config = {

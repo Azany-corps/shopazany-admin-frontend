@@ -28,7 +28,7 @@ export default function EditAttribute() {
   useEffect(() => {
     getAttributeById(String(attributeId))
       .then((response: any) => {
-         setAttribute(response.data.data.values[0].attribute_name)
+        setAttribute(response.data.data.values[0].attribute_name);
         const items = response.data.data.values[0].attribute_items.map(
           (item: any) => item.item_name
         );
@@ -151,19 +151,6 @@ export default function EditAttribute() {
                   onChange={(e) => setAttribute(e.target.value)}
                 />
               </div>
-              <div className="form-group flex flex-col gap-1">
-                <label htmlFor="attribute-description">
-                  Attribute Description
-                </label>
-                <textarea
-                  className="p-3 border border-[#51515183] rounded-md"
-                  rows={6}
-                  //   required={true}
-                  placeholder="Enter attribute description"
-                  value={attributeDescription}
-                  onChange={(e) => setAttributeDescription(e.target.value)}
-                />
-              </div>
 
               <div className="form-group flex flex-col gap-1">
                 <label htmlFor="attributeItem">Attribute Item</label>
@@ -198,14 +185,14 @@ export default function EditAttribute() {
                   onKeyDown={handleInputKeyDown}
                 />
               </div>
-            <div className="flex justify-center items-center w-full">
-              <button
-                className="border rounded-lg border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4  w-full"
-                type="submit"
-              >
-                Update Attribute
-              </button>
-            </div>
+              <div className="flex justify-center items-center w-full">
+                <button
+                  className="border rounded-lg border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4  w-full"
+                  type="submit"
+                >
+                  Update Attribute
+                </button>
+              </div>
             </div>
           </div>
         </form>

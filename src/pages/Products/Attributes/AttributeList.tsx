@@ -52,7 +52,9 @@ export default function AttributeList() {
     return {
       id: attribute.id,
       attribute: attribute.attribute_name,
-      items: attribute.attribute_items.length,
+      items: attribute.items
+        ? attribute.items?.length
+        : 0,
       Products: Math.floor(Math.random() * 3020),
       created_at: attribute.created_at,
       Searches: Math.floor(Math.random() * 100),
@@ -192,7 +194,7 @@ export default function AttributeList() {
                 <div className="flex flex-col">
                   <p>
                     {activeAttribute
-                      ? activeAttribute?.attribute_items.length
+                      ? activeAttribute?.attribute_items?.length
                       : 0}
                   </p>
                   <small className="text-xs">items</small>
