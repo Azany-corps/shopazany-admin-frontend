@@ -3,9 +3,9 @@ import React, { ChangeEventHandler } from 'react'
 const Select = ({
     options, name, value, onChange, label, optionText
 }: {
-    options?: [],
+    options?: any[],
     name: string,
-    value: string | number,
+    value?: string | number,
     onChange: ChangeEventHandler<HTMLSelectElement>,
     label: string,
     optionText: string
@@ -18,8 +18,8 @@ const Select = ({
                     <option disabled selected>{optionText}</option>
                     {
                         options?.map((option) => (
-                            <option key={option} value={option}>
-                                {option}
+                            <option key={option.id} value={option.id}>
+                                {option.name}
                             </option>
                         ))
                     }

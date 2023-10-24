@@ -134,11 +134,6 @@ export default function AddCategory() {
     updatedSubCategoryData[index][fieldName] = value;
     setSubCategoryData(updatedSubCategoryData);
   };
-  useEffect(() => {
-    getAttributes().then((response) =>
-      setAttributes(response.data.data.values)
-    );
-  }, []);
 
   const handleAttributeChange = (
     event: React.ChangeEvent<HTMLInputElement>,

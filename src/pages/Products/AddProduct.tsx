@@ -7,8 +7,17 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Select from '../../components/UI/Select';
 import { useNavigate } from "react-router-dom";
+import { getBrands } from '../../Services/brands.service';
+import { getAttributes } from '../../Services/attribbutes.service';
+import callAPI from '../../Services/api.service';
+import * as countryList from "../../newCountries";
 
 
+
+interface IAttribute {
+    name: string,
+    id: number
+}
 interface IProduct {
     subCategory: string;
     brand: string;
@@ -16,7 +25,7 @@ interface IProduct {
     productName: string;
     description: string;
     specification: string;
-    attributes: string[];
+    attributes: IAttribute[];
     country: string;
     stock: boolean;
     discount: boolean;
@@ -26,8 +35,21 @@ interface IProduct {
     quantity: number
 }
 
+
+
+interface Country {
+    name: string;
+    id: string;
+    currency: string;
+}
+
+interface State {
+    name: string;
+    id: string;
+}
+
 interface IAction {
-    type: 'update' | 'image';
+    type: 'update' | 'image' | 'attribute' | 'updateToggle';
     payload: any;
 }
 
@@ -55,6 +77,14 @@ const AddProduct = () => {
     //     "https://img.freepik.com/free-photo/bunch-black-friday-gifts-golden-shopping-cart-with-copy-space_23-2148667040.jpg?w=1480&t=st=1695914954~exp=1695915554~hmac=dd699f3b1464daf0ef8135b0142b87174f8af4d359170d2efc997d8ec908c2e3"
     // );
     const [previewUrls, setPreviewUrls] = useState<any[]>([])
+    const [attributes, setAttributes] = useState<any[]>([])
+
+    const [countries, setCountries] = useState<any[]>([]);
+    const [states, setStates] = useState<any[]>([]);
+    const [cities, setCities] = useState<any[]>([]);
+    const [brands, setBrands] = useState<any[]>([])
+    const [selectedAttribute, setSelectedAttributes] = useState<any[]>([])
+    const [subCategories, setSubCategories] = useState<any[]>([])
     const [product, dispatch] = useReducer((state: IProduct, action: IAction) => {
         if (action.type === 'update') {
             console.log('myacy: ', action.payload)
@@ -68,6 +98,20 @@ const AddProduct = () => {
             return {
                 ...state,
                 [action.payload.key]: [...state.images, action.payload.value]
+            }
+        }
+        if (action.type === 'attribute') {
+            console.log('myacy: ', action.payload)
+            return {
+                ...state,
+                [action.payload.key]: [...state.attributes, action.payload.value]
+            }
+        }
+        if (action.type === 'updateToggle') {
+            console.log('togg: ', action.payload)
+            return {
+                ...state,
+                [action.payload.key]: action.payload.value
             }
         }
         return { ...state, [action.type]: action.payload }
@@ -93,18 +137,90 @@ const AddProduct = () => {
         reader.readAsDataURL(value);
     };
 
+    const handleAttributeChange = async (event: any) => {
+        const key = event.currentTarget.name;
+        const value = event.currentTarget.value
+        const arr = value.split('__')
+        const valueObj = {
+            id: arr[0],
+            name: arr[1]
+        }
+        console.log('value: ', valueObj)
+
+
+        const payload = { key, value: valueObj }
+
+        dispatch({ type: 'attribute', payload })
+    }
+
     const handleInputChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
         const key = event.currentTarget.name;
         const value = event.currentTarget.value
+        if (key === 'country') {
+            const selectedCountry = countries.find(
+                (country) => country?.name === value
+            );
+            getStatesInCountry(selectedCountry?.id);
+        }
+        if (key === 'state') {
+            const selectedState = states.find(
+                (state) => state.name === value
+            );
+
+            getCitiesInState(selectedState?.id);
+        }
+        if (key === 'city') {
+            const selectedCity = cities.find((city) => city.name === value);
+        }
         const payload = { key, value }
+        console.log('payload: ', payload)
 
         dispatch({ type: 'update', payload })
+    }
+
+    const handleToggleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
+        const key = event.currentTarget.name;
+        const value = !product[key as 'stock' | 'discount']
+
+        const payload = { key, value }
+        console.log('payloadTT: ', payload)
+
+        dispatch({ type: 'updateToggle', payload })
     }
 
     const addProduct = (e: any) => {
         e.preventDefault();
         console.log("product: ", product)
+        console.log('ppp: ', product.attributes[0].id)
     }
+
+    const getStatesInCountry = async (countryId: any) => {
+        try {
+            const response = await callAPI(
+                `general/products/populate_states_by_country/${countryId}`,
+                "GET",
+                null
+            );
+
+            setStates(response?.data?.values);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getCitiesInState = async (id: any) => {
+        try {
+            console.log({ id });
+            const response = await callAPI(
+                `general/products/populate_cities_by_state/${id}`,
+                "GET",
+                null
+            );
+            setCities(response?.data?.values);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleSubmit = (event: any) => {
         event?.preventDefault();
@@ -133,22 +249,24 @@ const AddProduct = () => {
         //     });
         //     return;
         // }
+        const stock = product.stock ? 'inStock' : 'outOfStock'
         let data = new FormData();
-        data.append("sub_category", product.subCategory);
+        data.append("sub_category", "subcategory");
         data.append("product_name", product.productName);
-        data.append("stock", product.stock.toString());
+        data.append("stock", stock);
         data.append("quantity", product.quantity.toString());
         data.append("country", product.country);
         data.append("state", product.state);
         data.append("city", product.city);
         data.append("currency", 'ngn')
         data.append("price", product.price.toString())
+        data.append("brand_id", product.brand.toString())
 
         product.images.forEach((image, index) => {
             data.append(`image_1[${index}]`, image);
         });
         product.attributes.forEach((attribute, index) => {
-            data.append(`attribute[${index}]`, attribute);
+            data.append(`attribute[${index}]`, attribute.id.toString());
         });
 
         let config = {
@@ -190,6 +308,22 @@ const AddProduct = () => {
                 console.log(error);
             });
     };
+
+    useEffect(() => {
+        getAttributes().then((response) => {
+            console.log('attribute: ', response.data.data.values);
+            setAttributes(response.data.data.values)
+            // setSelectedAttributes(response.data.data.values)
+        });
+        setCountries(countryList.countries);
+
+        getBrands().then((response) => {
+            console.log('attribute: ', response.data.data.values);
+            setBrands(response.data.data.values)
+        });
+    }, []);
+
+
     return (
         <>
             <Layout>
@@ -213,9 +347,8 @@ const AddProduct = () => {
                                     <input
                                         className=""
                                         type="checkbox"
-                                        role="switch"
                                         name='stock'
-                                        onChange={handleInputChange}
+                                        onChange={handleToggleChange}
                                         checked={product.stock} />
                                 </div>
                             </div>
@@ -226,15 +359,14 @@ const AddProduct = () => {
                                         <input
                                             className=""
                                             type="checkbox"
-                                            role="switch"
                                             name='discount'
                                             checked={product.discount}
-                                            onChange={handleInputChange} />
+                                            onChange={handleToggleChange} />
                                     </div>
                                 </div>
                                 <div className="flex w-full flex-col gap-12">
                                     <Select name={'subCategory'} value={product.subCategory} onChange={handleInputChange} label={'product sub category'} optionText={'Select Sub Category?'} />
-                                    <Select name={'brand'} value={product.brand} onChange={handleInputChange} label={'product brand'} optionText={'Select Product brand?'} />
+                                    <Select name={'brand'} value={product.brand} onChange={handleInputChange} label={'product brand'} optionText={'Select Product brand?'} options={brands} />
                                     <div className="flex flex-col gap-2 w-full">
                                         <label htmlFor="images" className='uppercase font-bold  text-[#515151]'>Images</label>
                                         <div className="flex gap-4">
@@ -266,37 +398,110 @@ const AddProduct = () => {
                                     <Input name={'productName'} value={product.productName} label={'Product Name'} onChange={handleInputChange} />
                                     <Input name={'description'} value={product.description} label={'description'} onChange={handleInputChange} />
                                     <Input name={'specification'} value={product.specification} label={'specification'} onChange={handleInputChange} />
-                                    {/* <Input name={'attribute'} value={product.attribute} label={'attribute'} onChange={handleInputChange} /> */}
 
-                                    {/* <div className="flex flex-col gap-2 w-full">
-                                        <label htmlFor="" className='uppercase font-bold text-[#515151]'>Product Attributes</label>
-                                        <input type='text' className='border bg-[#f5f5f5] w-full border-[#e2e2e2] py-3 px-4 gap-8 rounded-md' name="" id="" />
-                                    </div> */}
+                                    <div className="flex flex-col gap-2 w-full">
+                                        <label htmlFor='attributes' className='uppercase font-bold text-[#515151]'>product attribute</label>
+                                        <div className="flex gap-3">
+                                            {
+                                                product?.attributes?.map((attribute, index) => (
+                                                    <div
+                                                        className="flex items-center p-1 px-2 rounded-md bg-brand-light-blue h-fit"
+                                                        key={index}
+                                                    >
+                                                        <span className="mr-1 text-sm">
+                                                            {attribute.name}
+                                                        </span>
+                                                        <span
+                                                            className="p-1 cursor-pointer"
+                                                        >
+                                                            x
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                        <select onChange={handleAttributeChange} className='border bg-[#f5f5f5] w-full border-[#e2e2e2] py-3 px-4 gap-8 rounded-md' name='attributes'>
+                                            <option disabled selected>Select Attribute?</option>
+                                            {
+                                                attributes?.map((option) => (
+                                                    <option key={option.id} value={`${option.id}__${option.attribute_name}`}>
+                                                        {option.attribute_name}
+                                                    </option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+
                                     <div className="flex flex-col gap-2 w-full">
                                         <label htmlFor="" className='uppercase font-bold text-[#515151]'>Location</label>
-                                        <div className="flex gap-4 w-full">
-                                            <div className="flex flex-col gap-2 w-full">
-                                                <label className='font-extralight' htmlFor="">COUNTRY</label>
-                                                <select className='border  bg-[#f5f5f5] w-full border-[#e2e2e2] py-3 px-4 gap-8 rounded-md' name="" id="">
-                                                    <option className='text-sm font-extralight' disabled selected>Select Country</option>
+                                        <div className="flex xs:flex-col justify-between w-full gap-4">
+                                            <div className="w-full relative flex flex-col items-start">
+                                                <label className="font-normal text-[12px] text-gray-600">
+                                                    COUNTRY
+                                                </label>
+                                                <select
+                                                    name="country"
+                                                    value={product?.country}
+                                                    id=""
+                                                    className="px-4 w-full py-3 rounded-md border border-[#e2e2e2] bg-[#F5F5F5]"
+                                                    onChange={handleInputChange}
+                                                >
+                                                    <option value="" disabled>
+                                                        Choose country
+                                                    </option>
+                                                    {countries?.map((country: Country) => (
+                                                        <option key={country.id} value={country?.name}>
+                                                            {country?.name}
+                                                        </option>
+                                                    ))}
                                                 </select>
                                             </div>
-                                            <div className="flex flex-col gap-2 w-full">
-                                                <label className='font-extralight' htmlFor="">STATE</label>
-                                                <select className='border  bg-[#f5f5f5] w-full border-[#e2e2e2] py-3 px-4 gap-8 rounded-md' name="" id="">
-                                                    <option className='text-sm font-extralight' disabled selected>Select State</option>
+                                            <div className="w-full  flex flex-col relative items-start">
+                                                <label className="font-normal text-[12px] text-gray-600">
+                                                    STATE/ PROVINCE
+                                                </label>
+
+                                                <select
+                                                    name="state"
+                                                    id=""
+                                                    value={product?.state}
+                                                    className="px-4 w-full py-3 rounded-md border border-[#e2e2e2] bg-[#F5F5F5]"
+                                                    onChange={handleInputChange}
+                                                >
+                                                    <option value="" disabled>
+                                                        Choose state/ province
+                                                    </option>
+                                                    {states?.map((state: State) => (
+                                                        <option value={state?.name}>{state?.name}</option>
+                                                    ))}
                                                 </select>
                                             </div>
-                                            <div className="flex flex-col gap-2 w-full">
-                                                <label className='font-extralight' htmlFor="">CITY</label>
-                                                <select className='border  bg-[#f5f5f5] w-full border-[#e2e2e2] py-3 px-4 gap-8 rounded-md' name="" id="">
-                                                    <option className='text-sm font-extralight' disabled selected>Select City</option>
+                                            <div className="w-full  flex flex-col relative items-start">
+                                                <label className="font-normal text-[12px] text-gray-600">
+                                                    CITY
+                                                </label>
+                                                <select
+                                                    name="city"
+                                                    id=""
+                                                    value={product?.city} className="px-4 w-full py-3 rounded-md border border-[#e2e2e2] bg-[#F5F5F5]"
+                                                    onChange={handleInputChange}
+                                                >
+                                                    <option value="" disabled>
+                                                        Choose city
+                                                    </option>
+                                                    {cities?.map((city: any) => (
+                                                        <option value={city?.name}>{city?.name}</option>
+                                                    ))}
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <Input name={'price'} value={product.price} label={'price'} onChange={handleInputChange} />
-                                    <button className='bg-[#E51B48] w-full py-3 px-4 rounded-md text-[#fff]' onClick={addProduct}>Add Product</button>
+                                    <Input type='number' name={'price'} value={product.price} label={'price'} onChange={handleInputChange} />
+                                    <Input type='number' disabled={!product.stock} name={'quantity'} value={product.quantity} label={'quantity'} onChange={handleInputChange} />
+                                    <div className="flex flex-col gap-2">
+                                        <button className='bg-[#E51B48] w-full py-3 px-4 rounded-md text-[#fff]' onClick={handleSubmit}>Add Product</button>
+                                        <small>By clicking add product, you accept the Terms of Use, confirm that you will abide by the Safety Tips, and declare that this posting does not include any Prohibited Items</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
