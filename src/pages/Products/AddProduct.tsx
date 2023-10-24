@@ -82,6 +82,7 @@ const AddProduct = () => {
     const [countries, setCountries] = useState<any[]>([]);
     const [states, setStates] = useState<any[]>([]);
     const [cities, setCities] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>(false)
     const [brands, setBrands] = useState<any[]>([])
     const [selectedAttribute, setSelectedAttributes] = useState<any[]>([])
     const [subCategories, setSubCategories] = useState<any[]>([])
@@ -223,7 +224,8 @@ const AddProduct = () => {
     };
 
     const handleSubmit = (event: any) => {
-        event?.preventDefault();
+        setLoading(true);
+        event?.preventDefault()
         // if (
         //     product.productName.trim() === "" ||
         //     product.description.trim() === "" ||
@@ -284,6 +286,7 @@ const AddProduct = () => {
             .request(config)
             .then((response) => {
                 console.log(JSON.stringify(response.data));
+                setLoading(false);
                 toast.success(response.data.message, {
                     position: "top-center",
                     autoClose: 3000,
@@ -296,6 +299,7 @@ const AddProduct = () => {
                 navigate("/products");
             })
             .catch((error) => {
+                setLoading(false);
                 toast.error(error?.response.data.message, {
                     position: "top-center",
                     autoClose: 3000,
@@ -339,8 +343,10 @@ const AddProduct = () => {
                                 <p>Back to Products</p>
                             </div>
                         </div>
-                        <div className="flex flex-col w-full bg-[#fff] py-4 px-20 rounded-md gap-4 justify-center items-center">
-                            <div className="flex img w-full bg-brand-red h-32 rounded-md"></div>
+                        <div className="flex flex-col w-full bg-[#fff] py-4 px-20 rounded-md gap-8 justify-center items-center">
+                            <div className="flex relative mb-10 img w-full bg-brand-red h-32 rounded-md">
+                                <div className="flex bg-[#003b94] justify-center items-center h-20 w-20 absolute left-16 -bottom-10 text-[2.5rem] text-[#fff] font-extrabold  border-4 rounded-full border-[#fff]">B.</div>
+                            </div>
                             <div className="flex justify-end w-full">
                                 <div className="flex justify-between px-4 bg-[#FF809C] w-36 rounded-full">
                                     <p className='font-medium text-[#fff] py-1'>In Stock</p>
@@ -499,7 +505,18 @@ const AddProduct = () => {
                                     <Input type='number' name={'price'} value={product.price} label={'price'} onChange={handleInputChange} />
                                     <Input type='number' disabled={!product.stock} name={'quantity'} value={product.quantity} label={'quantity'} onChange={handleInputChange} />
                                     <div className="flex flex-col gap-2">
-                                        <button className='bg-[#E51B48] w-full py-3 px-4 rounded-md text-[#fff]' onClick={handleSubmit}>Add Product</button>
+                                        {loading ? (
+                                            <button className='bg-[#dd91a2] relative flex justify-center items-center w-full py-3 px-4 rounded-md text-[#fff]' onClick={handleSubmit}>
+                                                <div className="absolute left-32 ">
+                                                    <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full" role="status" aria-label="loading">
+                                                        <span className="sr-only">Loading...</span>
+                                                    </div>
+                                                </div>
+                                                <span>Add Product</span>
+                                            </button>
+                                        ) : (
+                                            <button className='bg-[#E51B48] w-full py-3 px-4 rounded-md text-[#fff]' onClick={handleSubmit}>Add Product</button>
+                                        )}
                                         <small>By clicking add product, you accept the Terms of Use, confirm that you will abide by the Safety Tips, and declare that this posting does not include any Prohibited Items</small>
                                     </div>
                                 </div>
