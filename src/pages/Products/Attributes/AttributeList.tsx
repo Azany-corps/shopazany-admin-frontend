@@ -64,8 +64,8 @@ export default function AttributeList() {
   const columns: GridColDef[] = [
     { field: "attribute", headerName: "Attributes", width: 300 },
     { field: "items", headerName: "items", width: 200 },
-    { field: "Products", headerName: "Products", width: 200 },
-    { field: "created_at", headerName: "Created", width: 200 },
+    { field: "created_at", headerName: "Date Added", width: 200 },
+    { field: "status", headerName: "STATUS", width: 200 },
     {
       field: "actions",
       headerName: "Actions",
@@ -128,17 +128,31 @@ export default function AttributeList() {
   const badgeData = [
     {
       id: 1,
-      orders: 242000,
+      orders: 356,
       link: "./#",
       image: (
         <Icon
-          icon="streamline:shopping-bag-hand-bag-1-shopping-bag-purse-goods-item-products"
-          color="#1b7cfc"
-          width={36}
-          height={36}
+          icon="entypo:bar-graph"
+          color="#d65d5b"
+          width={24}
+          height={24}
         />
       ),
-      title: "Products Attributes",
+      title: "Attributes",
+    },
+    {
+      id: 2,
+      orders: 242,
+      link: "./#",
+      image: (
+        <Icon
+          icon="tabler:list-details"
+          color="#d65d5b"
+          width={24}
+          height={24}
+        />
+      ),
+      title: "Specifications",
     },
   ];
 
@@ -170,6 +184,10 @@ export default function AttributeList() {
           </div>
           <div className="flex flex-row items-center gap-4">
             <Badge badgeData={badgeData} />
+          </div>
+          <div className="flex justify-center gap-4 items-center w-[75%]">
+            <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-[#B3B7BB] placeholder:font-bold py-5" type="text" placeholder="Search" />
+            <button className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Create Attribute</button>
           </div>
           <div className="bg-[white]">
             <DataGrid
