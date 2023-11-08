@@ -63,7 +63,7 @@ export default function Login({}: Props) {
             className="flex flex-col gap-4 w-full"
             onSubmit={(e) => handleLogin(e)}
           >
-            <div className="mb-6">
+            <div className="">
               <label
                 htmlFor="email"
                 className="block mb-3 text-base font-normal text-[#5A5A5D] "
@@ -80,7 +80,7 @@ export default function Login({}: Props) {
                 required
               />
             </div>
-            <div className="mb-6">
+            <div>
               <label
                 htmlFor="password"
                 className="block mb-3 text-base font-normal text-[#5A5A5D] "
