@@ -4,7 +4,7 @@ import Badges from "../../components/Overview/Badges";
 import Chart from "../../components/Overview/Chart";
 import PieChartExample from "../../components/Overview/Pie";
 import List from "../../components/Overview/Table";
-import Layout2 from "../../components/Core/Layout2";
+import LayoutComp from "../../components/Core/LayoutComp";
 import DashboardCard from "../../components/Overview/DashboardCard";
 
 type each = {
@@ -99,7 +99,7 @@ const Home = () => {
           </div>
         </div>
       </Layout> */}
-      <Layout2>
+      <LayoutComp>
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2">
             <div className="flex flex-col max-h-[217px] rounded-lg bg-gray-50 p-[26.15px] bg-white">
@@ -206,7 +206,7 @@ const Home = () => {
           </div>
           <div className="col-span-1"></div>
         </div>
-      </Layout2>
+      </LayoutComp>
     </div>
   );
 };

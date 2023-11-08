@@ -7,7 +7,7 @@ type each = {
   title: string;
 };
 
-const Layout2 = ({
+const LayoutComp = ({
   children,
 }: {
   children: React.ReactNode | React.ReactNode[];
@@ -171,4 +171,4 @@ const Layout2 = ({
   );
 };
 
-export default Layout2;
+export default LayoutComp;
