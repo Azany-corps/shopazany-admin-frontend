@@ -137,7 +137,7 @@ export const data = [
       </svg>
     ),
     title: "Categories",
-    path: "/",
+    path: "/products/categories",
   },
   {
     image: (
