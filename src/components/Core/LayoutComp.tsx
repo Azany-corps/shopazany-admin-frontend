@@ -112,16 +112,18 @@ const LayoutComp = ({
               </a>
             </li>
             {data.map((each, index) => (
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center p-[7.51px] text-[#8B909A] hover:text-[#23272E]  rounded-lg hover:bg-[#F7DFDE] group"
-                >
-                  {each.image}
-                  <span className="flex-1 ml-3 whitespace-nowrap text-[12.524px]">
-                    {each.title}
-                  </span>
-                </a>
+              <li key={index}>
+                <Link to={each.path}>
+                  <a
+                    href="#"
+                    className="flex items-center p-[7.51px] text-[#8B909A] hover:text-[#23272E]  rounded-lg hover:bg-[#F7DFDE] group"
+                  >
+                    {each.image}
+                    <span className="flex-1 ml-3 whitespace-nowrap text-[12.524px]">
+                      {each.title}
+                    </span>
+                  </a>
+                </Link>
               </li>
             ))}
           </ul>
