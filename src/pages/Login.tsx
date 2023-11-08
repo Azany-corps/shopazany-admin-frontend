@@ -111,10 +111,12 @@ export default function Login({}: Props) {
                 </div>
               </div>
             </div>
-            <button className="text-white bg-[#D65D5B] hover:bg-[#bf4f4d] focus:ring-4 focus:outline-none focus:ring-[#f37472] font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">
-              Login
-            </button>
-            <div className="flex items-end justify-end mt-[105px] mb-[25px] ml-auto ">
+            <div className="min-w-[267px] flex justify-center items-center">
+              <button className="mt-[38px] mb-[13px] min-w-[267px] text-white bg-[#D65D5B] hover:bg-[#bf4f4d] focus:ring-4 focus:outline-none focus:ring-[#f37472] font-bold rounded-lg text-base w-full sm:w-auto px-5 py-[15px] text-center">
+                Login
+              </button>
+            </div>
+            <div className="flex items-end justify-end mb-[25px] ml-auto ">
               <p className="text-sm cursor-pointer">
                 <span>Forgot password?</span>
                 <span className="text-[#D65D5B] ml-4">Contact Admin</span>
