@@ -54,7 +54,7 @@ export default function Login({}: Props) {
   return (
     <section className="w-screen h-screen flex justify-center items-center bg-login-bg bg-cover font-public-sans">
       <main className="w-full flex flex-col justify-center items-center">
-        <div className="w-full max-w-[540px] p-4 bg-white rounded-lg sm:p-6 px-[73px]">
+        <div className="w-full max-w-[540px] bg-white rounded-lg px-6 md:px-[73px] lg:px-[73px] xl:px-[73px]">
           <p className="mt-[38px] mb-[21px] text-center w-full text-[40px] font-bold font-public-sans">
             Login
           </p>
