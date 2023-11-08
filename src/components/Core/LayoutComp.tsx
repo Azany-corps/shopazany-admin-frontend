@@ -59,7 +59,7 @@ const LayoutComp = ({
                   </svg>
                 )}
               </button>
-              <p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap md:flex ml-[209px] md:mr-24 hidden">
+              <p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
                 Dashboard
               </p>
             </div>
