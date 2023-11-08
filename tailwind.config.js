@@ -30,11 +30,16 @@ module.exports = {
       xlm: "1280px",
       // => @media (min-width: 1536px) { ... }
     },
-    colors: {
-      "brand-blue": "#1B7CFC",
-      "brand-red": "#E51B48",
-      "brand-light-blue": "#D9E9FF",
-      "brand-bg": "#F5F5F5",
+    extend: {
+      colors: {
+        "brand-blue": "#1B7CFC",
+        "brand-red": "#E51B48",
+        "brand-light-blue": "#D9E9FF",
+        "brand-bg": "#F5F5F5",
+      },
+      backgroundImage: {
+        "login-bg": "url('../public/images/LoginBg.svg')",
+      },
     },
   },
 };
