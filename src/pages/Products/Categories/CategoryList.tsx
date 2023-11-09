@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import LayoutComp from "../../../components/Core/LayoutComp";
 import Layout from "../../../components/Core/Layout";
 import { Rating } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
@@ -65,94 +66,24 @@ export default function CategoryList() {
       id: category.id,
       category: category.category,
       subCategories: category.sub_categories.length,
-      rating: Math.floor(Math.random() * 5),
-      Products: Math.floor(Math.random() * 3020),
-      Orders: Math.floor(Math.random() * 100),
-      Searches: Math.floor(Math.random() * 100),
-      // onClick: () => navigate(`./${category.id}`),
+      created_at: "12-03-2023",
+      status: "",
+      //created_at: category.created_at,
+      //rating: Math.floor(Math.random() * 5),
+      //Products: Math.floor(Math.random() * 3020),
+      //Orders: Math.floor(Math.random() * 100),
+      //Searches: Math.floor(Math.random() * 100),
+      //onClick: () => navigate(`./${category.id}`),
+      onClick: () => navigate("/products/categories/add-category"),
       // onDelete: null,
     };
   });
 
   const columns: GridColDef[] = [
-    { field: "category", headerName: "Category", width: 200 },
-    { field: "subCategories", headerName: "Sub-Categories", width: 120 },
-    {
-      field: "rating",
-      headerName: "Rating",
-      width: 200,
-      renderCell: (params) => {
-        const value = params.value || 0;
-        return (
-          <Rating
-            name={`rating-${params.row.id}`}
-            value={value}
-            precision={0.5}
-            readOnly
-          />
-        );
-      },
-    },
-    { field: "Products", headerName: "Products", width: 200 },
-    { field: "Orders", headerName: "Orders", width: 120 },
-    { field: "Searches", headerName: "No. of Searches", width: 200 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="flex items-center justify-center gap-3">
-            <svg
-              onClick={() => navigate(`./${params.row.id}`)}
-              className="cursor-pointer"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15 12C15 12.7956 14.6839 13.5587 14.1213 14.1213C13.5587 14.6839 12.7956 15 12 15C11.2044 15 10.4413 14.6839 9.87868 14.1213C9.31607 13.5587 9 12.7956 9 12C9 11.2044 9.31607 10.4413 9.87868 9.87868C10.4413 9.31607 11.2044 9 12 9C12.7956 9 13.5587 9.31607 14.1213 9.87868C14.6839 10.4413 15 11.2044 15 12Z"
-                stroke="black"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M2.45703 12C3.73103 7.943 7.52203 5 11.999 5C16.477 5 20.267 7.943 21.541 12C20.267 16.057 16.477 19 11.999 19C7.52203 19 3.73103 16.057 2.45703 12Z"
-                stroke="black"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-
-            <svg
-              onClick={() => {
-                setActiveCategory(
-                  categories.find(
-                    (category: CategoryData) => category.id === params.row.id
-                  )
-                );
-                openModal();
-              }}
-              className="cursor-pointer"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path
-                d="M19 7L18.133 19.142C18.0971 19.6466 17.8713 20.1188 17.5011 20.4636C17.1309 20.8083 16.6439 21 16.138 21H7.862C7.35614 21 6.86907 20.8083 6.49889 20.4636C6.1287 20.1188 5.90292 19.6466 5.867 19.142L5 7M10 11V17M14 11V17M15 7V4C15 3.73478 14.8946 3.48043 14.7071 3.29289C14.5196 3.10536 14.2652 3 14 3H10C9.73478 3 9.48043 3.10536 9.29289 3.29289C9.10536 3.48043 9 3.73478 9 4V7M4 7H20"
-                stroke="black"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-        );
-      },
-    },
+    { field: "category", headerName: "Category", width: 300 },
+    { field: "subCategories", headerName: "Sub-Categories", width: 300 },
+    { field: "created_at", headerName: "Date Added", width: 300 },
+    { field: "Status", headerName: "Status", width: 300 },
   ];
 
   const badgeData = [
@@ -182,7 +113,7 @@ export default function CategoryList() {
         <Icon icon="carbon:categories" color="#1b7cfc" width={36} height={36} />
       ),
       title: "Attributes",
-    }
+    },
   ];
 
   const goBack = () => {
@@ -197,7 +128,97 @@ export default function CategoryList() {
 
   return (
     <>
-      <Layout>
+      <LayoutComp>
+        <section className="space-y-4">
+          <div className="flex flex-row bg-[#fff] w-[261px] h-[97px] justify-left text-left p-[20px] rounded-[17px] space-x-6">
+            <div className="p-[15px] flex justify-center text-center bg-[#F4F7FE] w-[56px] h-[56px] rounded-full">
+              <img src="/images/caticon.svg" />
+            </div>
+            <div className="p-[5px]">
+              <p className="text-[#A3AED0] text-sm">Categories</p>
+              <p className="font-[700] text-xl">350</p>
+            </div>
+          </div>
+
+          <div className="flex flex-row w-full space-x-20">
+            <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+              <p className="font-[700] text-sm text-[#B3B7BB]">Search</p>
+            </div>
+            <button
+              onClick={openModal}
+              className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
+            >
+              <p className="font-[700] text-sm text-[#fff]">
+                Create a category
+              </p>
+            </button>
+            <button 
+              onClick={openModal}
+              className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
+              <p className="font-[700] text-sm text-[#fff]">
+                Create sub category
+              </p>
+            </button>
+          </div>
+
+          {/*Table*/}
+          <div className="bg-[white]">
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              onRowClick={(params) =>
+                params.row.onClick && params.row.onClick()
+              }
+              className="cursor-pointer"
+            />
+          </div>
+
+          {/*Modal*/}
+          <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
+            <div className="flex flex-col gap-4 p-3">
+              <div className="flex-start flex justify-between">
+                <h1 className="font-[700] text-xs mt-3">Create Category</h1>
+              </div>
+              <div className="flex-center flex-col space-y-3">
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    type="text"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    placeholder="Title"
+                  />
+                </div>
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    type="text"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    placeholder="Description"
+                  />
+                </div>
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    type="text"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    placeholder="Select attribute"
+                  />
+                </div>
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    type="file"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                  />
+                </div>
+                <button className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
+                  <p className="mt-1 font-[700] text-sm text-[#fff]">
+                    Done
+                  </p>
+                </button>
+              </div>
+
+            </div>
+          </PopUpModal>
+        </section>
+      </LayoutComp>
+      {/*<Layout>
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
           <div className="flex items-center justify-between">
             <div className="flex gap-3">
@@ -267,7 +288,7 @@ export default function CategoryList() {
             </div>
           </PopUpModal>
         </div>
-      </Layout>
+                </Layout>*/}
     </>
   );
 }
