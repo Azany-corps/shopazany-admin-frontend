@@ -1,5 +1,5 @@
 import { useEffect, ChangeEvent, useState, useReducer } from "react";
-import Layout from "../../../components/Core/Layout";
+import LayoutComp from "../../../components/Core/LayoutComp";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import Badge from "../../../components/Products/Badge";
 import { Icon } from "@iconify/react";
@@ -273,14 +273,14 @@ export default function AttributeList() {
 
   return (
     <>
-      <Layout>
+      <LayoutComp heading="Attributes and Specification">
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <div className="flex justify-between items-center">
+          {/* <div className="flex justify-between items-center">
             <div className="flex gap-3">
               <p className="text-[36px] font-bold">Product Attributes</p>
             </div>
-          </div>
-          <div className="flex flex-row items-center gap-4">
+          </div> */}
+          <div className="flex mt-4 flex-row items-center gap-4">
             <Badge badgeData={badgeData} />
           </div>
           <div className="flex justify-center gap-4 items-center w-[75%]">
@@ -368,7 +368,7 @@ export default function AttributeList() {
             </div>
           </PopUpModal>
         </div>
-      </Layout>
+      </LayoutComp>
     </>
   );
 }
