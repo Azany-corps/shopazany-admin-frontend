@@ -32,26 +32,63 @@ const PopUpModal: React.FC<Props> = ({ isOpen, onClose, children }) => {
       {isOpen && (
         <div className="fixed inset-0 z-10 overflow-y-auto flex items-center justify-center">
           <div className="transition-opacity" aria-hidden="true">
-            <div className="bg-[black] opacity-50 absolute inset-0"></div>
+            <div className="bg-[black] opacity-30 absolute inset-0"></div>
           </div>
 
-          <div className=" bg-[white] rounded-lg overflow-auto shadow-xl transform transition-all modal-content">
+          <div className=" bg-[white] rounded-[22px] overflow-auto shadow-xl transform transition-all modal-content">
             <div className="bg-[white]">
-              <div className="cancel absolute top-6 right-6 cursor-pointer" onClick={onClose}>
+              <div
+                className="cancel absolute top-6 right-6 cursor-pointer"
+                onClick={onClose}
+              >
                 <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
                   xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 22 22"
+                  fill="none"
                 >
-                  <path
-                    d="M1 13L13 1M1 1L13 13"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  <g clip-path="url(#clip0_295_8463)">
+                    <mask
+                      id="mask0_295_8463"
+                      maskUnits="userSpaceOnUse"
+                      x="1"
+                      y="0"
+                      width="20"
+                      height="21"
+                    >
+                      <path
+                        d="M11.2416 19.2735C16.0608 19.2735 19.9673 15.367 19.9673 10.5478C19.9673 5.72854 16.0608 1.82202 11.2416 1.82202C6.42233 1.82202 2.51581 5.72854 2.51581 10.5478C2.51581 15.367 6.42233 19.2735 11.2416 19.2735Z"
+                        fill="white"
+                        stroke="white"
+                        stroke-width="1.74515"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M13.7096 8.07983L8.77347 13.016M8.77347 8.07983L13.7096 13.016"
+                        stroke="black"
+                        stroke-width="1.74515"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </mask>
+                    <g mask="url(#mask0_295_8463)">
+                      <path
+                        d="M0.77066 0.0769043H21.7125V21.0187H0.77066V0.0769043Z"
+                        fill="#231F20"
+                      />
+                    </g>
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_295_8463">
+                      <rect
+                        width="20.9418"
+                        height="20.9418"
+                        fill="white"
+                        transform="translate(0.770721 0.0769043)"
+                      />
+                    </clipPath>
+                  </defs>
                 </svg>
               </div>
               <div>{children}</div>
