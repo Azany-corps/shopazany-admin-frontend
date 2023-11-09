@@ -413,7 +413,7 @@ export default function AddCategory() {
           </div>
         </section>
       </LayoutComp>
-      <Layout>
+      {/*<Layout>
         <form className="flex flex-col gap-4 bg-[#F5F5F5]">
           <div className="flex items-center justify-between">
             <div className="flex gap-3">
@@ -637,7 +637,7 @@ export default function AddCategory() {
             </div>
           </div>
         </form>
-      </Layout>
+      </Layout>*/}
     </>
   );
 }
