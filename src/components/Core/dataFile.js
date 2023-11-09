@@ -156,7 +156,7 @@ export const data = [
       </svg>
     ),
     title: "Attribute and Specifications",
-    path: "/",
+    path: "/products/attributes",
   },
   {
     image: (
