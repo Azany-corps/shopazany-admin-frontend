@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { data, data2, data3 } from "./dataFile";
 import { Link } from "react-router-dom";
 
@@ -12,35 +12,54 @@ const LayoutComp = ({
 }: {
   children: React.ReactNode | React.ReactNode[];
 }) => {
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const navHanlder = () => {
+    setShowMobileNav(!showMobileNav);
+  };
   return (
     <>
-      <nav className="fixed top-0 z-40 w-full bg-[#fafafa]">
+      <nav className={`fixed top-0  w-full bg-[#fafafa] z-50 md:z-40`}>
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start">
-              {/* <button
-                data-drawer-target="logo-sidebar"
-                data-drawer-toggle="logo-sidebar"
-                aria-controls="logo-sidebar"
-                type="button"
-                className="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              <button
+                className="inline-flex items-center p-2 mt-2 ml-1 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                onClick={navHanlder}
               >
                 <span className="sr-only">Open sidebar</span>
-                <svg
-                  className="w-6 h-6"
-                  aria-hidden="true"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    clip-rule="evenodd"
-                    fill-rule="evenodd"
-                    d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                  ></path>
-                </svg>
-              </button> */}
-              <p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap flex ml-[259px] md:mr-24 ">
+                {showMobileNav ? (
+                  <svg
+                    className="w-5 h-5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-5 h-5"
+                    aria-hidden="true"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      clip-rule="evenodd"
+                      fill-rule="evenodd"
+                      d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
+                    ></path>
+                  </svg>
+                )}
+              </button>
+              <p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
                 Dashboard
               </p>
             </div>
@@ -64,20 +83,31 @@ const LayoutComp = ({
           </div>
         </div>
       </nav>
+      {showMobileNav && (
+        <div
+          id="staticModal"
+          data-modal-backdrop="static"
+          aria-hidden="true"
+          className="md:hidden fixed top-0 left-0 right-0 z-30 w-full h-screen p-4 overflow-x-hidden overflow-y-auto md:inset-0  max-h-full flex justify-center items-center bg-gray-600 bg-opacity-70"
+        ></div>
+      )}
       <aside
         id="logo-sidebar"
         // className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-        className="fixed top-0 left-0 z-40 w-[246px] h-screen transition-transform"
+        className={`md:block md:fixed ${
+          showMobileNav ? "fixed" : "hidden"
+        } top-0 left-0 z-40 md:z-50 mt-16 md:mt-0 w-[246px] h-screen transition-transform`}
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-white ">
-          <a href="#" className="flex items-center justify-center pl-2.5 mb-5">
+          <Link to="/" className="flex items-center justify-center pl-2.5 mb-5">
             <img
               src="/images/azanyLogo.svg"
               className="h-6 mr-3 sm:h-7"
               alt="Azany Logo"
             />
-          </a>
+          </Link>
+
           <ul className="space-y-2 font-medium">
             <li>
               <a
@@ -166,7 +196,7 @@ const LayoutComp = ({
         </div>
       </aside>
 
-      <div className="px-4 sm:ml-64 h-full mt-16">
+      <div className="px-4 md:ml-64 h-full mt-16">
         <div className="rounded-lg h-full">{children}</div>
       </div>
     </>
