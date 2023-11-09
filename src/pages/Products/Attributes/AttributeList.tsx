@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, ChangeEvent, useState, useReducer } from "react";
 import Layout from "../../../components/Core/Layout";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import Badge from "../../../components/Products/Badge";
@@ -22,7 +22,55 @@ interface AttributeData {
   category_attributes: any[];
 }
 
+interface IAttribute {
+  attribute_name: string;
+  attribute_items: string[];
+}
+
+interface IAction {
+  type: 'update' | 'update_item' | 'add_item';
+  payload: any;
+}
+
 export default function AttributeList() {
+
+  const initialState: IAttribute = {
+    attribute_name: '',
+    attribute_items: []
+  }
+
+  const [attribute, dispatch] = useReducer((state: IAttribute, action: IAction) => {
+    if (action.type === 'update') {
+      console.log('payload: ', action.payload)
+      return {
+        ...state,
+        [action.payload.key]: action.payload.value
+      }
+    }
+    if (action.type === 'update_item') {
+      console.log('payload_item: ', action.payload)
+      // state.attribute_items.map((attribute_item, index) => {
+      //   if (index === action.payload.key.index) {
+      //     attribute_item = action.payload.value
+      //   }
+      // })
+
+      console.log(state);
+      return {
+        ...state,
+        [action.payload.key.key[0]]: action.payload.value
+      }
+    }
+    if (action.type === 'add_item') {
+      console.log('payload_item: ', action.payload)
+      return {
+        ...state,
+        [action.payload.key.key[action.payload.key.index]]: [...state.attribute_items, action.payload.value]
+      }
+    }
+    return { ...state, [action.type]: action.payload }
+  }, initialState)
+
   useEffect(() => {
     getAttributes()
       .then((response: any) => {
@@ -38,6 +86,50 @@ export default function AttributeList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attributes, setAttributes] = useState<AttributeData[]>([]);
   const [fields, setField] = useState<Array<any>>([1]);
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const key = event.currentTarget.name;
+    const value = event.currentTarget.value
+
+    const payload = { key, value }
+    console.log('payload: ', payload)
+
+    dispatch({ type: 'update', payload })
+  }
+
+  const handleAttributeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const key = event.currentTarget.name;
+    const value = event.currentTarget.value
+
+    const arr = key.split('__')
+
+    const keyObj = {
+      key: arr[0],
+      index: parseInt(arr[1], 10)
+    }
+    const payload = { key: keyObj, value }
+
+    dispatch({ type: 'update_item', payload })
+  }
+
+  const addAttributeItem = async (event: any) => {
+    const key = event.currentTarget.name;
+    const value = event.currentTarget.value
+
+    const arr = key.split('__')
+
+    const keyObj = {
+      key: arr[0],
+      index: arr[1]
+    }
+    const payload = { keyObj, value }
+
+    dispatch({ type: 'update_item', payload })
+  }
+
+  const saveAttribute = async () => {
+    console.log(attribute)
+  }
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -247,30 +339,32 @@ export default function AttributeList() {
           </PopUpModal> */}
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
             <div className="flex flex-col justify-between min-h-[500px] gap-3 py-4 px-4">
+              {/* <form className="flex h-full flex-col justify-between" action=""> */}
               <div className="flex flex-col pt-14 gap-3 px-14">
                 <div className="flex gap-1 w-full bg-[#efefef] p-4 rounded-lg pr-32">
                   <label className="font-bold" htmlFor="name">Attributes</label>
-                  <input className="rounded-2xl placeholder:text-left px-3 bg-[transparent] placeholder:text-[#B3B7BB] placeholder:font-semibold" placeholder="Enter Attribute Name" type="text" />
+                  <input className="rounded-2xl placeholder:text-left px-3 bg-[transparent] placeholder:text-[#B3B7BB] placeholder:font-semibold" onChange={handleInputChange} name={"attribute_name"} value={attribute.attribute_name} placeholder="Enter Attribute Name" type="text" />
                 </div>
                 <div className="flex w-full">
                   <div className="flex flex-col justify-center  mt-6 items-center gap-2">
                     {
-                      fields.map((field: any, index: number) => (
+                      fields.map((attribute_item: any, index: number) => (
                         <div className="flex w-full justify-start items-center gap-2">
-                          <input className="border py-1 outline-none border-[#B3B7BB] rounded-2xl placeholder:text-left placeholder:text-[#B3B7BB] placeholder:text-[8.78px] placeholder:font-bold px-5" type="text" />
+                          <input onChange={handleAttributeChange} className="border py-1 outline-none border-[#B3B7BB] rounded-2xl placeholder:text-left placeholder:text-[#B3B7BB] placeholder:text-[8.78px] placeholder:font-bold px-5" name={`attribute_items__${index}`} type="text" />
                           <div onClick={() => removeField(index)} className="rounded-full bg-#efefef] p-2">
                             <Icon icon="ic:round-delete" color="#d65d5b" width="15" height="15" />
                           </div>
                         </div>
                       ))
                     }
-                    <button onClick={() => setField([...fields, 1])} className="text-[#279F51] font-bold bg-[transparent]">Add + </button>
+                    <button onClick={(e) => { e.preventDefault(); setField([...fields, 1]) }} className="text-[#279F51] font-bold bg-[transparent]">Add + </button>
                   </div>
                 </div>
               </div>
               <div className="flex justify-end">
-                <button className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save</button>
+                <button onClick={saveAttribute} className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save</button>
               </div>
+              {/* </form> */}
             </div>
           </PopUpModal>
         </div>
