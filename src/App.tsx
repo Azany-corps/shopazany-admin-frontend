@@ -67,8 +67,13 @@ function App() {
           {/*<Route path="categories/add-category" element={<AddCategory />} />*/}
           <Route path="categories/new-attributes" element={<AddAttribute />} />
           <Route path="categories/attributes/:attributeId" element={<EditAttribute />} />
+          
+          {/*<Route path="categories/add-category" element={<AddCategory />} />*/}
+        {/*<Route path="new-attributes" element={<AddAttribute />} />*/}
+        {/*<Route path="attributes/:attributeId" element={<EditAttribute />} />*/}
+          
 
-          <Route path="categories/attributes" element={<AttributeList />} />
+          <Route path="attributes" element={<AttributeList />} />
         </Route>
         <Route path="/customers">
           <Route index element={<Customers />} />

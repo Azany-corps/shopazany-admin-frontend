@@ -35,7 +35,7 @@ const PopUpModal: React.FC<Props> = ({ isOpen, onClose, children }) => {
             <div className="bg-[black] opacity-30 absolute inset-0"></div>
           </div>
 
-          <div className=" bg-[white] rounded-[22px] overflow-auto shadow-xl transform transition-all modal-content">
+          <div className=" bg-[white] rounded-[30px] overflow-auto shadow-xl transform transition-all modal-content">
             <div className="bg-[white]">
               <div
                 className="cancel absolute top-6 right-6 cursor-pointer"

@@ -8,10 +8,18 @@ type each = {
 };
 
 const LayoutComp = ({
+
   children, title
 }: {
   children: React.ReactNode | React.ReactNode[],
   title: any;
+
+  //children,
+  //heading
+//}: {
+  //children: React.ReactNode | React.ReactNode[],
+  //heading?: string
+
 }) => {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const navHanlder = () => {
@@ -60,8 +68,12 @@ const LayoutComp = ({
                   </svg>
                 )}
               </button>
-              <p className="self-center text-lg font-bold text-[#23272E] whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
+              
+               <p className="self-center text-lg font-bold text-[#23272E] whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
                 {title}
+
+                 {/*<p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
+                {heading ? heading : 'Dashboard'}*/}
               </p>
             </div>
             <div className="flex items-center">
@@ -95,9 +107,8 @@ const LayoutComp = ({
       <aside
         id="logo-sidebar"
         // className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-        className={`md:block md:fixed ${
-          showMobileNav ? "fixed" : "hidden"
-        } top-0 left-0 z-40 md:z-50 mt-16 md:mt-0 w-[246px] h-screen transition-transform`}
+        className={`md:block md:fixed ${showMobileNav ? "fixed" : "hidden"
+          } top-0 left-0 z-40 md:z-50 mt-16 md:mt-0 w-[246px] h-screen transition-transform`}
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-white ">

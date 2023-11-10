@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import Layout from "../../../components/Core/Layout";
+import { useEffect, ChangeEvent, useState, useReducer } from "react";
+import LayoutComp from "../../../components/Core/LayoutComp";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import Badge from "../../../components/Products/Badge";
 import { Icon } from "@iconify/react";
@@ -9,10 +9,13 @@ import PopUpModal from "../../../components/Core/PopUp";
 import {
   deleteAttribute,
   getAttributes,
+  createAttribute,
+  getAttributeById,
+  updateAttributeById
 } from "../../../Services/attribbutes.service";
 
 interface AttributeData {
-  id: number;
+  id: number | string;
   attribute_name: string;
   //   about: string;
   //   banner_url: string;
@@ -22,7 +25,76 @@ interface AttributeData {
   category_attributes: any[];
 }
 
+interface IAttribute {
+  attribute_name: string;
+  attribute_items: Array<string>;
+}
+
+type IAction = | {
+  type: 'update' | 'update_item' | 'remove_item' | 'fetch' | 'reset' | 'add_item';
+  payload?: any;
+}
+
 export default function AttributeList() {
+  const [activeAttributeId, setActiveAttributeId] = useState<number | string>('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [submit, setSubmit] = useState<boolean>(false)
+  const [attributes, setAttributes] = useState<AttributeData[]>([]);
+
+  const initialState: IAttribute = {
+    attribute_name: '',
+    attribute_items: ['']
+  }
+
+  const [attribute, dispatch] = useReducer((state: IAttribute, action: IAction) => {
+    if (action.type === 'update') {
+      return {
+        ...state,
+        [action.payload.key]: action.payload.value
+      }
+    }
+    if (action.type === 'update_item') {
+      const newAttributeState = [...state.attribute_items]
+      newAttributeState[action.payload.key.index] = action.payload.value;
+
+      return {
+        ...state,
+        [action.payload.key.key]: newAttributeState
+      }
+    }
+    if (action.type === 'remove_item') {
+      const newAttributeState = [...state.attribute_items]
+      newAttributeState.splice(action.payload.value, 1);
+
+      return {
+        ...state,
+        [action.payload.key]: newAttributeState
+      }
+    }
+    if (action.type === 'add_item') {
+      return {
+        ...state,
+        attribute_items: [...state.attribute_items, '']
+      }
+    }
+    if (action.type === 'reset') {
+      return {
+        ...initialState
+      }
+    }
+    if (action.type === 'fetch') {
+      console.log('act: ', action.payload)
+      return {
+        ...state,
+        attribute_name: action.payload.attribute_name,
+        attribute_items: [...action.payload.items]
+      }
+    }
+    return { ...state, [action.type]: action.payload }
+  }, initialState)
+
   useEffect(() => {
     getAttributes()
       .then((response: any) => {
@@ -32,18 +104,122 @@ export default function AttributeList() {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [submit]);
 
-  const [activeAttribute, setActiveAttribute] = useState<AttributeData>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [attributes, setAttributes] = useState<AttributeData[]>([]);
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const key = event.currentTarget.name;
+    const value = event.currentTarget.value
+
+    const payload = { key, value }
+    console.log('payload: ', payload)
+
+    dispatch({ type: 'update', payload })
+  }
+
+  const handleAttributeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const key = event.currentTarget.name;
+    const value = event.currentTarget.value
+
+    const arr = key.split('__')
+
+    const keyObj = {
+      key: arr[0],
+      index: parseInt(arr[1], 10)
+    }
+    const payload = { key: keyObj, value }
+
+    dispatch({ type: 'update_item', payload })
+  }
+
+  const addAttributeItem = async (event: any) => {
+    dispatch({ type: 'add_item' })
+  }
+
+  const saveAttribute = async () => {
+    console.log(attribute)
+    const attribute_name = attribute.attribute_name;
+    const attribute_items = [...attribute.attribute_items]
+    const status = 'Active'
+
+    await createAttribute(attribute_name, attribute_items, status)
+      .then((response: any) => {
+        setSubmit(!submit);
+        dispatch({ type: 'reset' });
+        closeModal()
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const updateAttribute = async () => {
+    console.log(attribute)
+    const attribute_name = attribute.attribute_name;
+    const attribute_items = [...attribute.attribute_items]
+    const status = 'Active'
+    const id = activeAttributeId
+
+    await updateAttributeById(id, attribute_name, attribute_items, status)
+      .then((response: any) => {
+        setSubmit(!submit);
+        dispatch({ type: 'reset' });
+        setIsUpdateModalOpen(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const delAttribute = async () => {
+    const id = activeAttributeId
+    await deleteAttribute(id).then((response) => {
+      setSubmit(!submit);
+      dispatch({ type: 'reset' });
+      setIsUpdateModalOpen(false);
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
+    dispatch({ type: 'reset' });
     setIsModalOpen(false);
+  };
+
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const openUpdateModal = async (id: number) => {
+    console.log('id: ', id)
+    setActiveAttributeId(id)
+
+    await getAttributeById(id)
+      .then((response: any) => {
+        console.log('data: ', response.data.data.values);
+        const payload = {
+          ...response.data.data.values[0]
+        }
+        dispatch({ type: 'fetch', payload })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsUpdateModalOpen(true);
+  };
+
+  const closeUpdateModal = () => {
+    dispatch({ type: 'reset' });
+    setIsUpdateModalOpen(false);
   };
 
   const navigate = useNavigate();
@@ -64,8 +240,8 @@ export default function AttributeList() {
   const columns: GridColDef[] = [
     { field: "attribute", headerName: "Attributes", width: 300 },
     { field: "items", headerName: "items", width: 200 },
-    { field: "Products", headerName: "Products", width: 200 },
-    { field: "created_at", headerName: "Created", width: 200 },
+    { field: "created_at", headerName: "Date Added", width: 200 },
+    { field: "status", headerName: "STATUS", width: 200 },
     {
       field: "actions",
       headerName: "Actions",
@@ -74,7 +250,10 @@ export default function AttributeList() {
         return (
           <div className="flex justify-center items-center gap-3">
             <svg
-              onClick={() => navigate(`./${params.row.id}`)}
+              onClick={async () => {
+                // await setActiveAttributeId(params.row.id);
+                openUpdateModal(params.row.id)
+              }}
               className="cursor-pointer"
               width="24"
               height="24"
@@ -98,12 +277,8 @@ export default function AttributeList() {
 
             <svg
               onClick={() => {
-                setActiveAttribute(
-                  attributes.find(
-                    (attribute: any) => attribute?.id === params.row.id
-                  )
-                );
-                openModal();
+                setActiveAttributeId(params.row.id);
+                openDeleteModal();
               }}
               className="cursor-pointer"
               xmlns="http://www.w3.org/2000/svg"
@@ -125,29 +300,49 @@ export default function AttributeList() {
     },
   ];
 
+  const removeItem = (index: number) => {
+    const payload = {
+      key: 'attribute_items',
+      value: index
+    }
+    dispatch({ type: 'remove_item', payload })
+  }
+
   const badgeData = [
     {
       id: 1,
-      orders: 242000,
+      orders: 356,
       link: "./#",
       image: (
         <Icon
-          icon="streamline:shopping-bag-hand-bag-1-shopping-bag-purse-goods-item-products"
-          color="#1b7cfc"
-          width={36}
-          height={36}
+          icon="entypo:bar-graph"
+          color="#d65d5b"
+          width={24}
+          height={24}
         />
       ),
-      title: "Products Attributes",
+      title: "Attributes",
+    },
+    {
+      id: 2,
+      orders: 242,
+      link: "./#",
+      image: (
+        <Icon
+          icon="tabler:list-details"
+          color="#d65d5b"
+          width={24}
+          height={24}
+        />
+      ),
+      title: "Specifications",
     },
   ];
 
   const handleDeleteCategory = async (id: any) => {
     await deleteAttribute(id).then((response) => {
-      const updatedAttribute = attributes.filter(
-        (attribute: AttributeData) => attribute.id !== id
-      );
-      setAttributes(updatedAttribute);
+      setSubmit(!submit);
+      setIsDeleteModalOpen(false);
     });
 
     closeModal();
@@ -155,21 +350,19 @@ export default function AttributeList() {
 
   return (
     <>
-      <Layout>
+      <LayoutComp heading="Attributes and Specification">
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <div className="flex justify-between items-center">
+          {/* <div className="flex justify-between items-center">
             <div className="flex gap-3">
               <p className="text-[36px] font-bold">Product Attributes</p>
             </div>
-            <Link
-              to={"/products/categories/attributes/new-attributes"}
-              className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
-            >
-              Add Attribute
-            </Link>
-          </div>
-          <div className="flex flex-row items-center gap-4">
+          </div> */}
+          <div className="flex mt-4 flex-row items-center gap-4">
             <Badge badgeData={badgeData} />
+          </div>
+          <div className="flex justify-center gap-4 items-center w-[75%]">
+            <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-[#B3B7BB] placeholder:font-bold py-5" type="text" placeholder="Search" />
+            <button onClick={() => setIsModalOpen(true)} className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Create Attribute</button>
           </div>
           <div className="bg-[white]">
             <DataGrid
@@ -181,24 +374,12 @@ export default function AttributeList() {
               className="cursor-pointer"
             />
           </div>
-          <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
+          <PopUpModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal}>
             <div className="flex flex-col gap-4 p-3">
               <div className="flex justify-between">
                 <h1>Delete Product Attribute</h1>
               </div>
               <div className="flex p-3 gap-5 bg-[#F1F4FF] items-end">
-                <div className="flex-1">
-                  <p>{activeAttribute?.attribute_name}</p>
-                  <small>Created on: {activeAttribute?.created_at}</small>
-                </div>
-                <div className="flex flex-col">
-                  <p>
-                    {activeAttribute
-                      ? activeAttribute?.attribute_items?.length
-                      : 0}
-                  </p>
-                  <small className="text-xs">items</small>
-                </div>
                 <div className="flex flex-col">
                   <p>102</p>
                   <small className="text-xs">Products</small>
@@ -212,7 +393,7 @@ export default function AttributeList() {
                   className="w-48 h-10 pt-2.5 pb-3 rounded-sm border border-[#E51B48] text-brand-bg text-sm font-medium font-['Inter'] bg-[#E51B48] justify-center items-center"
                   onClick={() =>
                     handleDeleteCategory(
-                      activeAttribute ? activeAttribute.id : ""
+                      activeAttributeId
                     )
                   }
                 >
@@ -221,8 +402,69 @@ export default function AttributeList() {
               </div>
             </div>
           </PopUpModal>
+          <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
+            <div className="flex flex-col justify-between min-h-[500px] gap-3 py-4 px-4">
+              {/* <form className="flex h-full flex-col justify-between" action=""> */}
+              <div className="flex flex-col pt-14 gap-3 px-14">
+                <div className="flex justify-center items-center gap-1 w-full bg-[#efefef] p-4 rounded-lg pr-32">
+                  <label className="font-bold" htmlFor="name">Attributes</label>
+                  <input className="rounded-2xl border-none outline-none placeholder:text-left px-3 bg-[transparent] placeholder:text-[#B3B7BB] placeholder:font-semibold" onChange={handleInputChange} name={"attribute_name"} value={attribute.attribute_name} placeholder="Enter Attribute Name" type="text" />
+                </div>
+                <div className="flex w-full">
+                  <div className="flex flex-col justify-center  mt-6 items-center gap-2">
+                    {
+                      attribute.attribute_items.map((attribute_item: any, index: number) => (
+                        <div className="flex w-full justify-start items-center gap-2">
+                          <input onChange={handleAttributeChange} className="border py-1 outline-none border-[#B3B7BB] rounded-2xl placeholder:text-left placeholder:text-[#B3B7BB] placeholder:text-[8.78px] placeholder:font-bold px-5" value={attribute_item} id={`attribute_items__${index}`} name={`attribute_items__${index}`} type="text" />
+                          <div onClick={() => removeItem(index)} className="rounded-full bg-#efefef] p-2">
+                            <Icon icon="ic:round-delete" color="#d65d5b" width="15" height="15" />
+                          </div>
+                        </div>
+                      ))
+                    }
+                    <button onClick={addAttributeItem} className="text-[#279F51] font-bold bg-[transparent]">Add + </button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <button onClick={saveAttribute} className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save</button>
+              </div>
+              {/* </form> */}
+            </div>
+          </PopUpModal>
+          <PopUpModal isOpen={isUpdateModalOpen} onClose={closeUpdateModal}>
+            <div className="flex flex-col justify-between min-h-[500px] gap-3 py-4 px-4">
+              {/* <form className="flex h-full flex-col justify-between" action=""> */}
+              <div className="flex flex-col pt-14 gap-3 px-14">
+                <div className="flex justify-center items-center gap-1 w-full bg-[#efefef] p-4 rounded-lg pr-32">
+                  <label className="font-bold" htmlFor="name">Attributes</label>
+                  <input className="rounded-2xl border-none outline-none placeholder:text-left px-3 bg-[transparent] placeholder:text-[#B3B7BB] placeholder:font-semibold" onChange={handleInputChange} name={"attribute_name"} value={attribute.attribute_name} placeholder="Enter Attribute Name" type="text" />
+                </div>
+                <div className="flex w-full">
+                  <div className="flex flex-col justify-center  mt-6 items-center gap-2">
+                    {
+                      attribute.attribute_items.map((attribute_item: any, index: number) => (
+                        <div className="flex w-full justify-start items-center gap-2">
+                          <input onChange={handleAttributeChange} className="border py-1 outline-none border-[#B3B7BB] rounded-2xl placeholder:text-left placeholder:text-[#B3B7BB] placeholder:text-[8.78px] placeholder:font-bold px-5" value={attribute_item} id={`attribute_items__${index}`} name={`attribute_items__${index}`} type="text" />
+                          <div onClick={() => removeItem(index)} className="rounded-full bg-#efefef] p-2">
+                            <Icon icon="ic:round-delete" color="#d65d5b" width="15" height="15" />
+                          </div>
+                        </div>
+                      ))
+                    }
+                    <button onClick={addAttributeItem} className="text-[#279F51] font-bold bg-[transparent]">Add + </button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center items-center gap-4">
+                <button onClick={delAttribute} className="py-5 w-full bg-[transparent] border border-[#D65D5B] text-[#000] text-center rounded-2xl font-bold">Delete attribute</button>
+                <button onClick={updateAttribute} className="py-5 w-full bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save Changes</button>
+              </div>
+              {/* </form> */}
+            </div>
+          </PopUpModal>
         </div>
-      </Layout>
+      </LayoutComp>
     </>
   );
 }

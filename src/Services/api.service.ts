@@ -8,22 +8,14 @@ const callAPI = async (
   body: any,
   headers: any = {
     "Content-Type": "application/json",
-    authorization: "Bearer " + localStorage.getItem("token"),
-  }
+  },
+  base?: boolean
 ) => {
   try {
-    // let config = {
-    //   method: "post",
-    //   maxBodyLength: Infinity,
-    //   url: `${baseUrl}${url}`,
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //     authorization: "Bearer " + localStorage.getItem("token"),
-    //   },
-    //   data: body,
-    // };
+    const myUrl = base ? url : baseUrl + url;
+    console.log(myUrl)
     const response = await axios({
-      url: `${baseUrl}${url}`,
+      url: `${myUrl}`,
       method,
       headers,
       data: body,
