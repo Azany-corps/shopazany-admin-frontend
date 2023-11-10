@@ -17,6 +17,7 @@ interface CategoryData {
   about: string;
   banner_url: string;
   created_at: string;
+  status:any;
   updated_at: string;
   sub_categories: any[];
   category_attributes: any[];
@@ -49,6 +50,7 @@ export default function CategoryList() {
   };
   const [activeCategory, setActiveCategory] = useState<CategoryData>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDoneModalOpen, setIsDoneModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
 
   const openModal = () => {
@@ -57,6 +59,16 @@ export default function CategoryList() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const openDoneModal = () => {
+    setIsDoneModalOpen(true);
+    setTimeout(() => setIsDoneModalOpen(false), 800);
+  };
+
+  const closeDoneModal = () => {
+    setTimeout(() => setIsDoneModalOpen(false), 3000);
+    //setIsDoneModalOpen(false);
   };
 
   const navigate = useNavigate();
@@ -73,8 +85,8 @@ export default function CategoryList() {
       //Products: Math.floor(Math.random() * 3020),
       //Orders: Math.floor(Math.random() * 100),
       //Searches: Math.floor(Math.random() * 100),
-      //onClick: () => navigate(`./${category.id}`),
-      onClick: () => navigate("/products/categories/add-category"),
+      onClick: () => navigate(`./${category.id}`),
+      //onClick: () => navigate("/products/categories/add-category"),
       // onDelete: null,
     };
   });
@@ -83,7 +95,7 @@ export default function CategoryList() {
     { field: "category", headerName: "Category", width: 300 },
     { field: "subCategories", headerName: "Sub-Categories", width: 300 },
     { field: "created_at", headerName: "Date Added", width: 300 },
-    { field: "Status", headerName: "Status", width: 300 },
+    { field: "status", headerName: "Status", width: 300 },
   ];
 
   const badgeData = [
@@ -128,7 +140,7 @@ export default function CategoryList() {
 
   return (
     <>
-      <LayoutComp>
+      <LayoutComp title={<Link to="/products/categories">Categories</Link>}>
         <section className="space-y-4">
           <div className="flex flex-row bg-[#fff] w-[261px] h-[97px] justify-left text-left p-[20px] rounded-[17px] space-x-6">
             <div className="p-[15px] flex justify-center text-center bg-[#F4F7FE] w-[56px] h-[56px] rounded-full">
@@ -142,7 +154,11 @@ export default function CategoryList() {
 
           <div className="flex flex-row w-full space-x-20">
             <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-              <p className="font-[700] text-sm text-[#B3B7BB]">Search</p>
+              <input
+                type="text"
+                className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB] bg-[#FAFAFA;]"
+                placeholder="Search"
+              />
             </div>
             <button
               onClick={openModal}
@@ -152,9 +168,10 @@ export default function CategoryList() {
                 Create a category
               </p>
             </button>
-            <button 
+            <button
               onClick={openModal}
-              className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
+              className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
+            >
               <p className="font-[700] text-sm text-[#fff]">
                 Create sub category
               </p>
@@ -203,17 +220,66 @@ export default function CategoryList() {
                 </div>
                 <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
                   <input
+                    id="files"
                     type="file"
-                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    className="hidden text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                   />
+                  <label
+                    htmlFor="files"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                  >
+                    Select file
+                  </label>
                 </div>
-                <button className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
-                  <p className="mt-1 font-[700] text-sm text-[#fff]">
-                    Done
-                  </p>
+                <button
+                  onClick={() => {
+                    closeModal();
+                    openDoneModal();
+                  }}
+                  className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
+                >
+                  <p className="mt-1 font-[700] text-sm text-[#fff]">Done</p>
                 </button>
               </div>
+            </div>
+          </PopUpModal>
 
+          {/*Done Modal*/}
+          <PopUpModal isOpen={isDoneModalOpen} onClose={() => {}}>
+            <div className="w-[374px] h-[366.37px] flex-center flex-col gap-4 p-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="173"
+                height="173"
+                viewBox="0 0 173 173"
+                fill="none"
+              >
+                <path
+                  d="M173 86.5C173 134.273 134.273 173 86.5 173C38.7274 173 0 134.273 0 86.5C0 38.7274 38.7274 0 86.5 0C134.273 0 173 38.7274 173 86.5ZM8.08804 86.5C8.08804 129.806 43.1943 164.912 86.5 164.912C129.806 164.912 164.912 129.806 164.912 86.5C164.912 43.1943 129.806 8.08804 86.5 8.08804C43.1943 8.08804 8.08804 43.1943 8.08804 86.5Z"
+                  fill="#00A91B"
+                />
+                <path
+                  d="M128 57.9375L74.375 111.562L50 87.1875"
+                  stroke="url(#paint0_linear_317_10120)"
+                  stroke-width="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <defs>
+                  <linearGradient
+                    id="paint0_linear_317_10120"
+                    x1="46"
+                    y1="85"
+                    x2="82.5"
+                    y2="98.5"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#00A91B" />
+                    <stop offset="1" stop-color="#00A91B" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <p>Operation successful</p>
             </div>
           </PopUpModal>
         </section>

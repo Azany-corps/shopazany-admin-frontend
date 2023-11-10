@@ -8,9 +8,10 @@ type each = {
 };
 
 const LayoutComp = ({
-  children,
+  children, title
 }: {
-  children: React.ReactNode | React.ReactNode[];
+  children: React.ReactNode | React.ReactNode[],
+  title: any;
 }) => {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const navHanlder = () => {
@@ -59,8 +60,8 @@ const LayoutComp = ({
                   </svg>
                 )}
               </button>
-              <p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
-                Dashboard
+              <p className="self-center text-lg font-bold text-[#23272E] whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
+                {title}
               </p>
             </div>
             <div className="flex items-center">

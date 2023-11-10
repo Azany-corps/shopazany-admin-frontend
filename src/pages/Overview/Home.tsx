@@ -99,10 +99,10 @@ const Home = () => {
           </div>
         </div>
       </Layout> */}
-      <LayoutComp>
+      <LayoutComp title="Overview">
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2">
-            <div className="flex flex-col max-h-[217px] rounded-lg bg-gray-50 p-[26.15px] bg-white">
+            <div className="flex flex-col max-h-[217px] rounded-[18px] p-[26.15px] bg-white">
               <div className="flex">
                 <div>
                   <p className="text-[#23272E] font-semibold text-xl">

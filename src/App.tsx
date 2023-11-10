@@ -58,12 +58,13 @@ function App() {
           <Route path="add-product" element={<AddProduct />} />
           <Route path="product" element={<Product />} />
           <Route path="categories" element={<CategoryList />} />
-          <Route path="categories/:categoryId" element={<CategoryPage />} />
+          {/*<Route path="categories/:categoryId" element={<CategoryPage />} />*/}
+          <Route path="categories/:categoryId" element={<AddCategory />} />
           <Route
             path="categories/:categoryId/edit"
             element={<EditCategory />}
           />
-          <Route path="categories/add-category" element={<AddCategory />} />
+          {/*<Route path="categories/add-category" element={<AddCategory />} />*/}
           <Route path="categories/new-attributes" element={<AddAttribute />} />
           <Route path="categories/attributes/:attributeId" element={<EditAttribute />} />
 
