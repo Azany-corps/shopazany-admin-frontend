@@ -350,7 +350,7 @@ export default function AttributeList() {
 
   return (
     <>
-      <LayoutComp heading="Attributes and Specification">
+      <LayoutComp title="Attributes and Specification">
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
           {/* <div className="flex justify-between items-center">
             <div className="flex gap-3">
