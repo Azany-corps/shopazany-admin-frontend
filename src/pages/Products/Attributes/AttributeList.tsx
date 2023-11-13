@@ -40,6 +40,8 @@ export default function AttributeList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+
   const [submit, setSubmit] = useState<boolean>(false)
   const [attributes, setAttributes] = useState<AttributeData[]>([]);
 
@@ -191,6 +193,14 @@ export default function AttributeList() {
     setIsModalOpen(false);
   };
 
+  const openFilterModal = () => {
+    setIsFilterModalOpen(true);
+  };
+
+  const closeFilterModal = () => {
+    setIsFilterModalOpen(false);
+  };
+
   const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
@@ -317,11 +327,11 @@ export default function AttributeList() {
         <Icon
           icon="entypo:bar-graph"
           color="#d65d5b"
-          width={24}
-          height={24}
+          width={18}
+          height={18}
         />
       ),
-      title: "Attributes",
+      title: "Total Attributes",
     },
     {
       id: 2,
@@ -329,13 +339,27 @@ export default function AttributeList() {
       link: "./#",
       image: (
         <Icon
-          icon="tabler:list-details"
+          icon="entypo:bar-graph"
           color="#d65d5b"
-          width={24}
-          height={24}
+          width={18}
+          height={18}
         />
       ),
-      title: "Specifications",
+      title: "Total Published Attribute",
+    },
+    {
+      id: 2,
+      orders: 242,
+      link: "./#",
+      image: (
+        <Icon
+          icon="entypo:bar-graph"
+          color="#d65d5b"
+          width={18}
+          height={18}
+        />
+      ),
+      title: "Total Drafted Attribute",
     },
   ];
 
@@ -360,9 +384,19 @@ export default function AttributeList() {
           <div className="flex mt-4 flex-row items-center gap-4">
             <Badge badgeData={badgeData} />
           </div>
-          <div className="flex justify-center gap-4 items-center w-[75%]">
-            <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-[#B3B7BB] placeholder:font-bold py-5" type="text" placeholder="Search" />
-            <button onClick={() => setIsModalOpen(true)} className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Create Attribute</button>
+          <div className="flex justify-center gap-8 items-center w-[75%]">
+            <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-xs placeholder:text-[#B3B7BB] placeholder:font-bold py-3 bg-[transparent]" type="text" placeholder="Search" />
+            <div className="flex relative border justify-center items-center w-[60%] border-[#B3B7BB] rounded-2xl text-xs text-[#B3B7BB] font-bold py-[15px]">
+              <p onClick={openFilterModal}>
+                Filter
+              </p>
+              <PopUpModal isOpen={isFilterModalOpen} onClose={closeFilterModal}>
+                <div className="flex flex-col ">
+                  hello
+                </div>
+              </PopUpModal>
+            </div>
+            <button onClick={() => setIsModalOpen(true)} className="py-[15px] w-[40%] bg-[#D65D5B] text-[#fff] text-xs text-center rounded-2xl font-bold">Create Attribute</button>
           </div>
           <div className="bg-[white]">
             <DataGrid
