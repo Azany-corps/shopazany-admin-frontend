@@ -77,7 +77,7 @@ export default function CategoryList() {
     return {
       id: category.id,
       category: category.category,
-      subCategories: category.sub_categories.length,
+      product_count: category.sub_categories.length,
       created_at: "12-03-2023",
       status: "",
       //created_at: category.created_at,
@@ -93,7 +93,7 @@ export default function CategoryList() {
 
   const columns: GridColDef[] = [
     { field: "category", headerName: "Category", width: 300 },
-    { field: "subCategories", headerName: "Sub-Categories", width: 300 },
+    { field: "product_count", headerName: "Product Count", width: 300 },
     { field: "created_at", headerName: "Date Added", width: 300 },
     { field: "status", headerName: "Status", width: 300 },
   ];
@@ -152,30 +152,23 @@ export default function CategoryList() {
             </div>
           </div>
 
-          <div className="flex flex-row w-full space-x-20">
-            <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+          <div className="flex flex-row w-full space-x-14">
+            <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[240px] h-[41px] align-middle">
               <input
                 type="text"
-                className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB] bg-[#FAFAFA;]"
+                className="text-center focus:outline-none border-none w-[90%] font-[500] text-xs text-[#B3B7BB] bg-[#FAFAFA;]"
                 placeholder="Search"
               />
             </div>
             <button
               onClick={openModal}
-              className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
+              className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[140px] h-[41px] cursor-pointer"
             >
-              <p className="font-[700] text-sm text-[#fff]">
+              <p className="font-[500] text-xs text-[#fff]">
                 Create a category
               </p>
             </button>
-            <button
-              onClick={openModal}
-              className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
-            >
-              <p className="font-[700] text-sm text-[#fff]">
-                Create sub category
-              </p>
-            </button>
+            
           </div>
 
           {/*Table*/}
