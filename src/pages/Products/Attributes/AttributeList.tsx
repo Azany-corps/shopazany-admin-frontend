@@ -271,10 +271,10 @@ export default function AttributeList() {
   });
 
   const columns: GridColDef[] = [
-    { field: "attribute", headerName: "Attributes", width: 300 },
+    { field: "attribute", headerName: "Attributes", width: 200 },
     { field: "items", headerName: "Items", width: 200 },
     { field: "count_category", headerName: "Category Count  ", width: 200 },
-    { field: "created_at", headerName: "Date Added", width: 200 },
+    { field: "created_at", headerName: "Date Added", width: 300 },
     { field: "status", headerName: "STATUS", width: 200 },
   ];
 
