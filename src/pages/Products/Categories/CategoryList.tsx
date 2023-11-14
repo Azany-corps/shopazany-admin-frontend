@@ -11,13 +11,17 @@ import PopUpModal from "../../../components/Core/PopUp";
 import { deleteCategory } from "../../../Services/categories.service";
 // import { deleteCategory } from "../../../services/categories.service";
 
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+
 interface CategoryData {
   id: number;
   category: string;
   about: string;
   banner_url: string;
   created_at: string;
-  status:any;
+  status: any[];
   updated_at: string;
   sub_categories: any[];
   category_attributes: any[];
@@ -79,7 +83,7 @@ export default function CategoryList() {
       category: category.category,
       product_count: category.sub_categories.length,
       created_at: "12-03-2023",
-      status: "",
+      status: "Active",
       //created_at: category.created_at,
       //rating: Math.floor(Math.random() * 5),
       //Products: Math.floor(Math.random() * 3020),
@@ -93,9 +97,18 @@ export default function CategoryList() {
 
   const columns: GridColDef[] = [
     { field: "category", headerName: "Category", width: 300 },
-    { field: "product_count", headerName: "Product Count", width: 300 },
+    { field: "product_count", headerName: "Product Count", width: 250 },
     { field: "created_at", headerName: "Date Added", width: 300 },
-    { field: "status", headerName: "Status", width: 300 },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 250,
+      renderCell: (params) => {
+        return <div className="flex justify-center items-center rounded-[9px] bg-[#1EB56429] w-[60px] h-[21px]">
+          <p className="text-[#279F51] text-xs font-[600]">active</p>
+        </div>;
+      },
+    },
   ];
 
   const badgeData = [
@@ -142,24 +155,114 @@ export default function CategoryList() {
     <>
       <LayoutComp title={<Link to="/products/categories">Categories</Link>}>
         <section className="space-y-4">
-          <div className="flex flex-row bg-[#fff] w-[261px] h-[97px] justify-left text-left p-[20px] rounded-[17px] space-x-6">
-            <div className="p-[15px] flex justify-center text-center bg-[#F4F7FE] w-[56px] h-[56px] rounded-full">
-              <img src="/images/caticon.svg" />
+          <div className="flex flex-row space-x-6 mb-10">
+            <div className="flex flex-row bg-[#fff] w-[240px] h-[80px] justify-left text-left p-[15px]  rounded-[17px] space-x-2 align-middle">
+              <div className="p-[10px] flex justify-center text-center bg-[#F4F7FE] w-[45px] h-[45px] rounded-full">
+                <img src="/images/caticon.svg" />
+              </div>
+              <div className="p-[5px]">
+                <p className="text-[#A3AED0] text-xs">Total Categories</p>
+                <p className="font-[700] text-xl">350</p>
+              </div>
             </div>
-            <div className="p-[5px]">
-              <p className="text-[#A3AED0] text-sm">Categories</p>
-              <p className="font-[700] text-xl">350</p>
+
+            <div className="flex flex-row bg-[#fff] w-[240px] h-[80px] justify-left text-left p-[15px]  rounded-[17px] space-x-2 align-middle">
+              <div className="p-[10px] flex justify-center text-center bg-[#F4F7FE] w-[45px] h-[45px] rounded-full">
+                <img src="/images/caticon.svg" />
+              </div>
+              <div className="p-[5px]">
+                <p className="text-[#A3AED0] text-xs">
+                  Best Selling Categories
+                </p>
+                <p className="font-[700] text-xl">350</p>
+              </div>
+            </div>
+
+            <div className="flex flex-row bg-[#fff] w-[240px] h-[80px] justify-left text-left p-[15px]  rounded-[17px] space-x-2 align-middle">
+              <div className="p-[10px] flex justify-center text-center bg-[#F4F7FE] w-[45px] h-[45px] rounded-full">
+                <img src="/images/caticon.svg" />
+              </div>
+              <div className="p-[5px]">
+                <p className="text-[#A3AED0] text-xs">
+                  Total published category
+                </p>
+                <p className="font-[700] text-xl">350</p>
+              </div>
+            </div>
+
+            <div className="flex flex-row bg-[#fff] w-[240px] h-[80px] justify-left text-left p-[15px]  rounded-[17px] space-x-2 align-middle">
+              <div className="p-[10px] flex justify-center text-center bg-[#F4F7FE] w-[45px] h-[45px] rounded-full">
+                <img src="/images/caticon.svg" />
+              </div>
+              <div className="p-[5px]">
+                <p className="text-[#A3AED0] text-xs">Total Drafted Category</p>
+                <p className="font-[700] text-xl">350</p>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-row w-full space-x-14">
-            <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[240px] h-[41px] align-middle">
-              <input
-                type="text"
-                className="text-center focus:outline-none border-none w-[90%] font-[500] text-xs text-[#B3B7BB] bg-[#FAFAFA;]"
-                placeholder="Search"
-              />
-            </div>
+          <div className="flex flex-row w-full space-x-10">
+            <input
+              type="text"
+              className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] bg-[#FAFAFA] w-[240px] h-[41px] align-middle"
+              placeholder="Search"
+            />
+
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button className="font-[500] text-sm text-[#B3B7BB] bg-[#FAFAFA] rounded-[16px] w-[240px] h-[41px] inline-flex justify-center gap-x-1.5 px-3 py-2 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                  Filter
+                  <ChevronDownIcon
+                    className="-mr-1 h-5 w-5 text-gray-400"
+                    aria-hidden="true"
+                  />
+                </Menu.Button>
+              </div>
+
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={`${
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700 "
+                          } block px-4 py-2 text-sm`}
+                        >
+                          Active
+                        </a>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={`${
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700 "
+                          } block px-4 py-2 text-sm`}
+                        >
+                          Inactive
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+
             <button
               onClick={openModal}
               className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[140px] h-[41px] cursor-pointer"
@@ -168,7 +271,6 @@ export default function CategoryList() {
                 Create a category
               </p>
             </button>
-            
           </div>
 
           {/*Table*/}
@@ -190,27 +292,21 @@ export default function CategoryList() {
                 <h1 className="font-[700] text-xs mt-3">Create Category</h1>
               </div>
               <div className="flex-center flex-col space-y-3">
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-                  <input
-                    type="text"
-                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                    placeholder="Title"
-                  />
-                </div>
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-                  <input
-                    type="text"
-                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                    placeholder="Description"
-                  />
-                </div>
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-                  <input
-                    type="text"
-                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                    placeholder="Select attribute"
-                  />
-                </div>
+                <input
+                  type="text"
+                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                  placeholder="Title"
+                />
+                <input
+                  type="text"
+                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                  placeholder="Description"
+                />
+                <input
+                  type="text"
+                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                  placeholder="Select attribute"
+                />
                 <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
                   <input
                     id="files"

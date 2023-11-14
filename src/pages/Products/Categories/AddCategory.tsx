@@ -255,7 +255,7 @@ export default function AddCategory() {
 
   return (
     <>
-      <LayoutComp title={<Link to="/products/categories">Categories <span><Link to="">&lt; Subcategories</Link></span></Link>}>
+      <LayoutComp title={<div><Link to="/products/categories">Categories</Link><span>&lt;</span><Link to=""> Subcategories</Link></div>}>
         <section className="rounded-lg bg-[#fff] py-3">
           <div className="flex-end mr-4">
             <button onClick={openModal} className="p-2 rounded-[9px] bg-[#D0D0D059] flex flex-row space-x-2">
