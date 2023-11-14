@@ -11,7 +11,8 @@ import {
   getAttributes,
   createAttribute,
   getAttributeById,
-  updateAttributeById
+  updateAttributeById,
+  getAttributeByStatus
 } from "../../../Services/attribbutes.service";
 
 interface AttributeData {
@@ -97,6 +98,7 @@ export default function AttributeList() {
     return { ...state, [action.type]: action.payload }
   }, initialState)
 
+
   useEffect(() => {
     getAttributes()
       .then((response: any) => {
@@ -154,6 +156,7 @@ export default function AttributeList() {
       });
   }
 
+
   const updateAttribute = async () => {
     console.log(attribute)
     const attribute_name = attribute.attribute_name;
@@ -178,6 +181,15 @@ export default function AttributeList() {
       setSubmit(!submit);
       dispatch({ type: 'reset' });
       setIsUpdateModalOpen(false);
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const getAttributesByStatus = async (status: string) => {
+    await getAttributeByStatus(status).then((response) => {
+      setAttributes(response.data.data.values);
     })
       .catch((error) => {
         console.log(error);
@@ -238,73 +250,32 @@ export default function AttributeList() {
       items: attribute.items
         ? attribute.items?.length
         : 0,
-      Products: Math.floor(Math.random() * 3020),
+      status: attribute.status,
+      // status: (attribute: any) => {
+      //   return (
+      //     <>
+      //       {
+      //         attribute.status === "Active" ? (
+      //           <span className="py-1 bg-[#dbf3e6] text-[#279F51] font-bold text-xs w-[60px]">active</span>
+      //         ) : (
+      //           <span className="py-1 bg-[#fff6d6] text-[#FFC600] font-bold text-xs w-[60px]">inactive</span>
+      //         )
+      //       }
+      //     </>
+      //   )
+      // },
+      count_category: attribute.count_category,
       created_at: attribute.created_at,
-      Searches: Math.floor(Math.random() * 100),
+      onClick: () => openUpdateModal(attribute.id),
     };
   });
 
   const columns: GridColDef[] = [
-    { field: "attribute", headerName: "Attributes", width: 300 },
-    { field: "items", headerName: "items", width: 200 },
-    { field: "created_at", headerName: "Date Added", width: 200 },
+    { field: "attribute", headerName: "Attributes", width: 200 },
+    { field: "items", headerName: "Items", width: 200 },
+    { field: "count_category", headerName: "Category Count  ", width: 200 },
+    { field: "created_at", headerName: "Date Added", width: 300 },
     { field: "status", headerName: "STATUS", width: 200 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="flex justify-center items-center gap-3">
-            <svg
-              onClick={async () => {
-                // await setActiveAttributeId(params.row.id);
-                openUpdateModal(params.row.id)
-              }}
-              className="cursor-pointer"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15 12C15 12.7956 14.6839 13.5587 14.1213 14.1213C13.5587 14.6839 12.7956 15 12 15C11.2044 15 10.4413 14.6839 9.87868 14.1213C9.31607 13.5587 9 12.7956 9 12C9 11.2044 9.31607 10.4413 9.87868 9.87868C10.4413 9.31607 11.2044 9 12 9C12.7956 9 13.5587 9.31607 14.1213 9.87868C14.6839 10.4413 15 11.2044 15 12Z"
-                stroke="black"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M2.45703 12C3.73103 7.943 7.52203 5 11.999 5C16.477 5 20.267 7.943 21.541 12C20.267 16.057 16.477 19 11.999 19C7.52203 19 3.73103 16.057 2.45703 12Z"
-                stroke="black"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-
-            <svg
-              onClick={() => {
-                setActiveAttributeId(params.row.id);
-                openDeleteModal();
-              }}
-              className="cursor-pointer"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path
-                d="M19 7L18.133 19.142C18.0971 19.6466 17.8713 20.1188 17.5011 20.4636C17.1309 20.8083 16.6439 21 16.138 21H7.862C7.35614 21 6.86907 20.8083 6.49889 20.4636C6.1287 20.1188 5.90292 19.6466 5.867 19.142L5 7M10 11V17M14 11V17M15 7V4C15 3.73478 14.8946 3.48043 14.7071 3.29289C14.5196 3.10536 14.2652 3 14 3H10C9.73478 3 9.48043 3.10536 9.29289 3.29289C9.10536 3.48043 9 3.73478 9 4V7M4 7H20"
-                stroke="black"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-        );
-      },
-    },
   ];
 
   const removeItem = (index: number) => {
@@ -390,8 +361,8 @@ export default function AttributeList() {
               {
                 isFilterModalOpen && (
                   <div className="flex absolute top-14 z-40 shadow-md text-sm text-[#000] bg-white flex-col py-2 w-full rounded-2xl justify-center items-center">
-                    <span className="w-full text-center py-2">Active</span>
-                    <span className="w-full text-center py-2">Inactive</span>
+                    <span onClick={() => getAttributesByStatus("Active")} className="w-full text-center py-2">Active</span>
+                    <span onClick={() => getAttributesByStatus("Inactive")} className="w-full text-center py-2">Inactive</span>
                   </div>
                 )
               }
