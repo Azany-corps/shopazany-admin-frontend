@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/Core/Layout";
 import { Icon } from "@iconify/react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Checkbox } from "@mui/material";
 import { getAttributes } from "../../../Services/attribbutes.service";
 import LayoutComp from "../../../components/Core/LayoutComp";
+
+
+import PopUpModal from "../../../components/Core/PopUp";
 
 //switch
 import { styled } from "@mui/material/styles";
@@ -101,6 +104,9 @@ export default function AddCategory() {
   const goBack = () => {
     window.history.back();
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [attributes, setAttributes] = useState([]);
   const [category, setCategory] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
@@ -238,12 +244,21 @@ export default function AddCategory() {
     }
   };
 
+  //Edit Modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
-      <LayoutComp>
+      <LayoutComp title={<Link to="/products/categories">Categories <span><Link to="">&lt; Subcategories</Link></span></Link>}>
         <section className="rounded-lg bg-[#fff] py-3">
           <div className="flex-end mr-4">
-            <button className="p-2 rounded-[9px] bg-[#D0D0D059] flex flex-row space-x-2">
+            <button onClick={openModal} className="p-2 rounded-[9px] bg-[#D0D0D059] flex flex-row space-x-2">
               <p className="font-[700] text-base">Edit</p>
               <div className="">
                 <svg
@@ -411,6 +426,54 @@ export default function AddCategory() {
               ))}
             </div>
           </div>
+
+          {/*Modal*/}
+          <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
+            <div className="flex flex-col gap-4 p-3">
+              <div className="flex-start flex justify-between">
+                <h1 className="font-[700] text-xs mt-3">Create sub category</h1>
+              </div>
+              <div className="flex-center flex-col space-y-3">
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    type="text"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    placeholder="Title"
+                  />
+                </div>
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    type="text"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    placeholder="Description"
+                  />
+                </div>
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    type="text"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    placeholder="Select attribute"
+                  />
+                </div>
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <input
+                    id="files"
+                    type="file"
+                    className="hidden text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                  />
+                  <label htmlFor="files"
+                  className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                  >Select file</label>
+                </div>
+                <button className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
+                  <p className="mt-1 font-[700] text-sm text-[#fff]">
+                    Done
+                  </p>
+                </button>
+              </div>
+
+            </div>
+          </PopUpModal>
         </section>
       </LayoutComp>
       {/*<Layout>
