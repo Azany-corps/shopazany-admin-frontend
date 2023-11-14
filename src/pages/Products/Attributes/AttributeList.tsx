@@ -40,6 +40,8 @@ export default function AttributeList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+
   const [submit, setSubmit] = useState<boolean>(false)
   const [attributes, setAttributes] = useState<AttributeData[]>([]);
 
@@ -191,6 +193,11 @@ export default function AttributeList() {
     setIsModalOpen(false);
   };
 
+  const toggleFilterModal = () => {
+    setIsFilterModalOpen(!isFilterModalOpen);
+  };
+
+
   const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
@@ -317,11 +324,11 @@ export default function AttributeList() {
         <Icon
           icon="entypo:bar-graph"
           color="#d65d5b"
-          width={24}
-          height={24}
+          width={18}
+          height={18}
         />
       ),
-      title: "Attributes",
+      title: "Total Attributes",
     },
     {
       id: 2,
@@ -329,13 +336,27 @@ export default function AttributeList() {
       link: "./#",
       image: (
         <Icon
-          icon="tabler:list-details"
+          icon="entypo:bar-graph"
           color="#d65d5b"
-          width={24}
-          height={24}
+          width={18}
+          height={18}
         />
       ),
-      title: "Specifications",
+      title: "Total Published Attribute",
+    },
+    {
+      id: 2,
+      orders: 242,
+      link: "./#",
+      image: (
+        <Icon
+          icon="entypo:bar-graph"
+          color="#d65d5b"
+          width={18}
+          height={18}
+        />
+      ),
+      title: "Total Drafted Attribute",
     },
   ];
 
@@ -360,9 +381,23 @@ export default function AttributeList() {
           <div className="flex mt-4 flex-row items-center gap-4">
             <Badge badgeData={badgeData} />
           </div>
-          <div className="flex justify-center gap-4 items-center w-[75%]">
-            <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-[#B3B7BB] placeholder:font-bold py-5" type="text" placeholder="Search" />
-            <button onClick={() => setIsModalOpen(true)} className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Create Attribute</button>
+          <div className="flex justify-center gap-8 items-center w-[75%]">
+            <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-xs placeholder:text-[#B3B7BB] placeholder:font-bold py-3 bg-[transparent]" type="text" placeholder="Search" />
+            <div className="flex relative border justify-center items-center w-[60%] border-[#B3B7BB] rounded-2xl text-xs text-[#B3B7BB] font-bold py-[15px]">
+              <p onClick={toggleFilterModal} className="hover:cursor-pointer">
+                Filter
+              </p>
+              {
+                isFilterModalOpen && (
+                  <div className="flex absolute top-14 z-40 shadow-md text-sm text-[#000] bg-white flex-col py-2 w-full rounded-2xl justify-center items-center">
+                    <span className="w-full text-center py-2">Active</span>
+                    <span className="w-full text-center py-2">Inactive</span>
+                  </div>
+                )
+              }
+
+            </div>
+            <button onClick={() => setIsModalOpen(true)} className="py-[15px] w-[40%] bg-[#D65D5B] text-[#fff] text-xs text-center rounded-2xl font-bold">Create Attribute</button>
           </div>
           <div className="bg-[white]">
             <DataGrid
@@ -426,8 +461,9 @@ export default function AttributeList() {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end">
-                <button onClick={saveAttribute} className="py-5 w-[40%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save</button>
+              <div className="flex justify-center items-center gap-7">
+                <button className="py-[15px] text-xs bg-[transparent] w-[25%] border border-[#D65D5B] text-[#000] text-center rounded-2xl font-bold">Save as draft</button>
+                <button onClick={saveAttribute} className="py-[15px] text-xs w-[25%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Create</button>
               </div>
               {/* </form> */}
             </div>
@@ -456,9 +492,9 @@ export default function AttributeList() {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center gap-4">
-                <button onClick={delAttribute} className="py-5 w-full bg-[transparent] border border-[#D65D5B] text-[#000] text-center rounded-2xl font-bold">Delete attribute</button>
-                <button onClick={updateAttribute} className="py-5 w-full bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save Changes</button>
+              <div className="flex justify-center items-center gap-7">
+                <button onClick={delAttribute} className="py-[15px] text-xs bg-[transparent] w-[25%] border border-[#D65D5B] text-[#000] text-center rounded-2xl font-bold">Delete attribute</button>
+                <button onClick={updateAttribute} className="py-[15px] text-xs w-[25%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save Changes</button>
               </div>
               {/* </form> */}
             </div>
