@@ -65,6 +65,10 @@ const getAttributeById = (id: number | string) => {
   return sendRequest("get", `view_attribute/${id}`);
 };
 
+const getAttributeByStatus = (status: string) => {
+  return sendRequest("get", `fetch_attributes_by_status/${status}`);
+};
+
 const createAttribute = (
   attribute_name: string,
   attribute_items: string[],
@@ -111,4 +115,5 @@ export {
   deleteAttribute,
   getAttributeById,
   updateAttributeById,
+  getAttributeByStatus
 };
