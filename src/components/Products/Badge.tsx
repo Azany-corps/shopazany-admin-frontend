@@ -67,13 +67,13 @@ const Badge: React.FC<BadgeProps> = ({ badgeData }) => {
       {data.map((badge) => (
         <Link
           to={badge.link}
-          className="flex justify-start gap-6 bg-[white] items-center px-4 w-60 py-5 rounded-2xl"
+          className="flex justify-start gap-[14px] bg-[white] items-center px-4 w-64 py-5 rounded-2xl"
           key={badge.id}
         >
-          <div className="p-4 bg-[#F4F7FE] rounded-full shadow-sm">{badge.image}</div>
-          <div className="flex flex-col justify-between">
-            <p className="font-semibold text-[#A3AED0] text-[14px]">{badge.title}</p>
-            <p className="font-bold text-2xl">
+          <div className="p-3 bg-[#F4F7FE] rounded-full shadow-sm">{badge.image}</div>
+          <div className="flex flex-col justify-between w-full">
+            <p className="font-semibold text-[#A3AED0] w-full text-sm">{badge.title}</p>
+            <p className="font-bold text-xl">
               {badge.orders.toLocaleString()}
             </p>
           </div>
