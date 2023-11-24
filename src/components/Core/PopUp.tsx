@@ -30,12 +30,12 @@ const PopUpModal: React.FC<Props> = ({ isOpen, onClose, children }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-10 overflow-y-auto flex items-center justify-center">
+        <div className="fixed inset-0 no-scrollbar overflow-scroll z-10 flex items-center justify-center">
           <div className="transition-opacity" aria-hidden="true">
             <div className="bg-[black] opacity-30 absolute inset-0"></div>
           </div>
 
-          <div className=" bg-[white] rounded-[30px] overflow-auto shadow-xl transform transition-all modal-content">
+          <div className=" bg-[white] rounded-[30px] no-scrollbar overflow-auto shadow-xl transform transition-all modal-content">
             <div className="bg-[white]">
               <div
                 className="cancel absolute top-6 right-6 cursor-pointer"
