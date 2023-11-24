@@ -429,7 +429,7 @@ export default function AddCategory() {
 
           {/*Modal*/}
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
-            <div className="flex flex-col gap-4 p-3">
+            <form className="flex flex-col gap-4 p-3">
               <div className="flex-start flex justify-between">
                 <h1 className="font-[700] text-xs mt-3">Create sub category</h1>
               </div>
@@ -439,6 +439,9 @@ export default function AddCategory() {
                     type="text"
                     className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                     placeholder="Title"
+                    value={category}
+                    required={true}
+                    onChange={(e) => setCategory(e.target.value)}
                   />
                 </div>
                 <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
@@ -446,6 +449,9 @@ export default function AddCategory() {
                     type="text"
                     className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                     placeholder="Description"
+                    required={true}
+                    value={categoryDescription}
+                    onChange={(e) => setCategoryDescription(e.target.value)}
                   />
                 </div>
                 <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
@@ -457,22 +463,28 @@ export default function AddCategory() {
                 </div>
                 <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
                   <input
-                    id="files"
                     type="file"
                     className="hidden text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    accept="image/*"
+                    name="logo"
+                    id="logo"
+                    required={true}
+                    onChange={(e) => handleImageChange(e)}
                   />
                   <label htmlFor="files"
                   className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                   >Select file</label>
                 </div>
-                <button className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
+                <button 
+                  onClick={(event: any) => handleSubmit(event)}
+                  className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
                   <p className="mt-1 font-[700] text-sm text-[#fff]">
                     Done
                   </p>
                 </button>
               </div>
 
-            </div>
+            </form>
           </PopUpModal>
         </section>
       </LayoutComp>

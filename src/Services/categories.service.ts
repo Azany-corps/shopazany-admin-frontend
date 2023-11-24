@@ -7,6 +7,7 @@ const fetchCategories = async () => {
   let config = {
     method: "get",
     maxBodyLength: Infinity,
+    //url:"https://test.shopazany.com/api/auth/admin/nested-category"
     url: "test.shopazany.com/api/auth/admin/store/fetch_store_categories",
     headers: {
       Authorization: getBearerToken(),
