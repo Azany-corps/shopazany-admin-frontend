@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { data, data2, data3 } from "./dataFile";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type each = {
   image: React.ReactNode;
@@ -8,23 +8,29 @@ type each = {
 };
 
 const LayoutComp = ({
-
-  children, title
+  children,
+  title,
 }: {
-  children: React.ReactNode | React.ReactNode[],
+  children: React.ReactNode | React.ReactNode[];
   title: any;
 
   //children,
   //heading
-//}: {
+  //}: {
   //children: React.ReactNode | React.ReactNode[],
   //heading?: string
-
 }) => {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const navHanlder = () => {
     setShowMobileNav(!showMobileNav);
   };
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   return (
     <>
       <nav className={`fixed top-0  w-full bg-[#fafafa] z-50 md:z-40`}>
@@ -68,15 +74,15 @@ const LayoutComp = ({
                   </svg>
                 )}
               </button>
-              
-               <p className="self-center text-lg font-bold text-[#23272E] whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
+
+              <p className="self-center text-lg font-bold text-[#23272E] whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
                 {title}
 
-                 {/*<p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
+                {/*<p className="self-center text-2xl font-bold text-[#23272E] sm:text-2xl whitespace-nowrap md:flex ml-[219px] md:mr-24 hidden">
                 {heading ? heading : 'Dashboard'}*/}
               </p>
             </div>
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <div className="flex items-center">
                 <div className="flex items-center justify-center">
                   <div className="p-[2px] rounded-full bg-[#EA5455] relative left-7 bottom-2 z-50 text-[13px] text-white cursor-pointer font-semibold">
@@ -92,6 +98,28 @@ const LayoutComp = ({
                   <img src="/images/Avatar.svg" alt="Avatar" />
                 </div>
               </div>
+            </div> */}
+            <div className="bg-[#D0D0D059] rounded-[30px] py-1 pr-[14px] flex flex-row items-center justify-between">
+              <div className="flex items-center justify-center mr-[13px]">
+                <div className="p-[2px] rounded-full bg-[#EA5455] relative left-7 bottom-2 z-50 text-[13px] text-white cursor-pointer font-semibold ">
+                  <span className="">22</span>
+                </div>
+                <img
+                  src="/images/bell.svg"
+                  alt="Avatar"
+                  className="relative w-full"
+                />
+              </div>
+              <div
+                className="flex flex-row items-center mr-[13px] cursor-pointer"
+                onClick={handleLogout}
+              >
+                <img src="/images/logoutIcon.svg" />
+                <p className="font-public-sans text-[13px] font-semibold">
+                  Logout
+                </p>
+              </div>
+              <img src="/images/navAvatar.svg" />
             </div>
           </div>
         </div>
@@ -107,8 +135,9 @@ const LayoutComp = ({
       <aside
         id="logo-sidebar"
         // className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-        className={`md:block md:fixed ${showMobileNav ? "fixed" : "hidden"
-          } top-0 left-0 z-40 md:z-50 mt-16 md:mt-0 w-[246px] h-screen transition-transform`}
+        className={`md:block md:fixed ${
+          showMobileNav ? "fixed" : "hidden"
+        } top-0 left-0 z-40 md:z-50 mt-16 md:mt-0 w-[246px] h-screen transition-transform`}
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-white ">
