@@ -12,7 +12,10 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PopUpModal from "../../../components/Core/PopUp";
 import { deleteCategory } from "../../../Services/categories.service";
+import Select from "react-select";
+import { Formik, useFormik} from 'formik';
 // import { deleteCategory } from "../../../services/categories.service";
+
 
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
@@ -35,6 +38,30 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 //Attribute list
 import { getAttributes } from "../../../Services/attribbutes.service";
+
+//select-react
+import { MultiSelect } from "react-multi-select-component";
+
+interface Attribute {
+  id: number;
+  attribute_name: string;
+  items: string[];
+  status: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  count_category: number;
+}
+
+interface Option {
+  id: number;
+  label: string;
+  value: string;
+}
+
+interface Props {
+  attributes: Attribute[];
+}
 
 interface CategoryData {
   id: number;
@@ -92,18 +119,34 @@ interface CategoryListProps {
 }
 
 export default function CategoryList() {
+  //attribute
+  const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [selectedAttribute, setSelectedAttribute] = useState([]);
+
   useEffect(() => {
     getCategories();
     getNestedCategories();
     getAttributes()
       .then((response: any) => {
         console.log(JSON.stringify(response.data.data.values));
+        //const attribute = response.data.data.values
         setAttributes(response.data.data.values);
+        //console.log(attribute)
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+
+  const getOptions = (attributes: Attribute[]): Option[] => {
+    return attributes.map((attribute) => ({
+      id: attribute.id,
+      label: attribute.attribute_name,
+      value: attribute.attribute_name,
+    }));
+  };
+
+  const options: Option[] = getOptions(attributes);
 
   const IOSSwitch = styled((props: SwitchProps) => (
     <Switch
@@ -210,8 +253,12 @@ export default function CategoryList() {
   const [selectedParentCategory, setSelectedParentCategory] =
     useState<Category | null>(null);
 
-  const [selectedParentCategories, setSelectedParentCategories] = useState<number[]>([]);
-  const [selectedSubcategories, setSelectedSubcategories] = useState<number[]>([]);
+  const [selectedParentCategories, setSelectedParentCategories] = useState<
+    number[]
+  >([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<number[]>(
+    []
+  );
 
   const [activeCategory, setActiveCategory] = useState<CategoryData>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -223,9 +270,6 @@ export default function CategoryList() {
   const [parentCategories, setParentCategories] = useState<any[]>([]);
   //const [parentCategories, setParentCategories] =
   useState<ParentCategoryData[]>();
-
-  //attribute
-  const [attributes, setAttributes] = useState<AttributeData[]>([]);
 
   const [subCategoryShow, setSubCategoryShow] = useState(false);
   const [subSubCategoryShow, setSubSubCategoryShow] = useState(false);
@@ -343,6 +387,7 @@ export default function CategoryList() {
     closeModal();
   };
 
+  //former attribute list??
   const [selectedAttributes, setSelectedAttributes] = useState<any[]>([]);
   const selectAttributeValue = selectedAttributes.join(", ");
 
@@ -375,24 +420,6 @@ export default function CategoryList() {
     setSubCategoryData(updatedSubCategoryData);
   };
 
-  const handleAttributeSelection = (selectedAttribute: any) => {
-    setSelectedAttributes((prevSelectedAttributes) => {
-      const attributeIndex = prevSelectedAttributes.findIndex(
-        (attr) => attr.id === selectedAttribute.id
-      );
-
-      if (attributeIndex !== -1) {
-        // Attribute is already selected, remove it
-        const updatedAttributes = [...prevSelectedAttributes];
-        updatedAttributes.splice(attributeIndex, 1);
-        return updatedAttributes;
-      } else {
-        // Attribute is not selected, add it
-        return [...prevSelectedAttributes, selectedAttribute];
-      }
-    });
-  };
-
   const handleParentCategoryClick = (parentCategoryId: number) => {
     setSelectedParentCategories((prevSelected) =>
       prevSelected.includes(parentCategoryId)
@@ -415,43 +442,19 @@ export default function CategoryList() {
     return selectedSubcategories.includes(subcategoryId);
   };
 
-  const handleSubmit = (event: any) => {
-    event?.preventDefault();
-    if (
-      category.trim() === "" ||
-      categoryDescription.trim() === "" ||
-      imgFile === "" ||
-      subCategoryData.some((item) => item.name.trim() === "")
-    ) {
-      // Show a toast error message for validation failure
-      toast.error("Please fill in all required fields.", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-    let data = new FormData();
-    data.append("category", category);
-    data.append("about", categoryDescription);
-    data.append("banner", imgFile);
-
-    subCategoryData.forEach((subCategoryItem, index) => {
-      data.append(`sub_category[${index}]`, subCategoryItem.name);
-      data.append(`sub_category_about[${index}]`, subCategoryItem.description);
-    });
-
-    console.log("attr: ", selectedAttributes);
-    selectedAttributes.forEach((attribute, index) => {
-      data.append(`attribute_id[${index}]`, attribute.id);
-    });
-
-    console.log(data);
-  };
+  const formik = useFormik({
+    initialValues: {
+      title: '',
+      parent_category_id: 99,
+      description: '',
+      banner: '',
+      attribute_id : [] ,
+      status: '',
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    },
+  });
 
   return (
     <>
@@ -604,76 +607,53 @@ export default function CategoryList() {
           </div>
           {/*Modal*/}
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
-            <form className="w-[550px] flex flex-col gap-4 p-3">
+            <form onSubmit={formik.handleSubmit} className="w-[550px] flex flex-col gap-4 p-3">
               <div className="flex-start flex justify-between">
                 <h1 className="font-[700] text-xs mt-3 pl-3">
                   Create Category
                 </h1>
               </div>
               <div className="flex-center flex-col space-y-3">
+                
                 <input
+                  id="title"
+                  name="title"
                   type="text"
-                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[6px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[40px] align-middle"
                   placeholder="Title"
-                  value={category}
+                  value={formik.values.title}
                   //required={true}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={formik.handleChange}
                 />
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openParentCategoryModal();
-                  }}
-                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[54px] align-middle"
-                >
-                  <p>Select Parent Category</p>
-                </button>
+                
+                <Select
+                  id="category"
+                  name="category"
+                  //label="category"
+                  options={parentCategories}
+                  value={formik.values.parent_category_id}
+                  onChange={formik.handleChange}
+                />
                 <input
+                  id="description"
+                  name="description"
                   type="text"
-                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[6px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[40px] align-middle"
                   placeholder="Description"
                   //required={true}
-                  value={categoryDescription}
-                  onChange={(e) => setCategoryDescription(e.target.value)}
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
                 />
-                <div>
-                  <button
-                    value={selectAttributeValue}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openAttributeModal();
-                    }}
-                    className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[54px] align-middle"
-                  >
-                    <p>Select Attribute</p>
-                  </button>
-                  <PopUpModal
-                    isOpen={isAttributeModalOpen}
-                    onClose={closeAttributeModal}
-                  >
-                    <div className="w-[374px] h-[366.37px] flex flex-center flex-col gap-1 p-3 ">
-                      {attributes?.map((each, index) => (
-                        <div
-                          key={index}
-                          className="w-[350px] h-[34px] bg-[#D0D0D059] justify-start align-middle flex flex-row"
-                        >
-                          <Checkbox
-                            onClick={() => {
-                              handleAttributeSelection(each.attribute_name);
-                              console.log(selectedAttributes);
-                            }}
-                            color="default"
-                            value={each.attribute_name}
-                          />
-                          <p className="-ml-10 w-full flex-center font-[500] text-sm">
-                            {each.attribute_name}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </PopUpModal>
-                </div>
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                <MultiSelect
+                  options={options}
+                  value={selectedAttribute}
+                  //value={formik.values.parent_category_id}
+                  //onChange={formik.handleChange}
+                  onChange={(e:any) => setSelectedAttribute(e)}
+                  labelledBy="Attributes"
+                  className="text-center border-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                />
+                <div className="flex-center text-center rounded-[6px] border-[1px] border-[#B3B7BB] w-[372px] h-[40px] align-middle">
                   <input
                     alt="img"
                     type="file"
@@ -682,7 +662,7 @@ export default function CategoryList() {
                     //name="logo"
                     //id="logo"
                     //required={true}
-                    //onChange={(e) => handleImageChange(e)}
+                    onChange={formik.handleChange}
                   />
                   <label
                     htmlFor="files"
@@ -702,11 +682,7 @@ export default function CategoryList() {
                   </div>
                 </div>
                 <button
-                  onClick={(event: any) => {
-                    closeModal();
-                    openDoneModal();
-                    handleSubmit(event);
-                  }}
+                  type="submit"
                   className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
                 >
                   <p className="mt-1 font-[700] text-sm text-[#fff]">Done</p>
@@ -788,7 +764,7 @@ export default function CategoryList() {
                   {isParentCategorySelected(category.id) && (
                     <div className="ml-6">
                       {/* Display Subcategories under the selected parent category */}
-                      {category.subcategories?.map((subcategory:any) => (
+                      {category.subcategories?.map((subcategory: any) => (
                         <div
                           key={subcategory.id}
                           className={`flex flex-col bg-[#D0D0D059] p-4 rounded-md mb-2 cursor-pointer`}
