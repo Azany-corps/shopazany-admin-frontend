@@ -246,7 +246,7 @@ export default function CategoryList() {
         alert(`Error submitting form:\n${errorText}`);
         //alert(`Error submitting form:\n${JSON.stringify(errorData, null, 2)}`);
       }
-      
+
     } catch (error) {
       // Handle any network or other errors
       console.error("Error:", error);
@@ -288,7 +288,7 @@ export default function CategoryList() {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: "http://test.shopazany.com/api/auth/admin/fetch_all_categories",
+      url: "https://test.shopazany.com/api/auth/admin/fetch_all_categories",
       //url: "https://test.shopazany.com/api/auth/admin/store/fetch_store_categories",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
