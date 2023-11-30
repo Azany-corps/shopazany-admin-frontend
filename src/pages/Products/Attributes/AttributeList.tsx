@@ -228,7 +228,6 @@ export default function AttributeList() {
     setIsFilterModalOpen(!isFilterModalOpen);
   };
 
-
   const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
