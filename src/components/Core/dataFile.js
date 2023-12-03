@@ -85,7 +85,7 @@ export const data = [
       </svg>
     ),
     title: "Product by Azany",
-    path: "/",
+    path: "/products",
   },
   {
     image: (
@@ -203,7 +203,7 @@ export const data = [
       </svg>
     ),
     title: "Messages",
-    path: "/",
+    path: "/messages",
   },
 ];
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { data, data2, data3 } from "./dataFile";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 type each = {
   image: React.ReactNode;
@@ -21,6 +21,8 @@ const LayoutComp = ({
   //heading?: string
 }) => {
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const [active, setActive] = useState<each>();
+
   const navHanlder = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -30,6 +32,9 @@ const LayoutComp = ({
     localStorage.clear();
     navigate("/login");
   };
+
+  const location = useLocation();
+  console.log(location);
 
   return (
     <>
@@ -153,7 +158,7 @@ const LayoutComp = ({
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-[#8B909A] hover:text-gray-900 rounded-lg hover:bg-[#F7DFDE] group"
+                className={`flex items-center p-2 hover:text-gray-900 rounded-lg  hover:bg-[#F7DFDE] group`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -182,21 +187,30 @@ const LayoutComp = ({
                 <span className="ml-3 text-[12.524px]">Overview</span>
               </a>
             </li>
-            {data.map((each, index) => (
-              <li key={index}>
-                <Link to={each.path}>
-                  <a
-                    href="#"
-                    className="flex items-center p-[7.51px] text-[#8B909A] hover:text-[#23272E]  rounded-lg hover:bg-[#F7DFDE] group"
-                  >
-                    {each.image}
-                    <span className="flex-1 ml-3 whitespace-nowrap text-[12.524px]">
-                      {each.title}
-                    </span>
-                  </a>
-                </Link>
-              </li>
-            ))}
+            {data.map((each, index) => {
+              return (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setActive(each);
+                  }}
+                >
+                  <Link to={each.path}>
+                    <a
+                      href="#"
+                      className={`${
+                        active === each ? "bg-[#F7DFDE]" : ""
+                      } flex items-center p-[7.51px] text-[#8B909A] hover:text-[#23272E]  rounded-lg hover:bg-[#F7DFDE] group`}
+                    >
+                      {each.image}
+                      <span className="flex-1 ml-3 whitespace-nowrap text-[12.524px]">
+                        {each.title}
+                      </span>
+                    </a>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
           <ul className="space-y-2 font-medium">
             <p className="text-[#8B909A] text-[9.184px] uppercase px-[7.51px] pt-[37.24px]">

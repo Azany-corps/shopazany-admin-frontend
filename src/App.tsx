@@ -7,7 +7,8 @@ import Seller from "./pages/Sellers/Seller";
 import Tracking from "./pages/Orders/Tracking";
 import Store from "./pages/Sellers/Store";
 import Products from "./pages/Products/Products";
-import AddProduct from "./pages/Products/AddProduct";
+// import AddProduct from "./pages/Products/AddProduct";
+import AddProduct from "./pages/Products/NewAdd";
 import Customers from "./pages/Customers/Customers";
 import Messages from "./pages/Messages/Messages";
 import StoreTransactions from "./pages/Sellers/Store/Transactions";
@@ -66,12 +67,14 @@ function App() {
           />
           {/*<Route path="categories/add-category" element={<AddCategory />} />*/}
           <Route path="categories/new-attributes" element={<AddAttribute />} />
-          <Route path="categories/attributes/:attributeId" element={<EditAttribute />} />
-          
+          <Route
+            path="categories/attributes/:attributeId"
+            element={<EditAttribute />}
+          />
+
           {/*<Route path="categories/add-category" element={<AddCategory />} />*/}
-        {/*<Route path="new-attributes" element={<AddAttribute />} />*/}
-        {/*<Route path="attributes/:attributeId" element={<EditAttribute />} />*/}
-          
+          {/*<Route path="new-attributes" element={<AddAttribute />} />*/}
+          {/*<Route path="attributes/:attributeId" element={<EditAttribute />} />*/}
 
           <Route path="attributes" element={<AttributeList />} />
         </Route>

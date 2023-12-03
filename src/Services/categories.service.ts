@@ -2,6 +2,7 @@ import axios from "axios";
 // import { getBearerToken } from "./auth.service";
 import { toast } from "react-toastify";
 import { getBearerToken } from "./auth.service";
+import callAPI from "./api.service";
 
 const fetchCategories = async () => {
   let config = {
@@ -18,6 +19,8 @@ const fetchCategories = async () => {
   axios
     .request(config)
     .then((response) => {
+      console.log(response.data.data.values);
+
       return { categories: response.data.data.values };
     })
     .catch((error) => {
@@ -66,4 +69,20 @@ const deleteCategory = async (id: number | string) => {
   }
 };
 
-export { fetchCategories, deleteCategory };
+const fetchCategory = async (id: number) => {
+  const headers = { Authorization: getBearerToken() };
+  try {
+    const response = await callAPI(
+      `auth/store/show_nested_category/${id}`,
+      "GET",
+      null,
+      headers
+    );
+
+    return response.data.values[0];
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export { fetchCategories, deleteCategory, fetchCategory };

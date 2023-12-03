@@ -2,11 +2,12 @@ import React from "react";
 import Layout from "../../components/Core/Layout";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
+import LayoutComp from "../../components/Core/LayoutComp";
 
 const Product = () => {
   return (
     <>
-      <Layout>
+      <LayoutComp title="dashboard > product">
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8">
@@ -17,7 +18,12 @@ const Product = () => {
               </div>
             </div>
             <div className="flex gap-4">
-              <Link to={'./add-category'} className="p-2 py-2 bg-[#E51B48] text-white text-[14px] rounded-sm">Add Category</Link>
+              <Link
+                to={"./add-category"}
+                className="p-2 py-2 bg-[#E51B48] text-white text-[14px] rounded-sm"
+              >
+                Add Category
+              </Link>
             </div>
           </div>
           <div className="flex flex-row gap-4">
@@ -64,7 +70,11 @@ const Product = () => {
                 </div>
                 <div className="flex flex-row gap-2">
                   <div>
-                    <img src="/images/chimeze.png" alt="" className="w-10 h-10" />
+                    <img
+                      src="/images/chimeze.png"
+                      alt=""
+                      className="w-10 h-10"
+                    />
                   </div>
                   <div className="flex flex-col gap-1 text-[14px]">
                     <p className="font-semibold text-[16px]">Chimeze LTD</p>
@@ -78,8 +88,12 @@ const Product = () => {
               </div>
               <div></div>
               <div className="flex items-center justify-between gap-4">
-                <button className="font- text-[18px] w-full py-1 border border-[#E51B48] text-[#E51B48]">Edit</button>
-                <button className="font- text-[18px] bg-[#E51B48] text-[white] w-full py-1">Delete Product</button>
+                <button className="font- text-[18px] w-full py-1 border border-[#E51B48] text-[#E51B48]">
+                  Edit
+                </button>
+                <button className="font- text-[18px] bg-[#E51B48] text-[white] w-full py-1">
+                  Delete Product
+                </button>
               </div>{" "}
             </div>
           </div>
@@ -87,33 +101,53 @@ const Product = () => {
             <div>
               <h1 className="text-[24px]">Product Details</h1>
               <p>
-                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
-                dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
-                consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.
-                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
-                dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet
-                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.
-                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
-                dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet{" "}
+                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit
+                amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem
+                ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet{" "}
               </p>
             </div>
             <div>
               <h1 className="text-[24px]">Specifications</h1>
               <p>
                 {" "}
-                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
-                dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
-                consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.
-                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
-                dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet
-                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.
-                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
-                dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit
+                amet consectetur. Lorem ipsum dolor sit amet consectetur.Lorem
+                ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur.Lorem ipsum dolor sit amet consectetur.Lorem ipsum
+                dolor sit amet consectetur.Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet
               </p>
             </div>
           </div>
         </div>
-      </Layout>
+      </LayoutComp>
     </>
   );
 };
