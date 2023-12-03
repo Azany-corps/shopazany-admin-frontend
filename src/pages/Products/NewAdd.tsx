@@ -805,7 +805,6 @@ const AddProduct = () => {
                       id="sale_end_date"
                       value={formData?.sale_end_date}
                       onChange={handleChange}
-                      // onBlur={Formik.handleBlur}
                       // error={Formik?.errors?.sale_end_date as string}
                       // touched={Formik?.touched?.sale_end_date as boolean}
                       placeholder="Select date"
