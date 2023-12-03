@@ -777,7 +777,6 @@ const AddProduct = () => {
                       id="sale_price"
                       value={formData?.sale_price}
                       onChange={handleChange}
-                      // onBlur={Formik.handleBlur}
                       // error={Formik?.errors?.sale_price as string}
                       // touched={Formik?.touched?.sale_price as boolean}
                       placeholder="Input product description"
