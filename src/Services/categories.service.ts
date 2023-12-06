@@ -24,6 +24,28 @@ const fetchCategories = async () => {
     });
 };
 
+const fetchNestedCategories = async () => {
+  let config = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: "https://test.shopazany.com/api/auth/admin/nested-category",
+    headers: {
+      Authorization: getBearerToken(),
+      "Content-Type": "multipart/form-data",
+    },
+  };
+
+  axios
+    .request(config)
+    .then((response) => {
+      // console.log("my res: ", response.data)
+      return { categories: response.data.categories };
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 const deleteCategory = async (id: number | string) => {
   try {
     const config = {
@@ -65,4 +87,4 @@ const deleteCategory = async (id: number | string) => {
   }
 };
 
-export { fetchCategories, deleteCategory };
+export { fetchCategories, deleteCategory, fetchNestedCategories };
