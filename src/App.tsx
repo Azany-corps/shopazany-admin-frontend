@@ -19,6 +19,7 @@ import Customer from "./pages/Customers/Customer";
 import SupportTicket from "./pages/Messages/Support";
 import Notification from "./pages/Messages/Notification";
 import CategoryList from "./pages/Products/Categories/CategoryList";
+import CategoryListO from "./pages/Products/Categories/CategoryList_oracle";
 import AddCategory from "./pages/Products/Categories/AddCategory";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,7 +58,7 @@ function App() {
           <Route index element={<Products />} />
           <Route path="add-product" element={<AddProduct />} />
           <Route path="product" element={<Product />} />
-          <Route path="categories" element={<CategoryList />} />
+          <Route path="categories" element={<CategoryListO />} />
           {/*<Route path="categories/:categoryId" element={<CategoryPage />} />*/}
           <Route path="categories/:categoryId" element={<AddCategory />} />
           <Route
@@ -67,11 +68,11 @@ function App() {
           {/*<Route path="categories/add-category" element={<AddCategory />} />*/}
           <Route path="categories/new-attributes" element={<AddAttribute />} />
           <Route path="categories/attributes/:attributeId" element={<EditAttribute />} />
-          
+
           {/*<Route path="categories/add-category" element={<AddCategory />} />*/}
-        {/*<Route path="new-attributes" element={<AddAttribute />} />*/}
-        {/*<Route path="attributes/:attributeId" element={<EditAttribute />} />*/}
-          
+          {/*<Route path="new-attributes" element={<AddAttribute />} />*/}
+          {/*<Route path="attributes/:attributeId" element={<EditAttribute />} />*/}
+
 
           <Route path="attributes" element={<AttributeList />} />
         </Route>

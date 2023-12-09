@@ -5,15 +5,17 @@ import { Rating } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import Badge from "../../../components/Products/Badge";
 import { Icon } from "@iconify/react";
+import TextColorizer from "./ColorText";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PopUpModal from "../../../components/Core/PopUp";
 import { deleteCategory } from "../../../Services/categories.service";
 import { toast } from "react-toastify";
 import { fetchNestedCategories } from "../../../Services/categories.service";
+import { getAttributes } from "../../../Services/attribbutes.service";
+
 
 import { NestedAccordion } from "../../../components/UI/NestedAccordion";
-// import { deleteCategory } from "../../../services/categories.service";
 
 interface CategoryData {
   id: number;
@@ -26,21 +28,81 @@ interface CategoryData {
   sub_categories: any[];
   category_attributes: any[];
 }
+interface ColorizedText {
+  id: string;
+  text: string[];
+}
+interface FormData {
+  title: string;
+  parent_category_id: number | null;
+  parent_category: string;
+  description: string;
+  banner: File | null;
+  attribute_id: number[];
+  status: string;
+}
+interface Attribute {
+  id: number;
+  name: string;
+}
 
 export default function CategoryList() {
+
+  const initialFormData: FormData = {
+    title: "",
+    parent_category_id: 0,
+    parent_category: "",
+    description: "",
+    banner: null,
+    attribute_id: [],
+    status: "",
+  }
 
   const [activeCategory, setActiveCategory] = useState<CategoryData>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isParentModalOpen, setIsParentModalOpen] = useState(false);
   const [isDoneModalOpen, setIsDoneModalOpen] = useState(false);
   const [categories, setCategories] = useState<any>([]);
-  const [nestedCategories, setNestedCategories] = useState<any>([])
+  const [nestedCategories, setNestedCategories] = useState<any>([]);
+  const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [selectedAttribute, setSelectedAttribute] = useState([]);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [parentColorizedTexts, setParentColorizedTexts] = useState<
+    ColorizedText[]
+  >([]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+            ? "active"
+            : "inactive"
+          : value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData({
+      ...formData,
+      banner: file,
+    });
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
+    setFormData({ ...initialFormData })
     setIsModalOpen(false);
   };
 
@@ -53,11 +115,16 @@ export default function CategoryList() {
   };
 
   const handleCategorySelect = async (category: string, id: number) => {
-    const categ = category.split('- ')
-    console.log("Categs: ", categ[1], "id: ", id);
-    closeParentModal()
-    // setFormData({ ...formData, product_category: category });
-    // closeCategoryModal();
+    if (category.includes('--')) {
+      const categ = category.split('- ')
+      console.log("Categs: ", categ[1], "id: ", id);
+      setFormData({ ...formData, parent_category: categ[1], parent_category_id: id });
+      closeParentModal()
+    } else {
+      setFormData({ ...formData, parent_category: category, parent_category_id: id });
+      closeParentModal()
+    }
+
   }
 
   const openDoneModal = () => {
@@ -140,80 +207,96 @@ export default function CategoryList() {
   useEffect(() => {
     getCategories();
     getNestedCategories();
+    getAttributes()
+      .then((response: any) => {
+        const attributes: Attribute[] = response?.data?.data?.values?.map(
+          (attribute: any, index: number) => {
+            return {
+              id: attribute.id,
+              name: attribute.attribute_name,
+            };
+          }
+        );
+        console.log(attributes);
+
+        //const attribute = response.data.data.values
+        setAttributes(attributes);
+        //console.log(attribute)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
-  const handleSubmit = async (e: any) => {
-    let formData = new FormData();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    closeModal();
-    openDoneModal();
+    console.log("form: ", formData);
+    try {
+      const formDataObject = new FormData();
 
+      // Append text fields
+      formDataObject.append("title", formData.title);
+      formDataObject.append(
+        "parent_category_id",
+        formData.parent_category_id !== 0
+          ? String(formData.parent_category_id)
+          : "null"
+      );
+      formDataObject.append("description", formData.description);
+      formDataObject.append("status", formData.status);
 
-    // try {
-    //   let data = new FormData();
-    //   data.append("category", formData.product_category);
-    //   data.append("product_name", formData.product_name);
-    //   data.append("stock", formData.stock);
-    //   data.append("quantity", formData.stock_quantity);
-    //   data.append("currency", formData.currency);
-    //   data.append("price", formData.price);
-    //   data.append("brand_id", formData.brand);
-    //   data.append("description", formData.product_description);
-    //   data.append("short_description", formData.short_description);
-    //   data.append("weight", formData.weight);
-    //   data.append("sales_price", formData.sale_price);
-    //   data.append("start_date", formData.sale_start_date);
-    //   data.append("end_date", formData.sale_end_date);
+      // Append file field
+      formDataObject.append("banner", formData.banner || ""); // Handle null case
 
-    //   formData?.product_attributes?.forEach((attribute, index) => {
-    //     data.append(`attribute_text[${index}]`, attribute)
-    //   });
+      // Append attribute_ids as an array of strings
+      formData.attribute_id.forEach((attributeId, index) => {
+        formDataObject.append(`attribute_id[${index}]`, String(attributeId));
+      });
 
-    //   selectedImages?.forEach((image, index) => {
-    //     data.append(`image_1[${index}]`, image)
-    //   });
+      const response = await fetch(
+        "https://test.shopazany.com/api/auth/admin/create_category",
+        {
+          method: "POST",
+          body: formDataObject,
+        }
+      );
 
-    //   const response = await callAPI("auth/store/create_store_product", "POST", data, {
-    //     "Content-Type": "multipart/form-data",
-    //   });
-    //   console.log(response);
+      if (response.ok) {
+        // Request was successful
+        const responseData = await response.json();
+        openDoneModal();
+        closeModal();
+      } else {
+        // Request failed
+        const errorText = await response.json(); // Get the response text
+        console.error("Error submitting form:", errorText);
+        closeModal();
+        toast.error(errorText.message || "An error occurred", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
 
-    //   if (response.status && response.status_code === 200) {
-    //     toast.success("Product added successfully", {
-    //       position: "top-center",
-    //       autoClose: 3000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //     navigate("/manufacturers-profile/product");
-    //   } else {
-    //     const errorMessage = response.data.data.errors[0];
-    //     toast.error(errorMessage, {
-    //       position: "top-center",
-    //       autoClose: 3000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //   }
-    //   navigate("/manufacturers-profile/product");
-    // } catch (err: any) {
-    //   console.log(err);
-    //   toast.error(err?.response?.data?.data?.errors?.[0], {
-    //     position: "top-center",
-    //     autoClose: 3000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
-    // }
+    } catch (error) {
+      // Handle any network or other errors
+      console.error("Error:", error);
+      closeModal();
+      console.log(error);
+      toast.error("An error occurred", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   const getCategories = () => {
@@ -256,6 +339,17 @@ export default function CategoryList() {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleAttributesChange = (attributes: Attribute[]) => {
+    console.log(attributes);
+
+    const newAttributeId = attributes.map((attribute, index) => attribute.id)
+
+    setFormData({
+      ...formData,
+      attribute_id: [...newAttributeId]
+    })
   };
 
   return (
@@ -306,51 +400,73 @@ export default function CategoryList() {
           {/*Modal*/}
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
             <div className="flex flex-col gap-4 p-3">
-              <div className="flex-start flex justify-between">
+              <div className="flex justify-between flex-start">
                 <h1 className="font-[700] text-xs mt-3">Create Category</h1>
               </div>
-              <div className="py-6 px-28">
-                <form className="flex-center flex-col space-y-3" action="">
+              <div className="py-6 w-full px-28 max-h-[70vh] overflow-y-scroll no-scrollbar">
+                <form className="flex-col space-y-3 flex-center" action="">
                   <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
                     <input
                       type="text"
+                      name="title"
                       className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                       placeholder="Title"
+                      value={formData.title}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div
-                    className="flex-center text-center rounded-[16px] border-[1px] font-[700] text-sm text-[#B3B7BB] border-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                    className="flex-center text-center hover:cursor-pointer rounded-[16px] border-[1px] font-[700] text-sm text-[#B3B7BB] border-[#B3B7BB] w-[372px] h-[54px] align-middle"
                     onClick={openParentModal}
                   >
-                    <span>Select Parent Category</span>
+                    {
+                      formData.parent_category ? (
+                        <span>{formData.parent_category}</span>
+                      ) : (
+                        <span>Select Parent Category</span>
+                      )
+                    }
                   </div>
                   <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
                     <input
                       type="text"
+                      name="description"
                       className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                       placeholder="Description"
+                      value={formData.description}
+                      onChange={handleInputChange}
                     />
                   </div>
-                  <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                  <div className="flex w-full flex-col gap-4">
+                    <TextColorizer
+                      attributes={attributes}
+                      onAttributesChange={handleAttributesChange}
+                    />
+                  </div>
+                  <div className="flex-center text-center hover:cursor-pointer rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
                     <input
-                      type="text"
                       className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                      placeholder="Select attribute"
-                    />
-                  </div>
-                  <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-                    <input
-                      id="files"
                       type="file"
-                      className="hidden text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                      accept="image/*"
+                      name="banner"
+                      onChange={handleFileChange}
                     />
-                    <label
-                      htmlFor="files"
-                      className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                    >
-                      Select file
-                    </label>
                   </div>
+                  <div className="flex flex-row justify-center space-x-2 text-center align-middle">
+                    <p className=" font-[700] text-sm">Status</p>
+                    <div>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          name="status"
+                          checked={formData.status === "active"} // Convert to boolean
+                          onChange={handleInputChange}
+                        />
+                        <span className="slider round"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <br />
                   <button
                     onClick={handleSubmit}
                     className="flex-center mt-3 text-center rounded-[16px] border-[1px] bg-[#000] w-[267px] h-[54px] cursor-pointer"
@@ -365,7 +481,7 @@ export default function CategoryList() {
           {/*Modal*/}
           <PopUpModal isOpen={isParentModalOpen} onClose={closeParentModal}>
             <div className="flex justify-center items-center w-[700px] relative h-[60vh] flex-col gap-4 p-3">
-              <div className="flex-start flex w-full justify-between">
+              <div className="flex justify-between w-full flex-start">
                 <h1 className="font-[700] text-xs w-full text-left mt-3">Select parent category</h1>
               </div>
               <div className="flex flex-col w-full h-full overflow-y-scroll">
