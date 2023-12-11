@@ -1,31 +1,37 @@
 import { useEffect, useState } from "react";
-import Layout from "../../../components/Core/Layout";
-import { Icon } from "@iconify/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
-import { Checkbox } from "@mui/material";
 import { getAttributes } from "../../../Services/attribbutes.service";
 import LayoutComp from "../../../components/Core/LayoutComp";
 
+import { deleteCategory } from "../../../Services/categories.service";
 
 import PopUpModal from "../../../components/Core/PopUp";
 
-//switch
-import { styled } from "@mui/material/styles";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch, { SwitchProps } from "@mui/material/Switch";
-
-
-//edit modal
-
+//select-react
+import MultiSelect from "multiselect-react-dropdown";
 
 interface SubCategory {
   name: string;
   description: string;
 }
 
+interface FormData {
+  title: string;
+  //parent_category_id: string | null;
+  description: string;
+  banner: File | null;
+  //attribute_id: number[];
+  status: string;
+}
+
+interface DeleteButtonProps {
+  categoryId: number | string; // Assuming categoryId is a string, update the type accordingly
+}
+
 export default function AddCategory() {
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
   const data = [
     {
       image: "/images/tel.png",
@@ -45,76 +51,104 @@ export default function AddCategory() {
     },
   ];
 
-  const IOSSwitch = styled((props: SwitchProps) => (
-    <Switch
-      focusVisibleClassName=".Mui-focusVisible"
-      disableRipple
-      {...props}
-    />
-  ))(({ theme }) => ({
-    width: 36,
-    height: 20,
-    padding: 0,
-    "& .MuiSwitch-switchBase": {
-      padding: 0,
-      margin: 2,
-      transitionDuration: "300ms",
-      "&.Mui-checked": {
-        transform: "translateX(16px)",
-        color: "#000",
-        "& + .MuiSwitch-track": {
-          backgroundColor:
-            theme.palette.mode === "dark" ? "#D65D5B" : "#D65D5B",
-          opacity: 1,
-          border: 0,
-        },
-        "&.Mui-disabled + .MuiSwitch-track": {
-          opacity: 0.5,
-        },
+  const [categoryDetails, setCategoryDetails] = useState<any>(undefined);
+
+  const [formData, setFormData] = useState<FormData>({
+    title: "",
+    description: "",
+    banner: null,
+    status: "",
+  });
+
+  const [checkboxStatus, setCheckboxStatus] = useState<boolean>(false);
+
+  const fetchCategoryDetails = () => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url:
+        "https://test.shopazany.com/api/auth/admin/show-category/" + categoryId,
+      headers: {
+        authorization: `Bearer ${localStorage.getItem("token")}`,
       },
-      "&.Mui-focusVisible .MuiSwitch-thumb": {
-        color: "#33cf4d",
-        border: "6px solid #000",
-      },
-      "&.Mui-disabled .MuiSwitch-thumb": {
-        color:
-          theme.palette.mode === "light"
-            ? theme.palette.grey[100]
-            : theme.palette.grey[600],
-      },
-      "&.Mui-disabled + .MuiSwitch-track": {
-        opacity: theme.palette.mode === "light" ? 0.7 : 0.3,
-      },
-    },
-    "& .MuiSwitch-thumb": {
-      boxSizing: "border-box",
-      width: 17,
-      height: 17,
-    },
-    "& .MuiSwitch-track": {
-      borderRadius: 26 / 2,
-      backgroundColor: theme.palette.mode === "light" ? "#E9E9EA" : "#39393D",
-      opacity: 1,
-      transition: theme.transitions.create(["background-color"], {
-        duration: 500,
-      }),
-    },
-  }));
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(response.data.category);
+        setCategoryDetails(response.data.category);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+            ? "active"
+            : "inactive"
+          : value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData({
+      ...formData,
+      banner: file,
+    });
+  };
+
+  const { categoryId } = useParams();
+
+  useEffect(() => {
+    fetchCategoryDetails();
+  }, [categoryId]);
+
+  useEffect(() => {
+    if (categoryDetails) {
+      setFormData({
+        title: categoryDetails.title || "",
+        description: categoryDetails.description || "",
+        banner: categoryDetails.image || null,
+        status: categoryDetails.status.toLowerCase() || "",
+      });
+    }
+  }, [categoryDetails]);
+
+  useEffect(() => {
+    if (
+      categoryDetails?.status &&
+      categoryDetails.status.toLowerCase() === "active"
+    ) {
+      setCheckboxStatus(true);
+    }
+  }, [categoryDetails]);
 
   const goBack = () => {
     window.history.back();
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDoneModalOpen, setIsDoneModalOpen] = useState(false);
 
   const [attributes, setAttributes] = useState([]);
   const [category, setCategory] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
   const [subCategoryData, setSubCategoryData] = useState<SubCategory[]>([]);
   const [selectedAttributes, setSelectedAttributes] = useState<any[]>([]);
-  const [imgUrl, setImgUrl] = useState<any>(
-    "https://img.freepik.com/free-photo/bunch-black-friday-gifts-golden-shopping-cart-with-copy-space_23-2148667040.jpg?w=1480&t=st=1695914954~exp=1695915554~hmac=dd699f3b1464daf0ef8135b0142b87174f8af4d359170d2efc997d8ec908c2e3"
-  );
+
   const [imgFile, setImgFile] = useState<any>("");
   const navigate = useNavigate();
   const handleImageChange = async (e: any) => {
@@ -123,17 +157,12 @@ export default function AddCategory() {
     let file = e.target.files[0];
 
     reader.onloadend = () => {
-      setImgUrl(reader.result);
       setImgFile(file);
     };
 
     reader.readAsDataURL(file);
   };
-  const handleAddSubCategories = () => {
-    const updatedSubCategoryData = [...subCategoryData];
-    updatedSubCategoryData.push({ name: "", description: "" });
-    setSubCategoryData(updatedSubCategoryData);
-  };
+
   const deleteSubCategoryData = (index: number) => {
     const updatedSubCategoryData = subCategoryData.filter(
       (_, i) => i !== index
@@ -141,107 +170,134 @@ export default function AddCategory() {
     setSubCategoryData(updatedSubCategoryData);
   };
 
-  const handleSubmit = (event: any) => {
-    event?.preventDefault();
-    if (
-      category.trim() === "" ||
-      categoryDescription.trim() === "" ||
-      imgFile === "" ||
-      subCategoryData.some((item) => item.name.trim() === "")
-    ) {
-      // Show a toast error message for validation failure
-      toast.error("Please fill in all required fields.", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-    let data = new FormData();
-    data.append("category", category);
-    data.append("about", categoryDescription);
-    data.append("banner", imgFile);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    subCategoryData.forEach((subCategoryItem, index) => {
-      data.append(`sub_category[${index}]`, subCategoryItem.name);
-      data.append(`sub_category_about[${index}]`, subCategoryItem.description);
-    });
+    try {
+      const formDataObject = new FormData();
 
-    console.log("attr: ", selectedAttributes);
-    selectedAttributes.forEach((attribute, index) => {
-      data.append(`attribute_id[${index}]`, attribute.id);
-    });
+      // Append pre-filled values from categoryDetails
+      //formDataObject.append("title", categoryDetails?.title || "");
+      //formDataObject.append("description", categoryDetails?.description || "");
+      //formDataObject.append("status", categoryDetails?.status || "");
 
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: "https://test.shopazany.com/api/auth/admin/store/create_store_category",
-      headers: {
-        "Content-Type": "multipart/form-data",
-        authorization: "Bearer " + localStorage.getItem("token"),
-      },
-      data: data,
-    };
+      // Append edited or new values from the form
+      formDataObject.append("title", formData.title || "");
+      formDataObject.append("description", formData.description || "");
+      formDataObject.append("status", formData.status || "");
 
-    axios
-      .request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        toast.success(response.data.message, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        navigate("/products/categories");
-      })
-      .catch((error) => {
-        toast.error(error?.response.data.message, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        console.log(error);
-      });
-  };
+      // Append file field
+      formDataObject.append("banner", formData.banner || ""); // Handle null case
 
-  const handleSubCategoryChange = (
-    index: number,
-    fieldName: keyof SubCategory,
-    value: string
-  ) => {
-    const updatedSubCategoryData = [...subCategoryData];
-    updatedSubCategoryData[index][fieldName] = value;
-    setSubCategoryData(updatedSubCategoryData);
-  };
 
-  const handleAttributeChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    attribute: any
-  ) => {
-    const checked = event.target.checked;
-    const attributeId = attribute.id;
-    if (checked) {
-      setSelectedAttributes((prevSelectedAttributes) => [
-        ...prevSelectedAttributes,
-        attribute,
-      ]);
-    } else {
-      setSelectedAttributes((prevSelectedAttributes) =>
-        prevSelectedAttributes.filter((attr) => attr.id !== attributeId)
+      await axios.put(
+        `https://test.shopazany.com/auth/admin/update_category/${categoryId}`,
+        formDataObject,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
+      alert(
+        `Form submitted successfully!\nResponse: ${JSON.stringify(
+          formData,
+          null,
+          2
+        )}`
+      );
+
+      closeModal();
+      openDoneModal();
+    } catch (error) {
+      // Handle any network or other errors
+      console.error("Error:", error);
+      alert("Error submitting form. Please try again.");
     }
+  };
+
+  const handleCheckboxChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const isChecked = e.target.checked;
+    setCheckboxStatus(isChecked);
+
+    try {
+      const formDataObject = new FormData();
+
+      // Append pre-filled values from categoryDetails
+      formDataObject.append("title", categoryDetails?.title || "");
+      formDataObject.append("description", categoryDetails?.description || "");
+
+      // Append checkbox status
+      formDataObject.append("status", isChecked ? "active" : "inactive");
+
+      // Append file field
+      formDataObject.append("banner", categoryDetails?.image || ""); // Handle null case
+
+      // Perform any other necessary actions
+      const response = await fetch(
+        `https://test.shopazany.com/auth/admin/update_category/${categoryId}`,
+        {
+          method: "UPDATE",
+          body: formDataObject,
+        }
+      );
+
+      alert(
+        `Checkbox Form submitted successfully!\nResponse: ${JSON.stringify(
+          Object.fromEntries(formDataObject.entries()),
+          null,
+          2
+        )}`
+      );
+
+      window.location.reload();
+    } catch (error) {
+      // Handle any network or other errors
+      console.error("Error:", error);
+      alert("Error submitting checkbox form. Please try again.");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      // Construct the API URL with the categoryId
+      const apiUrl = `https://test.shopazany.com/auth/admin/delete_category/${categoryId}`;
+
+      // Make a DELETE request to delete the category
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // You can add additional headers if needed
+        },
+        // You can include a request body if required by your API
+        // body: JSON.stringify({}),
+      });
+
+      if (response.ok) {
+        // The category was successfully deleted
+        console.log("Category deleted successfully");
+        console.log(response);
+        alert("Form submitted successfully!\nResponse");
+        navigate("/");
+        // Add any additional logic you need after successful deletion
+      } else {
+        // Handle errors, display an error message, etc.
+        console.error("Error deleting category. Status:", response.status);
+      }
+    } catch (error) {
+      console.error("An error occurred during the delete request:", error);
+    }
+  };
+
+  const handleDeleteCategory = async (id: any) => {
+    await deleteCategory(id);
+    openDoneModal();
+    navigate("/products/categories");
   };
 
   //Edit Modal
@@ -251,14 +307,31 @@ export default function AddCategory() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    window.location.reload();
+  };
+
+  const openDoneModal = () => {
+    setIsDoneModalOpen(true);
+    setTimeout(() => setIsDoneModalOpen(false), 800);
   };
 
   return (
     <>
-      <LayoutComp title={<div><Link to="/products/categories">Categories</Link><span>&lt;</span><Link to=""> Subcategories</Link></div>}>
+      <LayoutComp
+        title={
+          <div>
+            <Link to="/products/categories">Categories</Link>
+            <span>&lt;</span>
+            <Link to=""> {categoryDetails?.title}</Link>
+          </div>
+        }
+      >
         <section className="rounded-lg bg-[#fff] py-3">
           <div className="flex-end mr-4">
-            <button onClick={openModal} className="p-2 rounded-[9px] bg-[#D0D0D059] flex flex-row space-x-2">
+            <button
+              onClick={openModal}
+              className="p-2 rounded-[9px] bg-[#D0D0D059] flex flex-row space-x-2"
+            >
               <p className="font-[700] text-base">Edit</p>
               <div className="">
                 <svg
@@ -278,24 +351,37 @@ export default function AddCategory() {
           </div>
           <div className="flex-center flex-col space-y-2">
             <div className="flex justify-center text-center">
-              <img src="/images/cat_pic.svg" alt="image" />
+              <img
+                src="/images/cat_pic.svg"
+                /*categoryDetails?.image*/ alt="image"
+              />
             </div>
             <p className="font-[400] text-lg text-[#B3B7BB]">Category name</p>
-            <p className="font-[700] text-lg text-[#231F20]">Electronics</p>
+            <p className="font-[700] text-lg text-[#231F20]">
+              {categoryDetails?.title}
+            </p>
             <div className="flex-row space-x-5 flex-center">
               <div className="flex-center bg-[#231F20] w-[150px] h-[43px] rounded-[30px] text-[#fff] text-sm">
                 <div className="px-10 flex flex-center space-x-5 flex-row">
                   <p className="ml-3">Delist</p>
                   <div className="flex-end">
-                    <FormControlLabel
-                      control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
-                      label=""
-                      onChange={()=>{}}
-                    />
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        name="status"
+                        checked={checkboxStatus}
+                        onChange={handleCheckboxChange}
+                      />
+                      <span className="slider round"></span>
+                    </label>
                   </div>
                 </div>
               </div>
-              <button className="bg-[#D65D5B] w-[150px] h-[43px] rounded-[30px] text-[#fff] text-sm">
+              <button
+                //onClick={() => handleDeleteCategory(categoryDetails?.id)}
+                onClick={handleDelete}
+                className="bg-[#D65D5B] w-[150px] h-[43px] rounded-[30px] text-[#fff] text-sm"
+              >
                 Delete
               </button>
             </div>
@@ -318,7 +404,7 @@ export default function AddCategory() {
                 </div>
                 <p className="text-[#B3B7BB] text-sm">Date added</p>
                 <p className="text-base font-[700] w-[120px] text-center">
-                  02-11-2023
+                  {categoryDetails?.created_at.slice(0, 10)}
                 </p>
               </div>
               <div className="flex flex-col flex-center">
@@ -370,7 +456,9 @@ export default function AddCategory() {
                   </svg>
                 </div>
                 <p className="text-[#B3B7BB] text-sm">Sub categories</p>
-                <p className="text-base font-[700] w-[120px] text-center">07</p>
+                <p className="text-base font-[700] w-[120px] text-center">
+                  {categoryDetails?.subcategories.length}
+                </p>
               </div>
               <div className="flex flex-col flex-center">
                 <div className="rounded-[50%] bg-[#D0D0D059] w-[49px] h-[49px] flex-center">
@@ -394,9 +482,7 @@ export default function AddCategory() {
 
             <p className="font-[700]">Description</p>
             <p className="text-[#B3B7BB] text-xs w-[300px] text-center">
-              This is the description accompanied by this current category at
-              this very point, bla bla bla bla bla bla bla bla bla bla bla bla
-              bla bla bla
+              {categoryDetails?.description}
             </p>
 
             <div className="px-8 w-full flex flex-col space-y-3">
@@ -428,291 +514,98 @@ export default function AddCategory() {
           </div>
 
           {/*Modal*/}
+
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
-            <form className="flex flex-col gap-4 p-3">
+            <form
+              onSubmit={handleSubmit}
+              className="w-[550px] h-[500px] pt-14 flex flex-col gap-1 p-3"
+            >
               <div className="flex-start flex justify-between">
-                <h1 className="font-[700] text-xs mt-3">Create sub category</h1>
+                <h1 className="font-[700] text-xs mb-3 pl-3">
+                  Create Category
+                </h1>
               </div>
               <div className="flex-center flex-col space-y-3">
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[40px] align-middle"
+                />
+
+                <textarea
+                  name="description"
+                  placeholder="Description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className="no-scrollbar px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[80px] align-middle"
+                />
+
+                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[40px] align-middle">
                   <input
-                    type="text"
                     className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                    placeholder="Title"
-                    value={category}
-                    required={true}
-                    onChange={(e) => setCategory(e.target.value)}
-                  />
-                </div>
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-                  <input
-                    type="text"
-                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                    placeholder="Description"
-                    required={true}
-                    value={categoryDescription}
-                    onChange={(e) => setCategoryDescription(e.target.value)}
-                  />
-                </div>
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-                  <input
-                    type="text"
-                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                    placeholder="Select attribute"
-                  />
-                </div>
-                <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[54px] align-middle">
-                  <input
                     type="file"
-                    className="hidden text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                     accept="image/*"
-                    name="logo"
-                    id="logo"
-                    required={true}
-                    onChange={(e) => handleImageChange(e)}
+                    name="banner"
+                    //onChange={handleFileChange}
                   />
-                  <label htmlFor="files"
-                  className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
-                  >Select file</label>
                 </div>
-                <button 
-                  onClick={(event: any) => handleSubmit(event)}
-                  className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer">
-                  <p className="mt-1 font-[700] text-sm text-[#fff]">
+                {/*Select attributes*/}
+
+                <br />
+                <button
+                  type="submit"
+                  className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
+                >
+                  <p className="mt-1 mb-2 font-[700] text-sm text-[#fff]">
                     Done
                   </p>
                 </button>
               </div>
-
             </form>
+          </PopUpModal>
+          {/*Done Modal*/}
+          <PopUpModal isOpen={isDoneModalOpen} onClose={() => {}}>
+            <div className="w-[374px] h-[366.37px] flex-center flex-col gap-4 p-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="173"
+                height="173"
+                viewBox="0 0 173 173"
+                fill="none"
+              >
+                <path
+                  d="M173 86.5C173 134.273 134.273 173 86.5 173C38.7274 173 0 134.273 0 86.5C0 38.7274 38.7274 0 86.5 0C134.273 0 173 38.7274 173 86.5ZM8.08804 86.5C8.08804 129.806 43.1943 164.912 86.5 164.912C129.806 164.912 164.912 129.806 164.912 86.5C164.912 43.1943 129.806 8.08804 86.5 8.08804C43.1943 8.08804 8.08804 43.1943 8.08804 86.5Z"
+                  fill="#00A91B"
+                />
+                <path
+                  d="M128 57.9375L74.375 111.562L50 87.1875"
+                  stroke="url(#paint0_linear_317_10120)"
+                  stroke-width="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <defs>
+                  <linearGradient
+                    id="paint0_linear_317_10120"
+                    x1="46"
+                    y1="85"
+                    x2="82.5"
+                    y2="98.5"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#00A91B" />
+                    <stop offset="1" stop-color="#00A91B" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <p>Operation successful</p>
+            </div>
           </PopUpModal>
         </section>
       </LayoutComp>
-      {/*<Layout>
-        <form className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-3">
-              <p className="text-[36px] font-bold">Add New Category</p>
-              <div
-                className="flex gap-2 items-center text-[#1B7CFC] cursor-pointer"
-                onClick={goBack}
-              >
-                <Icon icon="icon-park-outline:left" />
-                <p>Back to Products</p>
-              </div>
-            </div>
-            <button
-              onClick={(event: any) => handleSubmit(event)}
-              className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-1 px-2 rounded-sm"
-            >
-              Add Categories
-            </button>
-          </div>
-          <div className="flex gap-6">
-            <div className="flex flex-col gap-4 w-[90%] lgm:w-[60%]">
-              <div className="flex flex-row items-end gap-4">
-                <div className="flex flex-col flex-1">
-                  <label htmlFor="image">Category Image</label>
-                  <div
-                    className="rounded-lg w-full h-[200px] bg-cover bg-center"
-                    style={{ backgroundImage: `url(${imgUrl})` }}
-                  ></div>
-                </div>
-                <label htmlFor="logo" className="rounded-full cursor-pointer ">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    name="logo"
-                    id="logo"
-                    required={true}
-                    onChange={(e) => handleImageChange(e)}
-                  />
-                  <div className="flex justify-center ">
-                    <div className="border border-[#505050] bg-[#505050] text-[#fff] p-1 px-2 rounded-sm">
-                      change
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="flex flex-col gap-4 p-3 shadow-md">
-                <div className="flex flex-col gap-1 form-group">
-                  <label htmlFor="category">Category</label>
-                  <input
-                    className="p-3 border border-[#51515183] rounded-md"
-                    type="text"
-                    placeholder="Enter category name"
-                    value={category}
-                    required={true}
-                    onChange={(e) => setCategory(e.target.value)}
-                  />
-                </div>
-                <div className="flex flex-col gap-1 form-group">
-                  <label htmlFor="category-description">
-                    Category Description
-                  </label>
-                  <textarea
-                    className="p-3 border border-[#51515183] rounded-md"
-                    rows={6}
-                    required={true}
-                    placeholder="Enter category description"
-                    value={categoryDescription}
-                    onChange={(e) => setCategoryDescription(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-4">
-                <p className="text-[32px] font-semibold">
-                  Add Sub Category (optional)
-                </p>
-                {subCategoryData.length > 0 ? (
-                  subCategoryData.map((item, index) => (
-                    <div key={index} className="p-3 rounded-md shadow-md">
-                      <div className="flex flex-col gap-1 form-group">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm  font-medium font-['Inter']">
-                              {index + 1}
-                            </p>
-                            <label htmlFor={`sub-category-name-${index}`}>
-                              Sub-category Name
-                            </label>
-                          </div>
-                          <p
-                            className="text-base font-medium font-['Inter'] text-[#E51B48] cursor-pointer"
-                            onClick={() => deleteSubCategoryData(index)}
-                          >
-                            Remove
-                          </p>
-                        </div>
-                        <input
-                          required
-                          id={`sub-category-name-${index}`}
-                          className="p-3 border border-[#51515183] rounded-md"
-                          type="text"
-                          placeholder="Enter sub-category name"
-                          value={item.name}
-                          onChange={(e) =>
-                            handleSubCategoryChange(
-                              index,
-                              "name",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div className="flex flex-col gap-1 form-group">
-                        <label htmlFor={`sub-category-description-${index}`}>
-                          Sub-category Description
-                        </label>
-                        <textarea
-                          id={`sub-category-description-${index}`}
-                          className="p-3 border border-[#51515183] rounded-md"
-                          rows={6}
-                          required
-                          placeholder="Enter sub-category description"
-                          value={item.description}
-                          onChange={(e) =>
-                            handleSubCategoryChange(
-                              index,
-                              "description",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="w-full text-center my-6 text-[#8E8E8E] text-2xl font-normal font-['Inter']">
-                    Sub Categories will
-                    <br /> appear here
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center justify-center">
-                <button
-                  className="border border-[#E51B48] bg-[#E51B48] text-[#fff] p-3 px-4 rounded-sm"
-                  onClick={handleAddSubCategories}
-                >
-                  Add Sub Categories
-                </button>
-              </div>
-            </div>
-            <div className="flex flex-col flex-1 gap-4">
-              <p className="text-[32px] font-semibold">Add Product Attribute</p>
-              <div className="relative flex flex-wrap w-full gap-1 p-2 overflow-scroll bg-white border rounded-lg h-44 border-stone-300">
-                {selectedAttributes?.length > 0 ? (
-                  selectedAttributes.map((selectedAttribute, index) => (
-                    <div
-                      className="flex items-center p-1 rounded-md bg-brand-light-blue h-fit"
-                      key={index}
-                    >
-                      <span className="mr-1 text-sm">
-                        {selectedAttribute.attribute_name}
-                      </span>
-                      <span
-                        className="p-1 cursor-pointer"
-                        onClick={() => {
-                          const updatedItems = selectedAttributes.filter(
-                            (attribute: any, i: number) =>
-                              attribute.id !== selectedAttribute.id
-                          );
-                          setSelectedAttributes(updatedItems);
-                        }}
-                      >
-                        x
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="items-center justify-center flex-1 w-full h-full">
-                    <p className="text-center text-neutral-400 text-base font-normal font-['Inter']">
-                      {"Attributes will appear here"}
-                    </p>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col gap-2 p-3 rounded-md shadow-md">
-                <div className="flex flex-col gap-1 form-group ">
-                  <label htmlFor="attributeList"> Product Attributes</label>
-                  <input
-                    type="search"
-                    name="attributeList"
-                    className="p-3 border border-[#51515183] rounded-md"
-                    id="attributeList"
-                  />
-                </div>
-                <div className="flex flex-col items-start flex-1 gap-2">
-                  {attributes &&
-                    attributes.map((attribute: any) => (
-                      <div
-                        className="flex items-center gap-2"
-                        key={attribute.id}
-                      >
-                        <Checkbox
-                          value={attribute.id}
-                          // checked={selectedAttributes.includes(
-                          //   (selectedAttribute:any) =>
-                          //     selectedAttribute.id === attribute.id
-                          // )}
-                          onChange={(event) =>
-                            handleAttributeChange(event, {
-                              id: attribute.id,
-                              attribute_name: attribute.attribute_name,
-                            })
-                          }
-                        />
-                        <span>{attribute.attribute_name}</span>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-      </Layout>*/}
     </>
   );
 }

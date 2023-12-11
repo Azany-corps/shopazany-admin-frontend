@@ -5,6 +5,7 @@ import { Rating } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import { toast } from "react-toastify";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { createTheme, ThemeProvider } from "@mui/material";
 import Badge from "../../../components/Products/Badge";
 import { Icon } from "@iconify/react";
 import AddIcon from "@mui/icons-material/Add";
@@ -24,7 +25,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { getAttributes } from "../../../Services/attribbutes.service";
 
 //select-react
-import { MultiSelect } from "react-multi-select-component";
+import MultiSelect from "multiselect-react-dropdown";
 
 interface Attribute {
   id: number;
@@ -35,16 +36,6 @@ interface Attribute {
   created_at: string;
   updated_at: string;
   count_category: number;
-}
-
-interface Option {
-  id: number;
-  label: string;
-  value: string;
-}
-
-interface Props {
-  attributes: Attribute[];
 }
 
 interface CategoryData {
@@ -70,22 +61,27 @@ interface Category {
 interface FormData {
   title: string;
   parent_category_id: string | null;
+  business_type: string;
   description: string;
   banner: File | null;
   attribute_id: number[];
   status: string;
-  //subcategories: (string | number)[];
 }
 
 export default function CategoryList() {
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
   const [formData, setFormData] = useState<FormData>({
     title: "",
-    parent_category_id: null,
+    parent_category_id: "" || null,
+    business_type: "",
     description: "",
     banner: null,
     attribute_id: [],
-    status: "",
+    status: "inactive",
   });
+
+  const [formErrors, setFormErrors] = useState<Partial<FormData>>({});
 
   const [displaySub, setDisplaySub] = useState(false);
   const [displaySubSub, setDisplaySubSub] = useState(false);
@@ -225,7 +221,7 @@ export default function CategoryList() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value, type } = e.target || null;
 
     setFormData((prevData) => ({
       ...prevData,
@@ -246,59 +242,100 @@ export default function CategoryList() {
     });
   };
 
-  const handleAttributeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, (option) =>
-      parseInt(option.value, 10)
-    );
-    setFormData({
-      ...formData,
-      attribute_id: selectedOptions,
-    });
+  //handle attributes multiselect
+  const handleSelectAttribute = (selectedList: any, selectedItem: any) => {
+    if (selectedItem) {
+      const selectedIdsList = selectedList.map((item: Attribute) => item.id);
+      setSelectedIds(selectedIdsList);
+    }
   };
 
-  const [level, setLevel] = useState<number>(1);
+  const handleRemoveAttribute = (selectedList: any, removedItem: any) => {
+    if (removedItem) {
+      const updatedIdsList = selectedList
+        .map((item: Attribute) => item.id)
+        .filter((id: number) => id !== removedItem.id);
+      setSelectedIds(updatedIdsList);
+    }
+  };
 
   const [parentCategories, setParentCategories] = useState<any[]>([]);
 
   const isFile = (value: any): value is File => value instanceof File;
 
+  const validateForm = (): boolean => {
+    const errors: Partial<FormData> = {};
+
+    // Validate title
+    if (!formData.title.trim()) {
+      errors.title = "Title is required";
+    }
+
+    // Validate description
+    if (!formData.description.trim()) {
+      errors.description = "Description is required";
+    }
+
+    // Validate attribute_id
+    // Validate attribute_id
+    if (selectedIds.length === 0) {
+      //errors.attribute_id = "Please select at least one attribute";
+    } else {
+      delete errors.attribute_id; // Clear the error if there are selected attributes
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const formDataObject = new FormData();
+    if (validateForm()) {
+      try {
+        const formDataObject = new FormData();
 
-      // Append text fields
-      formDataObject.append("title", formData.title);
-      //formDataObject.append(
-      //"parent_category_id",
-      //formData.parent_category_id !== 0
-      //? String(formData.parent_category_id)
-      //: "null"
-      //);
-      formDataObject.append("description", formData.description);
-      formDataObject.append("status", formData.status);
+        // Append text fields
+        formDataObject.append("title", formData.title);
+        formDataObject.append("description", formData.description);
+        formDataObject.append("business_type", formData.business_type);
+        formDataObject.append(
+          "parent_category_id",
+          formData.parent_category_id || ""
+        );
+        formDataObject.append("status", formData.status);
 
-      // Append file field
-      formDataObject.append("banner", formData.banner || ""); // Handle null case
+        // Append file field
+        formDataObject.append("banner", formData.banner || ""); // Handle null case
 
-      // Append attribute_ids as an array of strings
-      formData.attribute_id.forEach((attributeId) => {
-        formDataObject.append("attribute_id[]", String(attributeId));
-      });
+        // Append attribute_ids as an array of strings
+        formData.attribute_id.forEach((attributeId) => {
+          formDataObject.append("attribute_id", String(attributeId));
+        });
 
-      alert(
-        `Form submitted successfully!\nResponse: ${JSON.stringify(
-          formData,
-          null,
-          2
-        )}`
-      );
-    } catch (error) {
-      // Handle any network or other errors
-      console.error("Error:", error);
-      console.log(error);
-      alert("Error submitting form. Please try again.");
+        const response = await fetch(
+          "https://test.shopazany.com/api/auth/admin/create_category",
+          {
+            method: "POST",
+            body: formDataObject,
+          }
+        );
+        //console.log(response);
+        //alert(
+          //`Form submitted successfully!\nResponse: ${JSON.stringify(
+            //Object.fromEntries(formDataObject.entries()),
+            //null,
+            //2
+          //)}`
+        //);
+        closeModal();
+        openDoneModal();
+      } catch (error) {
+        // Handle any network or other errors
+        console.error("Error:", error);
+        console.log(error);
+        //alert("Error submitting form. Please try again.");
+      }
     }
   };
 
@@ -307,6 +344,10 @@ export default function CategoryList() {
   const [selectedAttribute, setSelectedAttribute] = useState([]);
 
   useEffect(() => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      attribute_id: selectedIds,
+    }));
     getCategories();
     getNestedCategories();
     getAttributes()
@@ -364,17 +405,14 @@ export default function CategoryList() {
     } else {
       setDisplaySubSubSubSubSub(false);
     }
-  }, [subCat, subSubCat, subSubSubCat, subSubSubSubCat, subSubSubSubSubCat]);
-
-  const getOptions = (attributes: Attribute[]): Option[] => {
-    return attributes.map((attribute) => ({
-      id: attribute.id,
-      label: attribute.attribute_name,
-      value: attribute.attribute_name,
-    }));
-  };
-
-  const attributeoptions: Option[] = getOptions(attributes);
+  }, [
+    subCat,
+    subSubCat,
+    subSubSubCat,
+    subSubSubSubCat,
+    subSubSubSubSubCat,
+    selectedIds,
+  ]);
 
   const getCategories = () => {
     let config = {
@@ -475,41 +513,45 @@ export default function CategoryList() {
 
   const navigate = useNavigate();
 
-  const rows: GridRowsProp = categories.map((category: any) => {
-    return {
-      id: category.id,
-      category: category.title,
-      //product_count: category.sub_categories.length,
-      created_at: "12-03-2023",
-      status: category.status,
-      //created_at: category.created_at,
-      //rating: Math.floor(Math.random() * 5),
-      //Products: Math.floor(Math.random() * 3020),
-      //Orders: Math.floor(Math.random() * 100),
-      //Searches: Math.floor(Math.random() * 100),
-      onClick: () => navigate(`./${category.id}`),
-      //onClick: () => navigate("/products/categories/add-category"),
-      // onDelete: null,
-    };
-  });
+  const customTheme = createTheme();
 
   const columns: GridColDef[] = [
     { field: "category", headerName: "Category", width: 400 },
-    //{ field: "product_count", headerName: "Product Count", width: 250 },
     { field: "created_at", headerName: "Date Added", width: 350 },
     {
       field: "status",
       headerName: "Status",
-      width: 250,
-      //renderCell: (params) => {
-      //return (
-      //<div className="flex justify-center items-center rounded-[9px] bg-[#1EB56429] w-[60px] h-[21px]">
-      //<p className="text-[#279F51] text-xs font-[600]">active</p>
-      //</div>
-      //);
-      //},
+      width: 150,
+      renderCell: (params) => (
+        <ThemeProvider theme={customTheme}>
+          <div
+            className={`flex justify-center items-center rounded-[9px] bg-${
+              params.value === "active" ? "green" : "red"
+            } w-[60px] h-[21px]`}
+          >
+            <p
+              className={`text-${
+                params.value === "active" ? "green" : "red"
+              } text-xs font-[600]`}
+            >
+              {params.value}
+            </p>
+          </div>
+        </ThemeProvider>
+      ),
     },
   ];
+
+  const rows: GridRowsProp = categories.map((category: any) => {
+    return {
+      id: category.id,
+      category: category.title,
+      created_at: category.created_at.slice(0, 10),
+      status: category.status.toLowerCase(),
+      onClick: () => navigate(`./${category.id}`),
+      // onDelete: null,
+    };
+  });
 
   const goBack = () => {
     window.history.back();
@@ -520,10 +562,6 @@ export default function CategoryList() {
   //setCategories(categoryList);
   //closeModal();
   //};
-
-  //former attribute list??
-  const [selectedAttributes, setSelectedAttributes] = useState<any[]>([]);
-  const selectAttributeValue = selectedAttributes.join(", ");
 
   const [category, setCategory] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
@@ -697,7 +735,7 @@ export default function CategoryList() {
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
             <form
               onSubmit={handleSubmit}
-              className="w-[500px] h-[450px] pt-14 flex flex-col gap-1 p-3"
+              className="w-[550px] h-[580px] pt-14 flex flex-col gap-1 p-3"
             >
               <div className="flex-start flex justify-between">
                 <h1 className="font-[700] text-xs mb-3 pl-3">
@@ -713,6 +751,9 @@ export default function CategoryList() {
                   onChange={handleInputChange}
                   className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[40px] align-middle"
                 />
+                {formErrors.title && (
+                  <span style={{ color: "red" }}>{formErrors.title}</span>
+                )}
 
                 <select
                   name="parent_category_id"
@@ -847,8 +888,24 @@ export default function CategoryList() {
                   placeholder="Description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[40px] align-middle"
+                  className="no-scrollbar px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[80px] align-middle"
                 />
+                {formErrors.description && (
+                  <span style={{ color: "red" }}>{formErrors.description}</span>
+                )}
+
+                <select
+                  name="business_type"
+                  value={formData.business_type}
+                  onChange={handleInputChange}
+                  className="px-3 py-2 border shadow-sm border-slate-300 placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500 block rounded-[16px] sm:text-sm focus:ring-1 text-center focus:outline-none font-[500] text-xs text-[#B3B7BB] w-[372px] h-[40px] align-middle"
+                >
+                  <option>Select a business type</option>
+                  <option value="merchant">Merchant</option>
+                  <option value="manufacturer">Manufacturer</option>
+                  <option value="seller">Seller</option>
+                </select>
+
                 <div className="flex-center text-center rounded-[16px] border-[1px] border-[#B3B7BB] w-[372px] h-[40px] align-middle">
                   <input
                     className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
@@ -858,32 +915,42 @@ export default function CategoryList() {
                     onChange={handleFileChange}
                   />
                 </div>
-                <label>
-                  Attribute:
-                  <select
-                    name="attribute_ids"
-                    multiple
-                    value={formData.attribute_id.map(String)} // Convert numbers to strings
-                    onChange={handleAttributeChange}
-                  >
-                    {attributes.map((attribute) => (
-                      <option key={attribute.id} value={attribute.id}>
-                        {attribute.attribute_name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <br />
+                {/*Select attributes*/}
                 <MultiSelect
-                  options={attributeoptions}
-                  value={selectedAttribute}
-                  //value={formik.values.parent_category_id}
-                  //onChange={formik.handleChange}
-                  onChange={(e: any) => setSelectedAttribute(e)}
-                  labelledBy="Attributes"
-                  className="text-center border-[#B3B7BB] w-[372px] h-[54px] align-middle"
+                  options={attributes}
+                  selectedValues={selectedIds.map((id) =>
+                    attributes.find((item) => item.id === id)
+                  )}
+                  onSelect={handleSelectAttribute}
+                  onRemove={handleRemoveAttribute}
+                  displayValue="attribute_name"
+                  showCheckbox={true}
+                  placeholder="                    Select Attributes"
+                  style={{
+                    chips: {
+                      background: "#D65D5B",
+                    },
+                    multiselectContainer: {
+                      color: "#B3B7BB",
+                      width: "372px",
+                    },
+                    searchBox: {
+                      //width: "500px",
+                      //height: "10px",
+                      //border: "2px",
+                      //"border-bottom": "red",
+                      //border: 'none',
+                      "border-radius": "16px",
+                    },
+                  }}
                 />
-                <div className="flex flex-row space-x-2 align-middle justify-center text-center">
+                {formErrors.attribute_id && (
+                  <span style={{ color: "red" }}>
+                    {formErrors.attribute_id}
+                  </span>
+                )}
+
+                <div className="mt-10 flex flex-row space-x-2 align-middle justify-center text-center">
                   <p className=" font-[700] text-sm">Status</p>
                   <div>
                     <label className="switch">
@@ -902,7 +969,9 @@ export default function CategoryList() {
                   type="submit"
                   className="flex-center text-center rounded-[16px] border-[1px] bg-[#D65D5B] w-[267px] h-[54px] cursor-pointer"
                 >
-                  <p className="mt-1 font-[700] text-sm text-[#fff]">Done</p>
+                  <p className="mt-1 mb-2 font-[700] text-sm text-[#fff]">
+                    Done
+                  </p>
                 </button>
               </div>
             </form>
