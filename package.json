@@ -16,8 +16,6 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.37",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
     "autoprefixer": "^10.4.14",
     "axios": "^1.5.1",
     "formik": "^2.4.5",
@@ -61,6 +59,9 @@
     ]
   },
   "devDependencies": {
-    "@iconify/react": "^4.1.1"
+    "@iconify/react": "^4.1.1",
+    "@types/react": "^18.2.42",
+    "@types/react-dom": "^18.2.17",
+    "multiselect-react-dropdown": "^2.0.25"
   }
 }
