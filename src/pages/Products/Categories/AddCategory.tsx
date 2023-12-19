@@ -290,7 +290,7 @@ export default function AddCategory() {
                     <FormControlLabel
                       control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
                       label=""
-                      onChange={()=>{}}
+                      onChange={() => { }}
                     />
                   </div>
                 </div>
@@ -472,7 +472,7 @@ export default function AddCategory() {
                     onChange={(e) => handleImageChange(e)}
                   />
                   <label htmlFor="files"
-                  className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
+                    className="text-center focus:outline-none border-none w-[90%] font-[700] text-sm text-[#B3B7BB]"
                   >Select file</label>
                 </div>
                 <button 

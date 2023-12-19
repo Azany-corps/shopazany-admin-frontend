@@ -30,15 +30,23 @@ const PopUpModal: React.FC<Props> = ({ isOpen, onClose, children }) => {
   return (
     <>
       {isOpen && (
+<<<<<<< HEAD
         <div className="fixed inset-0 no-scrollbar overflow-scroll z-10 flex items-center justify-center">
+=======
+        <div className="fixed inset-0 z-10 flex items-center justify-center">
+>>>>>>> attribute-page-update
           <div className="transition-opacity" aria-hidden="true">
             <div className="bg-[black] opacity-30 absolute inset-0"></div>
           </div>
 
+<<<<<<< HEAD
           <div className=" bg-[white] rounded-[30px] no-scrollbar overflow-auto shadow-xl transform transition-all modal-content">
+=======
+          <div className=" bg-[white] rounded-[30px] overflow-hidden shadow-xl transform transition-all modal-content">
+>>>>>>> attribute-page-update
             <div className="bg-[white]">
               <div
-                className="cancel absolute top-6 right-6 cursor-pointer"
+                className="cancel absolute z-40 top-6 right-6 cursor-pointer"
                 onClick={onClose}
               >
                 <svg

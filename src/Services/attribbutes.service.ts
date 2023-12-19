@@ -12,7 +12,8 @@ interface AttributeItem {
 
 const apiUrl = "https://test.shopazany.com/api/auth/admin/store/";
 
-const sendRequest = async (method: string, endpoint: string, data = {}) => {
+const sendRequest = async (method: string, endpoint: string, data = {}, err = false) => {
+  console.log(err);
   const config = {
     method: method,
     maxBodyLength: Infinity,
@@ -39,7 +40,7 @@ const sendRequest = async (method: string, endpoint: string, data = {}) => {
     }
     return response;
   } catch (error: any) {
-    if (method === 'put' || method === 'post' || method === 'delete') {
+    if (method === 'put' || method === 'post' || method === 'delete' || err === true) {
       if (error.response.data.status_code === 422) {
         toast.warning(error.response.data.message, {
           position: "top-center",
@@ -66,7 +67,7 @@ const getAttributeById = (id: number | string) => {
 };
 
 const getAttributeByStatus = (status: string) => {
-  return sendRequest("get", `fetch_attributes_by_status/${status}`);
+  return sendRequest("get", `fetch_attributes_by_status/${status}`, {}, true);
 };
 
 const createAttribute = (

@@ -15,6 +15,11 @@ import {
   getAttributeByStatus
 } from "../../../Services/attribbutes.service";
 
+//switch
+import { styled } from "@mui/material/styles";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch, { SwitchProps } from "@mui/material/Switch";
+
 interface AttributeData {
   id: number | string;
   attribute_name: string;
@@ -120,6 +125,20 @@ export default function AttributeList() {
     dispatch({ type: 'update', payload })
   }
 
+  function convertDateFormat(inputDate: any) {
+    const inputDateObj = new Date(inputDate);
+
+    // Extract date components
+    const day = inputDateObj.getUTCDate();
+    const month = inputDateObj.getUTCMonth() + 1; // Months are 0-indexed
+    const year = inputDateObj.getUTCFullYear();
+
+    // Format the date components
+    const formattedDate = `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
+
+    return formattedDate;
+  }
+
   const handleAttributeChange = (event: ChangeEvent<HTMLInputElement>) => {
     const key = event.currentTarget.name;
     const value = event.currentTarget.value
@@ -209,7 +228,6 @@ export default function AttributeList() {
     setIsFilterModalOpen(!isFilterModalOpen);
   };
 
-
   const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
@@ -265,7 +283,7 @@ export default function AttributeList() {
       //   )
       // },
       count_category: attribute.count_category,
-      created_at: attribute.created_at,
+      created_at: convertDateFormat(attribute.created_at),
       onClick: () => openUpdateModal(attribute.id),
     };
   });
@@ -274,9 +292,67 @@ export default function AttributeList() {
     { field: "attribute", headerName: "Attributes", width: 200 },
     { field: "items", headerName: "Items", width: 200 },
     { field: "count_category", headerName: "Category Count  ", width: 200 },
-    { field: "created_at", headerName: "Date Added", width: 300 },
+    { field: "created_at", headerName: "Date Added", width: 150 },
     { field: "status", headerName: "STATUS", width: 200 },
   ];
+
+  const IOSSwitch = styled((props: SwitchProps) => (
+    <Switch
+      focusVisibleClassName=".Mui-focusVisible"
+      disableRipple
+      {...props}
+    />
+  ))(({ theme }) => ({
+    width: 36,
+    height: 20,
+    padding: 0,
+    "& .MuiSwitch-switchBase": {
+      padding: 0,
+      margin: 2,
+      transitionDuration: "300ms",
+      "&.Mui-checked": {
+        transform: "translateX(16px)",
+        color: "#000",
+        "& + .MuiSwitch-track": {
+          backgroundColor:
+            theme.palette.mode === "dark" ? "#D65D5B" : "#D65D5B",
+          opacity: 1,
+          border: 0,
+        },
+        "&.Mui-disabled + .MuiSwitch-track": {
+          opacity: 0.5,
+        },
+      },
+      "&.Mui-focusVisible .MuiSwitch-thumb": {
+        color: "#33cf4d",
+        border: "6px solid #000",
+      },
+      "&.Mui-disabled .MuiSwitch-thumb": {
+        color:
+          theme.palette.mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.grey[600],
+      },
+      "&.Mui-disabled + .MuiSwitch-track": {
+        opacity: theme.palette.mode === "light" ? 0.7 : 0.3,
+      },
+    },
+    "& .MuiSwitch-thumb": {
+      boxSizing: "border-box",
+      width: 17,
+      height: 17,
+    },
+    "& .MuiSwitch-track": {
+      borderRadius: 26 / 2,
+      backgroundColor: theme.palette.mode === "light" ? "#E9E9EA" : "#39393D",
+      opacity: 1,
+      transition: theme.transitions.create(["background-color"], {
+        duration: 500,
+      }),
+    },
+  }));
+
+
 
   const removeItem = (index: number) => {
     const payload = {
@@ -354,15 +430,15 @@ export default function AttributeList() {
           </div>
           <div className="flex justify-center gap-8 items-center w-[75%]">
             <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-xs placeholder:text-[#B3B7BB] placeholder:font-bold py-3 bg-[transparent]" type="text" placeholder="Search" />
-            <div className="flex relative border justify-center items-center w-[60%] border-[#B3B7BB] rounded-2xl text-xs text-[#B3B7BB] font-bold py-[15px]">
-              <p onClick={toggleFilterModal} className="hover:cursor-pointer">
+            <div onClick={toggleFilterModal} className="flex hover:cursor-pointer relative border justify-center items-center w-[60%] border-[#B3B7BB] rounded-2xl text-xs text-[#B3B7BB] font-bold py-[15px]">
+              <p className="">
                 Filter
               </p>
               {
                 isFilterModalOpen && (
                   <div className="flex absolute top-14 z-40 shadow-md text-sm text-[#000] bg-white flex-col py-2 w-full rounded-2xl justify-center items-center">
-                    <span onClick={() => getAttributesByStatus("Active")} className="w-full text-center py-2">Active</span>
-                    <span onClick={() => getAttributesByStatus("Inactive")} className="w-full text-center py-2">Inactive</span>
+                    <span onClick={() => getAttributesByStatus("Active")} className="w-full text-center py-2 hover:cursor-pointer hover:bg-[#d0d0d0]">Active</span>
+                    <span onClick={() => getAttributesByStatus("Inactive")} className="w-full text-center py-2 hover:cursor-pointer hover:bg-[#d0d0d0]">Inactive</span>
                   </div>
                 )
               }
