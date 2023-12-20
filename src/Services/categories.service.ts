@@ -52,7 +52,8 @@ const deleteCategory = async (id: number | string) => {
     const config = {
       method: "delete",
       maxBodyLength: Infinity,
-      url: `https://test.shopazany.com/api/auth/admin/store/delete_store_category/${id}`,
+      //url: `https://test.shopazany.com/api/auth/admin/store/delete_store_category/${id}`,
+      url: `https://test.shopazany.com/auth/admin/delete_category/${id}`,
       headers: {
         Authorization: getBearerToken(),
         "Content-Type": "multipart/form-data",
