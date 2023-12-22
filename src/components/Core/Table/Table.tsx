@@ -7,14 +7,18 @@ import Pagination from './Pagination';
 
 interface TableProps {
     headers: string[];
-    data: ReactNode[][]; // Array of objects representing table rows
+    data: any; // Array of objects representing table rows
     itemsPerPage?: number;
+    search?: boolean;
 }
 
-const Table: React.FC<TableProps> = ({ headers, data, itemsPerPage = 5 }) => {
+const Table: React.FC<TableProps> = ({ headers, data, itemsPerPage = 10, search = false }) => {
+    const sortData = (data: any) => {
+        return [...data.map((dat: any, index: number) => [...Object.values(dat).map((item: any, index: number) => item)])]
+    }
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortedData, setSortedData] = useState([...data]);
+    const [sortedData, setSortedData] = useState([...sortData(data)]);
 
     // Update displayed data when sortedData, searchTerm, or currentPage changes
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -25,28 +29,25 @@ const Table: React.FC<TableProps> = ({ headers, data, itemsPerPage = 5 }) => {
         console.log('dd: ', currentPage)
     }, [currentPage]); // Update sortedData when data changes
 
-    // useEffect(() => {
-    //     // Searching logic
-
-    //     setSortedData(updatedFilteredData);
-    //     setCurrentPage(1); // Reset to the first page when search term changes
-    // }, [searchTerm]);
-
     const handlePageChange = (page: number) => {
         console.log(page)
         setCurrentPage(page);
     };
 
     return (
-        <div className='flex flex-col items-start gap-4 w-full'>
-            <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="p-2"
-            />
-            <table className="border-collapse border-none w-full">
+        <div className='flex flex-col items-start w-full gap-4'>
+            {
+                search && (
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="p-2"
+                    />
+                )
+            }
+            <table className="w-full border-collapse border-none">
                 <TableHeader headers={headers} />
                 <tbody>
                     {currentData.map((row, index) => (

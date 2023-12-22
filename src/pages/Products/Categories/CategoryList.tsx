@@ -437,7 +437,7 @@ export default function CategoryList() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="flex w-full flex-col gap-4">
+                  <div className="flex flex-col w-full gap-4">
                     <TextColorizer
                       attributes={attributes}
                       onAttributesChange={handleAttributesChange}
