@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Layout from "../../components/Core/Layout";
 import LayoutComp from "../../components/Core/LayoutComp";
 
@@ -6,8 +6,31 @@ import { Icon } from "@iconify/react";
 import Profile from "../../components/Sellers/Profile";
 import Subscription from "../../components/Sellers/Subscription";
 import Feedback from "../../components/Sellers/Feedback";
+import Table from "../../components/Core/Table/Table";
 
 const Seller = () => {
+  const [activeTab, setActiveTab] = useState<number>(1)
+  const headers = ['Product name', 'Category', 'Status', 'Action'];
+  const handleTabChange = (index: number) => {
+    setActiveTab(index)
+  }
+  const tdata = [
+    {
+      product_name: 'Gucci bag',
+      category: 'Clothing',
+      status: 'Status',
+      action: <div className="bg-slate-400 text-white px-3 py-2">Custom Content</div>
+    },
+    {
+      product_name: 'Gucci bag',
+      category: 'Clothing',
+      status: 'Status',
+      action: <div className="bg-slate-400 text-white px-3 py-2">Custom</div>
+    },
+  ];
+
+  const data = [...tdata.map((dat, index) => [...Object.values(dat).map((item, index) => item)])]
+  console.log('data: ', data)
   return (
     <>
       <LayoutComp title={'Manage Seller'}>
@@ -15,7 +38,9 @@ const Seller = () => {
           <div className="flex flex-col items-start gap-6 bg-white py-5 px-3 rounded-3xl">
             <h2 className="text-[#0F60FF] font-medium">Store Details</h2>
             <div className="flex gap-4 items-start">
-              <div className="flex h-[264px] w-[209px] bg-slate-300"></div>
+              <div className="flex h-[264px] w-[209px] bg-slate-300 rounded-[20px] relative">
+                <span className="py-3 absolute text-xs w-[90%] bottom-3 left-1/2 -translate-x-1/2 z-10 rounded-3xl text-center bg-white/50 backdrop:blur-md">Shop logo</span>
+              </div>
               <div className="flex gap-12">
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-4 items-start text-left font-semibold">
@@ -115,8 +140,22 @@ const Seller = () => {
               </div>
             </div>
           </div>
-          <div className="flex">
-
+          <div className="flex flex-col items-start gap-6 bg-white py-5 px-3 rounded-3xl">
+            <div className="flex items-end gap-6">
+              <div onClick={() => handleTabChange(1)} className={`flex hover:cursor-pointer items-end pb-1 gap-2 font-bold ${activeTab === 1 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>New Listings</p>
+                <span className={`text-white font-normal bg-[#0F60FF] rounded-full px-1 ${activeTab === 1 ? '' : 'opacity-40'}`}>9+</span>
+              </div>
+              <div onClick={() => handleTabChange(2)} className={`flex hover:cursor-pointer items-end pb-1 gap-2 font-bold ${activeTab === 2 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Approved</p>
+                <span className={`text-white font-normal bg-[#0F60FF] rounded-full px-1 ${activeTab === 2 ? '' : 'opacity-40'}`}>9+</span>
+              </div>
+              <div onClick={() => handleTabChange(3)} className={`flex hover:cursor-pointer items-end pb-1 gap-2 font-bold ${activeTab === 3 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Rejected</p>
+                <span className={`text-white font-normal bg-[#0F60FF] rounded-full px-1 ${activeTab === 3 ? '' : 'opacity-40'}`}>9+</span>
+              </div>
+            </div>
+            <Table headers={headers} data={data} />
           </div>
         </div>
       </LayoutComp>
