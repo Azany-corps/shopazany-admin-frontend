@@ -18,7 +18,7 @@ import Product from "./pages/Products/Product";
 import Customer from "./pages/Customers/Customer";
 import SupportTicket from "./pages/Messages/Support";
 import Notification from "./pages/Messages/Notification";
-import CategoryList from "./pages/Products/Categories/CategoryList Old";
+import CategoryList from "./pages/Products/Categories/CategoryList";
 import CategoryListO from "./pages/Products/Categories/CategoryList";
 import AddCategory from "./pages/Products/Categories/AddCategory";
 import { ToastContainer } from "react-toastify";
@@ -42,8 +42,7 @@ function App() {
         </Route>
         <Route path="/sellers">
           <Route index element={<Sellers />} />
-          {/* <Route path=":id" element={<Sellers />} /> */}
-          <Route path="seller" element={<Seller />} />
+          <Route path=":id" element={<Seller />} />
           <Route path="store" element={<Store />} />
           <Route path="transactions" element={<StoreTransactions />} />
           <Route path="orders" element={<StoreOrders />} />
