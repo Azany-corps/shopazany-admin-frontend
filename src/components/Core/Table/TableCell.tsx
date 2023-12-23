@@ -7,8 +7,7 @@ interface TableCellProps {
 }
 
 const TableCell: React.FC<TableCellProps> = ({ children }) => {
-    console.log('chil: ', children);
-    return <td className="border-none p-2">{children}</td>;
+    return <td className="p-2 border-none">{children}</td>;
 };
 
 export default TableCell;

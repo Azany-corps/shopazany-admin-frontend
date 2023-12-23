@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import Layout from "../../components/Core/Layout";
 import LayoutComp from "../../components/Core/LayoutComp";
-
+import axios from "axios";
 import { Icon } from "@iconify/react";
 import Profile from "../../components/Sellers/Profile";
 import Subscription from "../../components/Sellers/Subscription";
 import Feedback from "../../components/Sellers/Feedback";
 import Table from "../../components/Core/Table/Table";
+import { useParams } from "react-router-dom";
+import { approveSeller, suspendSeller } from "../../Services/seller.service";
+import { error } from "console";
 
 interface IProduct {
   product_name: string;
@@ -15,41 +18,134 @@ interface IProduct {
   action: string;
 }
 const Seller = () => {
+  let { id } = useParams<string>()
   const [activeTab, setActiveTab] = useState<number>(1)
-  const [products, setProducts] = useState<IProduct[]>([
-    {
-      product_name: 'Gucci bag',
-      category: 'Clothin',
-      status: 'Status',
-      action: 'Action'
-    },
-    {
-      product_name: 'Gucci bag 2',
-      category: 'Clothing',
-      status: 'Status',
-      action: 'Action'
-    }
-  ])
+  const [seller, setSeller] = useState<any>({})
+  const [products, setProducts] = useState<IProduct[]>([])
+  const [rowData, setRowData] = useState<any>([])
+  const [status, setStatus] = useState<string>('')
   const headers = ['Product name', 'Category', 'Status', 'Action'];
   const handleTabChange = (index: number) => {
     setActiveTab(index)
   }
 
-  const rowData = products.map((data, index) => {
-    return {
-      product_name: (
-        <div className="flex items-center gap-3">
-          <span className=" h-[35px] rounded-full overflow-hidden bg-red-400 w-[35px]">
-            <img className="object-cover w-full h-full" src="" alt="" />
-          </span>
-          <p className="text-[13px] font-medium">{data.product_name}</p>
-        </div>
-      ),
-      category_name: <p className="text-[#555F7E] text-[13px]">{data.category}</p>,
-      status: <p className="text-[#FFAD33] text-[13px]">{data.status}</p>,
-      action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
-    }
-  })
+
+
+  // const rowData = products.map((data, index) => {
+  //   return {
+  //     product_name: (
+  //       <div className="flex items-center gap-3">
+  //         <span className=" h-[35px] rounded-full overflow-hidden bg-red-400 w-[35px]">
+  //           <img className="object-cover w-full h-full" src="" alt="" />
+  //         </span>
+  //         <p className="text-[13px] font-medium">{data.product_name}</p>
+  //       </div>
+  //     ),
+  //     category_name: <p className="text-[#555F7E] text-[13px]">{data.category}</p>,
+  //     status: <p className="text-[#FFAD33] text-[13px]">{data.status}</p>,
+  //     action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
+  //   }
+  // })
+
+  useEffect(() => {
+    console.log('pr: ', products)
+    const rowData = products.map((data, index) => {
+      return {
+        product_name: (
+          <div className="flex items-center gap-3">
+            <span className=" h-[35px] rounded-full overflow-hidden bg-red-400 w-[35px]">
+              <img className="object-cover w-full h-full" src="" alt="" />
+            </span>
+            <p className="text-[13px] font-medium">{data.product_name}</p>
+          </div>
+        ),
+        category_name: <p className="text-[#555F7E] text-[13px]">{data.category}</p>,
+        status: <p className="text-[#FFAD33] text-[13px]">{data.status}</p>,
+        action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
+      }
+    })
+    console.log('row: ', rowData)
+    setRowData(rowData);
+  }, [products])
+
+  useEffect(() => {
+    getSellerProducts(id);
+  }, [])
+
+  useEffect(() => {
+    getSellerDetails(id);
+  }, [status])
+
+
+  const handleApprove = () => {
+    approveSeller(id).then((res: any) => {
+      console.log(res)
+      setStatus('Active');
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
+  const handleSuspend = () => {
+    suspendSeller(id).then((res: any) => {
+      console.log(res)
+      setStatus('Suspended');
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
+  const getSellerProducts = (id: string | undefined) => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://test.shopazany.com/api/auth/admin/sellers/products/all/${id}`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log('res: ', response.data.all_user_products);
+        const products: IProduct[] = response.data.all_user_products.map((product: IProduct, index: number) => {
+          return {
+            product_name: product.product_name,
+            category: product.category,
+            status: product.status,
+            action: 'action'
+          }
+        });
+
+        setProducts(products);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+
+  const getSellerDetails = (id: string | undefined) => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://test.shopazany.com/api/auth/admin/sellers/details/${id}`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log('res: ', response.data.seller);
+        setSeller(response.data.seller);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <>
@@ -78,8 +174,12 @@ const Seller = () => {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <button className="rounded-[16px] text-white bg-[#279F51] px-[10px] py-2">Approve</button>
-                    <button className="rounded-[16px] bg-transparent border border-[#D65D5B] px-[10px] py-2">Approve</button>
+                    {seller.status !== 'Active' && (
+                      <button onClick={handleApprove} className="rounded-[16px] text-white bg-[#279F51] px-[10px] py-2">Approve</button>
+                    )}
+                    {seller.status !== 'Suspended' && (
+                      <button onClick={handleSuspend} className="rounded-[16px] bg-transparent border border-[#D65D5B] px-[10px] py-2">Suspend</button>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col font-semibold">

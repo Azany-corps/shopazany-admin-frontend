@@ -13,12 +13,10 @@ interface TableProps {
 }
 
 const Table: React.FC<TableProps> = ({ headers, data, itemsPerPage = 10, search = false }) => {
-    const sortData = (data: any) => {
-        return [...data.map((dat: any, index: number) => [...Object.values(dat).map((item: any, index: number) => item)])]
-    }
+    console.log(data)
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortedData, setSortedData] = useState([...sortData(data)]);
+    const [sortedData, setSortedData] = useState<any>([]);
 
     // Update displayed data when sortedData, searchTerm, or currentPage changes
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -26,8 +24,8 @@ const Table: React.FC<TableProps> = ({ headers, data, itemsPerPage = 10, search 
     const currentData = sortedData.slice(startIndex, endIndex);
 
     useEffect(() => {
-        console.log('dd: ', currentPage)
-    }, [currentPage]); // Update sortedData when data changes
+        setSortedData([...data.map((dat: any, index: number) => [...Object.values(dat).map((item: any, index: number) => item)])])
+    }, [data]);
 
     const handlePageChange = (page: number) => {
         console.log(page)
@@ -49,10 +47,15 @@ const Table: React.FC<TableProps> = ({ headers, data, itemsPerPage = 10, search 
             }
             <table className="w-full border-collapse border-none">
                 <TableHeader headers={headers} />
-                <tbody>
-                    {currentData.map((row, index) => (
-                        <TableRow key={index} row={row} />
-                    ))}
+                <tbody className='w-full'>
+                    {
+                        currentData.length > 0 ?
+                            currentData.map((row: any, index: number) => (
+                                <TableRow key={index} row={row} />
+                            )) : (
+                                <div className="w-full py-6 text-2xl font-semibold text-center">No Product Found</div>
+                            )
+                    }
                 </tbody>
             </table>
             <div className="flex justify-end w-full">
