@@ -267,15 +267,15 @@ const Seller = () => {
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Registered company name</h4>
-                      <p className="text-xs">{seller.company_name || 'Nil'}</p>
+                      <p className="text-xs">{seller.business_details?.company_name || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">CAC registration number</h4>
-                      <p className="text-xs">{seller.cac_registration_number || 'Nil'}</p>
+                      <p className="text-xs">{seller.business_details?.cac_registration_number || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Tax Identification number</h4>
-                      <p className="text-xs">{seller.tin || 'Nil'}</p>
+                      <p className="text-xs">{seller.business_details?.tin || 'Nil'}</p>
                     </div>
                   </div>
                 </div>
@@ -284,11 +284,11 @@ const Seller = () => {
                   <div className="flex flex-col items-start gap-4 text-left">
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Phone Number</h4>
-                      <p className="text-xs">{seller.phone || 'Nil'}</p>
+                      <p className="text-xs">{seller.business_details?.company_phone || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Additional Number</h4>
-                      <p className="text-xs">{seller.company_additional_phone || 'Nil'}</p>
+                      <p className="text-xs">{seller.business_details?.company_additional_phone || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Email</h4>
