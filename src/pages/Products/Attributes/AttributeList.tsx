@@ -420,12 +420,8 @@ export default function AttributeList() {
     <>
       <LayoutComp title="Attributes and Specification">
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          {/* <div className="flex justify-between items-center">
-            <div className="flex gap-3">
-              <p className="text-[36px] font-bold">Product Attributes</p>
-            </div>
-          </div> */}
-          <div className="flex mt-4 flex-row items-center gap-4">
+
+          <div className="flex flex-row items-center gap-4 mt-4">
             <Badge badgeData={badgeData} />
           </div>
           <div className="flex justify-center gap-8 items-center w-[75%]">
@@ -486,17 +482,17 @@ export default function AttributeList() {
           </PopUpModal>
           <PopUpModal isOpen={isModalOpen} onClose={closeModal}>
             <div className="flex flex-col justify-between min-h-[500px] gap-3 py-4 px-4">
-              {/* <form className="flex h-full flex-col justify-between" action=""> */}
-              <div className="flex flex-col pt-14 gap-3 px-14">
+              {/* <form className="flex flex-col justify-between h-full" action=""> */}
+              <div className="flex flex-col gap-3 pt-14 px-14">
                 <div className="flex justify-center items-center gap-1 w-full bg-[#efefef] p-4 rounded-lg pr-32">
                   <label className="font-bold" htmlFor="name">Attributes</label>
                   <input className="rounded-2xl border-none outline-none placeholder:text-left px-3 bg-[transparent] placeholder:text-[#B3B7BB] placeholder:font-semibold" onChange={handleInputChange} name={"attribute_name"} value={attribute.attribute_name} placeholder="Enter Attribute Name" type="text" />
                 </div>
                 <div className="flex w-full">
-                  <div className="flex flex-col justify-center  mt-6 items-center gap-2">
+                  <div className="flex flex-col items-center justify-center gap-2 mt-6">
                     {
                       attribute.attribute_items.map((attribute_item: any, index: number) => (
-                        <div className="flex w-full justify-start items-center gap-2">
+                        <div className="flex items-center justify-start w-full gap-2">
                           <input onChange={handleAttributeChange} className="border py-1 outline-none border-[#B3B7BB] rounded-2xl placeholder:text-left placeholder:text-[#B3B7BB] placeholder:text-[8.78px] placeholder:font-bold px-5" value={attribute_item} id={`attribute_items__${index}`} name={`attribute_items__${index}`} type="text" />
                           <div onClick={() => removeItem(index)} className="rounded-full bg-#efefef] p-2">
                             <Icon icon="ic:round-delete" color="#d65d5b" width="15" height="15" />
@@ -508,7 +504,7 @@ export default function AttributeList() {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center gap-7">
+              <div className="flex items-center justify-center gap-7">
                 <button className="py-[15px] text-xs bg-[transparent] w-[25%] border border-[#D65D5B] text-[#000] text-center rounded-2xl font-bold">Save as draft</button>
                 <button onClick={saveAttribute} className="py-[15px] text-xs w-[25%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Create</button>
               </div>
@@ -517,17 +513,17 @@ export default function AttributeList() {
           </PopUpModal>
           <PopUpModal isOpen={isUpdateModalOpen} onClose={closeUpdateModal}>
             <div className="flex flex-col justify-between min-h-[500px] gap-3 py-4 px-4">
-              {/* <form className="flex h-full flex-col justify-between" action=""> */}
-              <div className="flex flex-col pt-14 gap-3 px-14">
+              {/* <form className="flex flex-col justify-between h-full" action=""> */}
+              <div className="flex flex-col gap-3 pt-14 px-14">
                 <div className="flex justify-center items-center gap-1 w-full bg-[#efefef] p-4 rounded-lg pr-32">
                   <label className="font-bold" htmlFor="name">Attributes</label>
                   <input className="rounded-2xl border-none outline-none placeholder:text-left px-3 bg-[transparent] placeholder:text-[#B3B7BB] placeholder:font-semibold" onChange={handleInputChange} name={"attribute_name"} value={attribute.attribute_name} placeholder="Enter Attribute Name" type="text" />
                 </div>
                 <div className="flex w-full">
-                  <div className="flex flex-col justify-center  mt-6 items-center gap-2">
+                  <div className="flex flex-col items-center justify-center gap-2 mt-6">
                     {
                       attribute.attribute_items.map((attribute_item: any, index: number) => (
-                        <div className="flex w-full justify-start items-center gap-2">
+                        <div className="flex items-center justify-start w-full gap-2">
                           <input onChange={handleAttributeChange} className="border py-1 outline-none border-[#B3B7BB] rounded-2xl placeholder:text-left placeholder:text-[#B3B7BB] placeholder:text-[8.78px] placeholder:font-bold px-5" value={attribute_item} id={`attribute_items__${index}`} name={`attribute_items__${index}`} type="text" />
                           <div onClick={() => removeItem(index)} className="rounded-full bg-#efefef] p-2">
                             <Icon icon="ic:round-delete" color="#d65d5b" width="15" height="15" />
@@ -539,7 +535,7 @@ export default function AttributeList() {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center gap-7">
+              <div className="flex items-center justify-center gap-7">
                 <button onClick={delAttribute} className="py-[15px] text-xs bg-[transparent] w-[25%] border border-[#D65D5B] text-[#000] text-center rounded-2xl font-bold">Delete attribute</button>
                 <button onClick={updateAttribute} className="py-[15px] text-xs w-[25%] bg-[#D65D5B] text-[#fff] text-center rounded-2xl font-bold">Save Changes</button>
               </div>

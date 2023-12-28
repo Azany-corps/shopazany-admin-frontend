@@ -8,8 +8,10 @@ import Subscription from "../../components/Sellers/Subscription";
 import Feedback from "../../components/Sellers/Feedback";
 import Table from "../../components/Core/Table/Table";
 import { useParams } from "react-router-dom";
-import { approveSeller, suspendSeller } from "../../Services/seller.service";
+import { approveSeller, getSellerActiveProducts, getSellerBlockedProducts, getSellerPendingProducts, getSellerRejectedProducts, suspendSeller } from "../../Services/seller.service";
 import { error } from "console";
+import { parseStatus, parseStatusColor } from "../../Utils/status";
+import { ITableCol } from "../../components/Core/Table/types";
 
 interface IProduct {
   product_name: string;
@@ -17,6 +19,7 @@ interface IProduct {
   status: string;
   action: string;
 }
+
 const Seller = () => {
   let { id } = useParams<string>()
   const [activeTab, setActiveTab] = useState<number>(1)
@@ -24,31 +27,17 @@ const Seller = () => {
   const [products, setProducts] = useState<IProduct[]>([])
   const [rowData, setRowData] = useState<any>([])
   const [status, setStatus] = useState<string>('')
-  const headers = ['Product name', 'Category', 'Status', 'Action'];
+  const headers: ITableCol[] = [
+    { field: 'product_name', headerName: 'Product name' },
+    { field: 'category', headerName: 'Category' },
+    { field: 'status', headerName: 'Status' },
+    { field: 'action', headerName: 'Action' }
+  ];
   const handleTabChange = (index: number) => {
     setActiveTab(index)
   }
 
-
-
-  // const rowData = products.map((data, index) => {
-  //   return {
-  //     product_name: (
-  //       <div className="flex items-center gap-3">
-  //         <span className=" h-[35px] rounded-full overflow-hidden bg-red-400 w-[35px]">
-  //           <img className="object-cover w-full h-full" src="" alt="" />
-  //         </span>
-  //         <p className="text-[13px] font-medium">{data.product_name}</p>
-  //       </div>
-  //     ),
-  //     category_name: <p className="text-[#555F7E] text-[13px]">{data.category}</p>,
-  //     status: <p className="text-[#FFAD33] text-[13px]">{data.status}</p>,
-  //     action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
-  //   }
-  // })
-
   useEffect(() => {
-    console.log('pr: ', products)
     const rowData = products.map((data, index) => {
       return {
         product_name: (
@@ -60,17 +49,71 @@ const Seller = () => {
           </div>
         ),
         category_name: <p className="text-[#555F7E] text-[13px]">{data.category}</p>,
-        status: <p className="text-[#FFAD33] text-[13px]">{data.status}</p>,
+        status: <p className={`text-[${parseStatusColor(data.status)}] text-[13px]`}>{parseStatus(data.status)}</p>,
         action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
       }
     })
-    console.log('row: ', rowData)
     setRowData(rowData);
   }, [products])
 
   useEffect(() => {
-    getSellerProducts(id);
-  }, [])
+    if (activeTab === 1) {
+      getSellerPendingProducts(id).then((response: any) => {
+        const products: IProduct[] = response.data.user_pending_products.map((product: IProduct, index: number) => {
+          return {
+            product_name: product.product_name,
+            category: product.category,
+            status: product.status,
+            action: 'action'
+          }
+        });
+
+        setProducts(products);
+      })
+    }
+    if (activeTab === 2) {
+      getSellerActiveProducts(id).then((response: any) => {
+        const products: IProduct[] = response.data.user_active_products.map((product: IProduct, index: number) => {
+          return {
+            product_name: product.product_name,
+            category: product.category,
+            status: product.status,
+            action: 'action'
+          }
+        });
+
+        setProducts(products);
+      })
+    }
+    if (activeTab === 3) {
+      getSellerBlockedProducts(id).then((response: any) => {
+        const products: IProduct[] = response.data.user_blocked_products.map((product: IProduct, index: number) => {
+          return {
+            product_name: product.product_name,
+            category: product.category,
+            status: product.status,
+            action: 'action'
+          }
+        });
+
+        setProducts(products);
+      })
+    }
+    if (activeTab === 4) {
+      getSellerRejectedProducts(id).then((response: any) => {
+        const products: IProduct[] = response.data.user_rejected_products.map((product: IProduct, index: number) => {
+          return {
+            product_name: product.product_name,
+            category: product.category,
+            status: product.status,
+            action: 'action'
+          }
+        });
+
+        setProducts(products);
+      })
+    }
+  }, [activeTab])
 
   useEffect(() => {
     getSellerDetails(id);
@@ -79,7 +122,6 @@ const Seller = () => {
 
   const handleApprove = () => {
     approveSeller(id).then((res: any) => {
-      console.log(res)
       setStatus('Active');
     }).catch((error) => {
       console.log(error);
@@ -88,7 +130,6 @@ const Seller = () => {
 
   const handleSuspend = () => {
     suspendSeller(id).then((res: any) => {
-      console.log(res)
       setStatus('Suspended');
     }).catch((error) => {
       console.log(error);
@@ -99,7 +140,7 @@ const Seller = () => {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `https://test.shopazany.com/api/auth/admin/sellers/products/all/${id}`,
+      url: `https://test.shopazany.com/api/auth/admin/sellers/products/pending/${id}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -108,7 +149,6 @@ const Seller = () => {
     axios
       .request(config)
       .then((response) => {
-        console.log('res: ', response.data.all_user_products);
         const products: IProduct[] = response.data.all_user_products.map((product: IProduct, index: number) => {
           return {
             product_name: product.product_name,
@@ -139,7 +179,6 @@ const Seller = () => {
     axios
       .request(config)
       .then((response) => {
-        console.log('res: ', response.data.seller);
         setSeller(response.data.seller);
       })
       .catch((error) => {
@@ -162,15 +201,15 @@ const Seller = () => {
                   <div className="flex flex-col items-start gap-4 font-semibold text-left">
                     <div className="flex flex-col">
                       <h3 className="font-semibold text-sm text-[#909090]">Shop name</h3>
-                      <p className="">Getfit Technologies</p>
+                      <p className="">{seller.shop_name}</p>
                     </div>
                     <div className="flex flex-col">
                       <h3 className="font-semibold text-sm text-[#909090]">Status</h3>
-                      <p className="text-[#FFC600]">Pending</p>
+                      <p className="text-[#FFC600]">{seller.status}</p>
                     </div>
                     <div className="flex flex-col">
                       <h3 className="font-semibold text-sm text-[#909090]">Business type</h3>
-                      <p className="">Individual</p>
+                      <p className="">{seller.business_type}</p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -187,27 +226,27 @@ const Seller = () => {
                   <div className="flex flex-col items-start gap-4 text-left">
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Account managers first name </h4>
-                      <p className="text-xs">Emmanuel</p>
+                      <p className="text-xs">{seller.first_name}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Account managers middle name </h4>
-                      <p className="text-xs">Johnathan</p>
+                      <p className="text-xs">{seller.middle_name || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Account managers last name </h4>
-                      <p className="text-xs">Emmanuel</p>
+                      <p className="text-xs">{seller.last_name || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Account number</h4>
-                      <p className="text-xs">345678980</p>
+                      <p className="text-xs">{seller.bank_account_details?.account_number}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Bank</h4>
-                      <p className="text-xs">First bank</p>
+                      <p className="text-xs">{seller.bank_account_details?.bank_name}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Country</h4>
-                      <p className="text-xs">Nigeria</p>
+                      <p className="text-xs">{seller.country || 'Nil'}</p>
                     </div>
                   </div>
                 </div>
@@ -216,27 +255,27 @@ const Seller = () => {
                   <div className="flex flex-col items-start gap-4 text-left">
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Legal representative first name</h4>
-                      <p className="text-xs">Emmanuel</p>
+                      <p className="text-xs">{seller.business_details?.business_owner_first_name || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Legal representative middle name</h4>
-                      <p className="text-xs">Johnathan</p>
+                      <p className="text-xs">{seller.business_details?.business_owner_middle_name || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Account managers last name </h4>
-                      <p className="text-xs">Emmanuel</p>
+                      <p className="text-xs">{seller.business_details?.business_owner_last_name || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Registered company name</h4>
-                      <p className="text-xs">Getfit Technologies limited</p>
+                      <p className="text-xs">{seller.company_name || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">CAC registration number</h4>
-                      <p className="text-xs">345678980</p>
+                      <p className="text-xs">{seller.cac_registration_number || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Tax Identification number</h4>
-                      <p className="text-xs">345678980</p>
+                      <p className="text-xs">{seller.tin || 'Nil'}</p>
                     </div>
                   </div>
                 </div>
@@ -245,15 +284,15 @@ const Seller = () => {
                   <div className="flex flex-col items-start gap-4 text-left">
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Phone Number</h4>
-                      <p className="text-xs">09034867656</p>
+                      <p className="text-xs">{seller.phone || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Additional Number</h4>
-                      <p className="text-xs">09034867656</p>
+                      <p className="text-xs">{seller.company_additional_phone || 'Nil'}</p>
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-[10px] text-[#909090]">Email</h4>
-                      <p className="text-xs">emmy433@gmail.com</p>
+                      <p className="text-xs">{seller.email || 'Nil'}</p>
                     </div>
                   </div>
                 </div>
@@ -273,6 +312,10 @@ const Seller = () => {
               <div onClick={() => handleTabChange(3)} className={`flex hover:cursor-pointer items-end pb-1 gap-2 font-bold ${activeTab === 3 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
                 <p>Rejected</p>
                 <span className={`text-white font-normal bg-[#0F60FF] rounded-full px-1 ${activeTab === 3 ? '' : 'opacity-40'}`}>9+</span>
+              </div>
+              <div onClick={() => handleTabChange(4)} className={`flex hover:cursor-pointer items-end pb-1 gap-2 font-bold ${activeTab === 4 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Blocked</p>
+                <span className={`text-white font-normal bg-[#0F60FF] rounded-full px-1 ${activeTab === 4 ? '' : 'opacity-40'}`}>9+</span>
               </div>
             </div>
             <Table headers={headers} data={rowData} />

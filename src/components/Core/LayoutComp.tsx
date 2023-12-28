@@ -52,9 +52,9 @@ const LayoutComp = ({
                   >
                     <path
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                     />
                   </svg>
@@ -67,8 +67,8 @@ const LayoutComp = ({
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      clip-rule="evenodd"
-                      fill-rule="evenodd"
+                      clipRule="evenodd"
+                      fillRule="evenodd"
                       d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
                     ></path>
                   </svg>
@@ -94,7 +94,7 @@ const LayoutComp = ({
                     className="relative w-full"
                   />
                 </div>
-                <div className="w-10 h-10 rounded-full object-cover ml-6">
+                <div className="object-cover w-10 h-10 ml-6 rounded-full">
                   <img src="/images/Avatar.svg" alt="Avatar" />
                 </div>
               </div>
@@ -129,15 +129,14 @@ const LayoutComp = ({
           id="staticModal"
           data-modal-backdrop="static"
           aria-hidden="true"
-          className="md:hidden fixed top-0 left-0 right-0 z-30 w-full h-screen p-4 overflow-x-hidden overflow-y-auto md:inset-0  max-h-full flex justify-center items-center bg-gray-600 bg-opacity-70"
+          className="fixed top-0 left-0 right-0 z-30 flex items-center justify-center w-full h-screen max-h-full p-4 overflow-x-hidden overflow-y-auto bg-gray-600 md:hidden md:inset-0 bg-opacity-70"
         ></div>
       )}
       <aside
         id="logo-sidebar"
         // className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-        className={`md:block md:fixed ${
-          showMobileNav ? "fixed" : "hidden"
-        } top-0 left-0 z-40 md:z-50 mt-16 md:mt-0 w-[246px] h-screen transition-transform`}
+        className={`md:block md:fixed ${showMobileNav ? "fixed" : "hidden"
+          } top-0 left-0 z-40 md:z-50 mt-16 md:mt-0 w-[246px] h-screen transition-transform`}
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-white ">
@@ -166,16 +165,16 @@ const LayoutComp = ({
                   <path
                     d="M14.589 7.26123L10.5075 4.08659C9.77058 3.51333 8.73861 3.51333 8.00173 4.08659L3.9194 7.26123C3.42224 7.64785 3.13157 8.24247 3.13187 8.87227V14.3827C3.13187 15.2281 3.81718 15.9134 4.66255 15.9134H13.8466C14.692 15.9134 15.3773 15.2281 15.3773 14.3827V8.87227C15.3773 8.2424 15.0865 7.64773 14.589 7.26123"
                     stroke="currentColor"
-                    stroke-width="1.46111"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.46111"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                   <path
                     d="M12.293 12.0751C10.6016 13.0953 7.86013 13.0953 6.17026 12.0751"
                     stroke="currentColor"
-                    stroke-width="1.46111"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.46111"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
 
@@ -203,7 +202,7 @@ const LayoutComp = ({
               Products
             </p>
             {data2.map((each, index) => (
-              <li>
+              <li key={index}>
                 <a
                   href="#"
                   className="flex items-center p-[7.51px] text-[#8B909A] hover:text-[#23272E]  rounded-lg hover:bg-[#F7DFDE] group"
@@ -221,7 +220,7 @@ const LayoutComp = ({
               Admin
             </p>
             {data3.map((each, index) => (
-              <li>
+              <li key={index}>
                 <a
                   href="#"
                   className="flex items-center p-[7.51px] text-[#8B909A] hover:text-[#23272E]  rounded-lg hover:bg-[#F7DFDE] group"
@@ -237,8 +236,8 @@ const LayoutComp = ({
         </div>
       </aside>
 
-      <div className="px-4 md:ml-64 h-full mt-16">
-        <div className="rounded-lg h-full">{children}</div>
+      <div className="h-full px-4 mt-16 md:ml-64">
+        <div className="h-full rounded-lg">{children}</div>
       </div>
     </>
   );

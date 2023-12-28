@@ -6,12 +6,12 @@ import callAPI from './api.service';
 
 const apiUrl = "https://test.shopazany.com/api/auth/admin/sellers/";
 
-const sendRequest = async (method: string, endpoint: string, data = {}, err = false) => {
+const sendRequest = async (method: string, endpoint: string, baseurl?: string, data = {}, err = false) => {
   console.log(err);
   const config = {
     method: method,
     maxBodyLength: Infinity,
-    url: apiUrl + endpoint,
+    url: baseurl || apiUrl + endpoint,
     headers: {
       Authorization: getBearerToken(),
     },
@@ -69,20 +69,76 @@ const getSellerProducts = (id: string | undefined) => {
   return sendRequest("get", `products/all/${id}`);
 };
 
+const getSellerPendingProducts = (id: string | undefined) => {
+  return sendRequest("get", `products/pending/${id}`);
+};
+
+const getSellerActiveProducts = (id: string | undefined) => {
+  return sendRequest("get", `products/active/${id}`);
+};
+
+const getSellerBlockedProducts = (id: string | undefined) => {
+  return sendRequest("get", `products/blocked/${id}`);
+};
+
+const getSellerRejectedProducts = (id: string | undefined) => {
+  return sendRequest("get", `products/rejected/${id}`);
+};
+
 const getSeller = (id: number | string | undefined) => {
   return sendRequest("get", `details/${id}`);
 };
 
-const getSellers = (id: string | undefined) => {
-  return sendRequest("get", `details/${id}`);
+const getSellers = () => {
+  return sendRequest("get", '', `https://test.shopazany.com/api/auth/admin/all-sellers`);
+};
+
+const getPendingSellers = () => {
+  return sendRequest("get", `pending`);
+};
+
+const getActiveSellers = () => {
+  return sendRequest("get", `active`);
+};
+
+const getBlockedSellers = () => {
+  return sendRequest("get", `blocked`);
+};
+
+const getSuspendedSellers = () => {
+  return sendRequest("get", `suspended`);
+};
+
+const getDeletedSellers = () => {
+  return sendRequest("get", `deleted`);
+};
+
+const searchSellers = (search: string) => {
+  return sendRequest("put", `all-users/search?query=${search}`);
+};
+
+const getSellersCount = () => {
+  return sendRequest("get", `total`);
+};
+
+const getSellersCount7Days = () => {
+  return sendRequest("get", `new-last-7-days`);
+};
+
+const getApprovedSellersCount = () => {
+  return sendRequest("get", `approved`);
+};
+
+const getUnApprovedSellersCount = () => {
+  return sendRequest("get", `unapproved`);
 };
 
 const approveSeller = (id: string | undefined) => {
-  return sendRequest("post", `approve/${id}`, {}, true);
+  return sendRequest("post", `approve/${id}`, '', {}, true);
 };
 
 const suspendSeller = (id: string | undefined) => {
-  return sendRequest("post", `suspend/${id}`, {}, true);
+  return sendRequest("post", `suspend/${id}`, '', {}, true);
 };
 
 const deleteAttribute = (id: number | string | undefined) => {
@@ -94,5 +150,19 @@ export {
   getSellers,
   getSellerProducts,
   approveSeller,
-  suspendSeller
+  suspendSeller,
+  getApprovedSellersCount,
+  getUnApprovedSellersCount,
+  getSellersCount,
+  getSellersCount7Days,
+  getSellerActiveProducts,
+  getSellerBlockedProducts,
+  getSellerPendingProducts,
+  getSellerRejectedProducts,
+  getActiveSellers,
+  getBlockedSellers,
+  getDeletedSellers,
+  getPendingSellers,
+  getSuspendedSellers,
+  searchSellers
 }

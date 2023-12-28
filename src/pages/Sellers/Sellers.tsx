@@ -1,173 +1,381 @@
-import React from "react";
-import Layout from "../../components/Core/Layout";
+import React, { useEffect, useState } from "react";
+import LayoutComp from "../../components/Core/LayoutComp";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
+import Badge from "../../components/UI/Badge";
+import Table from "../../components/Core/Table/Table";
+import { Icon } from "@iconify/react";
+import { getActiveSellers, getApprovedSellersCount, getBlockedSellers, getDeletedSellers, getPendingSellers, getSellers, getSellersCount, getSellersCount7Days, getSuspendedSellers, getUnApprovedSellersCount } from "../../Services/seller.service";
+import { parseStatus, parseStatusColor } from "../../Utils/status";
+import { ITableCol } from "../../components/Core/Table/types";
 
-const rows: GridRowsProp = [
-  {
-    id: 1,
-    username: "Samsung",
-    img: "https://images.pexels.com/photos/1820770/pexels-photo-1820770.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    datejoined: "2021-09-01",
-    status: "active",
-    account: "Manufacturer",
-    products: 8,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 2,
-    username: "Apple",
-    img: "https://randomwordgenerator.com/img/picture-generator/sebastiaan-stam-XbZkCaminOY-unsplash.jpg",
-    datejoined: "2023-09-07",
-    account: "Merchant",
-    status: "passive",
-    products: 12,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 3,
-    username: "Chimeze LTD",
-    img: "https://randomwordgenerator.com/img/picture-generator/55e9dc4a4851ae14f1dc8460962e33791c3ad6e04e50744172287ad29e44c4_640.jpg",
-    datejoined: "2022-02-01",
-    account: "Farmer",
-    status: "pending",
-    products: 5,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 4,
-    username: "Mashmood LTD",
-    img: "https://randomwordgenerator.com/img/picture-generator/54e6d5404a55b10ff3d8992cc12c30771037dbf85257714d702672d69548_640.jpg",
-    datejoined: "2021-09-01",
-    account: "Merchant",
-    status: "active",
-    products: 10,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 5,
-    username: "Hisense",
-    img: "https://images.pexels.com/photos/1820770/pexels-photo-1820770.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    datejoined: "2021-09-01",
-    account: "Manufacturer",
-    status: "passive",
-    products: 3,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 6,
-    username: "Toshiba",
-    img: "https://randomwordgenerator.com/img/picture-generator/53e4d246495bad14f1dc8460962e33791c3ad6e04e507440722d72d5954ac1_640.jpg",
-    datejoined: "2023-08-05",
-    account: "Farmer",
-    status: "active",
-    products: 7,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 7,
-    username: "LG",
-    img: "https://randomwordgenerator.com/img/picture-generator/53e3d7464e53a414f1dc8460962e33791c3ad6e04e507440762a7cd19049cd_640.jpg",
-    datejoined: "2020-08-05",
-    account: "Merchant",
-    status: "passive",
-    products: 6,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 8,
-    username: "Sony",
-    img: "https://randomwordgenerator.com/img/picture-generator/57e2d1464d56a414f1dc8460962e33791c3ad6e04e50744172287cd19649c5_640.jpg",
-    datejoined: "2021-04-05",
-    account: "Manufacturer",
-    status: "active",
-    products: 9,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 9,
-    username: "Panasonic",
-    img: "https://randomwordgenerator.com/img/picture-generator/55e0d3414a51a814f1dc8460962e33791c3ad6e04e507440702d79d3944ecd_640.jpg",
-    datejoined: "2023-08-05",
-    account: "Farmer",
-    status: "pending",
-    products: 4,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-  {
-    id: 10,
-    username: "Roxie",
-    img: "https://images.unsplash.com/photo-1672709842636-1dd09e63c0f4?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3Mzk2MDUzMg&ixlib=rb-4.0.3&q=80&w=300",
-    datejoined: "2021-08-05",
-    account: "Manufacturer",
-    status: "active",
-    products: 6,
-    orders: Math.floor(Math.random() * 100),
-    reviews: Math.floor(Math.random() * 50),
-  },
-];
+interface IStat {
+  unapproved_sellers: number;
+  approved_sellers: number;
+  new_sellers_last_7_days: number;
+  total_sellers: number;
+}
 
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 90 },
-  {
-    field: "company",
-    headerName: "Logo",
-    renderCell: (params) => {
-      return (
-        <div className="">
-          <img className="rounded-full w-8 h-8" src={params.row.img} alt="avatar" />
-        </div>
-      );
-    },
-    width: 150,
-  },
-  { field: "username", headerName: "Seller Name", width: 200 },
-  { field: "datejoined", headerName: "Date Joined", width: 200 },
+interface ISeller {
+  id: string;
+  name: string,
+  status: string,
+  business_type: string,
+  date_registered: string,
+  total_listed_items: number,
+  total_products_sold: number
 
-  {
-    field: "account",
-    headerName: "Account",
-    width: 200,
-  },
-  {
-    field: "products",
-    headerName: "Products",
-  },
-  {
-    field: "orders",
-    headerName: "Orders",
-  },
-  {
-    field: "reviews",
-    headerName: "Reviews",
-  },
-];
+}
+
 const Sellers = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<number>(1)
+  const [sellers, setSellers] = useState<any[]>([])
+  const [stat, setStat] = useState<IStat>({} as IStat)
+  const [badgeData, setBadgeData] = useState<any[]>([])
+  const [totalSellersCount, setTotalSellersCount] = useState<number>(0);
+  const [last7DaysCount, setLast7DaysCount] = useState<number>(0);
+  const [approvedSellersCount, setApprovedSellersCount] = useState<number>(0);
+  const [unApprovedSellersCount, setUnApprovedSellersCount] = useState<number>(0);
+  const [rowData, setRowData] = useState<any>([])
 
-  const handleRowClick = (params: any) => {
+
+  const handleRowClick = (id: string | number) => {
     // const sellerId = params.row.id;
-    navigate("/sellers/seller");
+    console.log(id);
+    navigate(`/sellers/${id}`);
   };
+  const handleTabChange = (index: number) => {
+    setActiveTab(index)
+
+  }
+
+  useEffect(() => {
+    if (activeTab === 1) {
+      getSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+    if (activeTab === 2) {
+      getPendingSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+    if (activeTab === 3) {
+      getActiveSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+    if (activeTab === 4) {
+      getBlockedSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+    if (activeTab === 5) {
+      getSuspendedSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+    if (activeTab === 6) {
+      getDeletedSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+    if (activeTab === 1) {
+      getSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+    if (activeTab === 1) {
+      getSellers().then((response: any) => {
+        console.log(response);
+        const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+          return {
+            id: seller.id,
+            name: seller.name,
+            status: seller.status,
+            business_type: seller.business_type,
+            date_registered: seller.date_registered,
+            total_listed_items: seller.total_listed_items,
+            total_products_sold: seller.total_products_sold
+          }
+        });
+        setSellers(sellers)
+      })
+    }
+
+  }, [activeTab])
+
+  useEffect(() => {
+    console.log(sellers)
+    const rowData = sellers.map((data, index) => {
+      return {
+        id: data.id,
+        name: <p className="text-[13px] font-medium">{data.name}</p>,
+        status: <p className={`text-[${parseStatusColor(data.status)}] text-[13px]`}>{data.status}</p>,
+        business_type: <p className="text-[#555F7E] text-[13px]">{data.business_type}</p>,
+        date_registered: <p className="text-[#555F7E] text-[13px]">{data.date_registered}</p>,
+        total_listed_items: <p className="text-[#555F7E] text-[13px]">{data.total_listed_items}</p>,
+        total_products_sold: <p className="text-[#555F7E] text-[13px]">{data.total_products_sold}</p>,
+        action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
+
+      }
+    })
+    setRowData(rowData);
+  }, [sellers])
+
+  const headers: ITableCol[] = [
+    { field: 'name', headerName: 'Seller Name' },
+    { field: 'status', headerName: 'Status' },
+    { field: 'business_type', headerName: 'Business Type' },
+    { field: 'date_registered', headerName: 'Date Registered' },
+    { field: 'total_listed_items', headerName: 'Total Listed Items' },
+    { field: 'total_products_sold', headerName: 'Total Sales Made' },
+    { field: 'action', headerName: 'Action' },
+
+  ]
+  useEffect(() => {
+    getSellers().then((response: any) => {
+      console.log(response);
+      const sellers: ISeller[] = response.data.map((seller: any, index: number) => {
+        return {
+          id: seller.id,
+          name: seller.name,
+          status: seller.status,
+          business_type: seller.business_type,
+          date_registered: seller.date_registered,
+          total_listed_items: seller.total_listed_items,
+          total_products_sold: seller.total_products_sold
+        }
+      });
+      setSellers(sellers)
+    })
+
+
+    getSellersCount().then((res: any) => {
+      setTotalSellersCount(res.data.total_sellers)
+    })
+
+    getSellersCount7Days().then((res: any) => {
+      setLast7DaysCount(res.data.new_sellers_last_7_days)
+    })
+
+    getApprovedSellersCount().then((res: any) => {
+      setApprovedSellersCount(res.data.approved_sellers)
+    })
+
+    getUnApprovedSellersCount().then((res: any) => {
+      setUnApprovedSellersCount(res.data.unapproved_sellers)
+    })
+  }, [])
+
+  useEffect(() => {
+    const badgeData = [
+      {
+        id: 1,
+        number: totalSellersCount,
+        image: (
+          <Icon
+            icon="entypo:bar-graph"
+            color="#d65d5b"
+            width={18}
+            height={18}
+          />
+        ),
+        title: "Total Sellers",
+      },
+      {
+        id: 2,
+        number: last7DaysCount,
+        image: (
+          <Icon
+            icon="entypo:bar-graph"
+            color="#d65d5b"
+            width={18}
+            height={18}
+          />
+        ),
+        title: "Total sellers in past 7 days",
+      },
+      {
+        id: 3,
+        number: totalSellersCount,
+        image: (
+          <Icon
+            icon="entypo:bar-graph"
+            color="#d65d5b"
+            width={18}
+            height={18}
+          />
+        ),
+        title: "Total sellers in past 30 days",
+      },
+      {
+        id: 4,
+        number: approvedSellersCount,
+        image: (
+          <Icon
+            icon="entypo:bar-graph"
+            color="#d65d5b"
+            width={18}
+            height={18}
+          />
+        ),
+        title: "Total approved sellers",
+      },
+      {
+        id: 5,
+        number: unApprovedSellersCount,
+        image: (
+          <Icon
+            icon="entypo:bar-graph"
+            color="#d65d5b"
+            width={18}
+            height={18}
+          />
+        ),
+        title: "Total unapproved sellers",
+      },
+    ];
+
+    setBadgeData(badgeData)
+  }, [totalSellersCount, last7DaysCount, unApprovedSellersCount, approvedSellersCount])
+
   return (
     <>
-      <Layout>
+      <LayoutComp title={"Manage sellers"}>
         <div className="flex flex-col gap-4 bg-[#F5F5F5]">
-          <p className="text-[36px] font-bold">Sellers</p>
-          <div className="bg-[white]">
-            <DataGrid rows={rows} columns={columns} onRowClick={handleRowClick} className="cursor-pointer"/>
+          <div className="flex flex-row items-center gap-4 mt-4">
+            {
+              badgeData.map((data, index) => (
+                <Badge key={data.id} title={data.title} number={data.number} image={data.image} className={'text-[9px]'} />
+              ))
+            }
           </div>
+          <div className="flex justify-center gap-8 items-center w-[50%]">
+            <input className="border w-[60%] border-[#B3B7BB] rounded-2xl placeholder:text-center placeholder:text-xs placeholder:text-[#B3B7BB] placeholder:font-bold py-3 bg-[transparent]" type="text" placeholder="Search" />
+            <button className="py-[15px] w-[40%] bg-[#D65D5B] text-[#fff] text-xs text-center rounded-2xl font-bold">Search</button>
+          </div>
+          <div className="flex flex-col items-start gap-6 px-3 py-5 bg-white rounded-3xl">
+            <div className="flex items-end gap-6">
+              <div onClick={() => handleTabChange(1)} className={`flex hover:cursor-pointer items-end pb-1 text-sm gap-2 font-bold ${activeTab === 1 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>All</p>
+              </div>
+              <div onClick={() => handleTabChange(2)} className={`flex hover:cursor-pointer items-end pb-1 text-sm gap-2 font-bold ${activeTab === 2 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Pending</p>
+              </div>
+              <div onClick={() => handleTabChange(3)} className={`flex hover:cursor-pointer items-end pb-1 text-sm gap-2 font-bold ${activeTab === 3 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Approved</p>
+              </div>
+              <div onClick={() => handleTabChange(5)} className={`flex hover:cursor-pointer items-end pb-1 text-sm gap-2 font-bold ${activeTab === 5 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Blocked</p>
+              </div>
+              <div onClick={() => handleTabChange(6)} className={`flex hover:cursor-pointer items-end pb-1 text-sm gap-2 font-bold ${activeTab === 6 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Suspended</p>
+              </div>
+              <div onClick={() => handleTabChange(7)} className={`flex hover:cursor-pointer items-end pb-1 text-sm gap-2 font-bold ${activeTab === 7 ? 'text-[#0F60FF] border-b-[3px] border-b-[#0F60FF]' : 'text-[#D0D0D0]'}`}>
+                <p>Deleted</p>
+              </div>
+            </div>
+            <Table headers={headers} headerStyle={'text-xs'} data={rowData} onClick={handleRowClick} />
+          </div>
+
+          {/* <div className="bg-[white]">
+            <DataGrid rows={rows} columns={columns} onRowClick={handleRowClick} className="cursor-pointer"/>
+          </div> */}
         </div>
-      </Layout>
+      </LayoutComp>
     </>
   );
 };
