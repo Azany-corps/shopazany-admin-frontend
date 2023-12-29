@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 import Badge from "../../components/UI/Badge";
 import Table from "../../components/Core/Table/Table";
 import { Icon } from "@iconify/react";
-import { getActiveSellers, getApprovedSellersCount, getBlockedSellers, getDeletedSellers, getPendingSellers, getSellers, getSellersCount, getSellersCount7Days, getSuspendedSellers, getUnApprovedSellersCount } from "../../Services/seller.service";
+import { approveSeller, blockSeller, deleteSeller, getActiveSellers, getApprovedSellersCount, getBlockedSellers, getDeletedSellers, getPendingSellers, getSellers, getSellersCount, getSellersCount7Days, getSuspendedSellers, getUnApprovedSellersCount, suspendSeller } from "../../Services/seller.service";
 import { parseStatus, parseStatusColor } from "../../Utils/status";
 import { ITableCol } from "../../components/Core/Table/types";
+import Action from "../../components/UI/Action";
+import { IAction } from "../../types/types";
 
 interface IStat {
   unapproved_sellers: number;
@@ -30,6 +32,7 @@ interface ISeller {
 const Sellers = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<number>(1)
+  const [updateStatus, setUpdateStatus] = useState<boolean>(false);
   const [sellers, setSellers] = useState<any[]>([])
   const [stat, setStat] = useState<IStat>({} as IStat)
   const [badgeData, setBadgeData] = useState<any[]>([])
@@ -49,6 +52,58 @@ const Sellers = () => {
     setActiveTab(index)
 
   }
+
+  function myFunc(id: string) {
+    console.log("approve: ", id)
+  }
+
+  const ActionObj: IAction[] = [
+    {
+      action: "Approve",
+      api: (id: string) => {
+        approveSeller(id).then((res: any) => {
+          console.log(res)
+          setUpdateStatus(!updateStatus)
+        }).catch((err: any) => {
+          console.log(err)
+        })
+      }
+    },
+    {
+      action: "Block",
+      api: (id: string) => {
+        blockSeller(id).then((res: any) => {
+          console.log(res)
+          setUpdateStatus(!updateStatus)
+        }).catch((err: any) => {
+          console.log(err)
+        })
+      }
+    },
+    {
+      action: "Suspend",
+      api: (id: string) => {
+        suspendSeller(id).then((res: any) => {
+          console.log(res)
+          setUpdateStatus(!updateStatus)
+        }).catch((err: any) => {
+          console.log(err)
+        })
+      }
+    },
+    {
+      action: "Delete",
+      api: (id: string) => {
+        deleteSeller(id).then((res: any) => {
+          console.log(res)
+          setUpdateStatus(!updateStatus)
+        }).catch((err: any) => {
+          console.log(err)
+        })
+      }
+
+    }
+  ]
 
   useEffect(() => {
     if (activeTab === 1) {
@@ -195,7 +250,7 @@ const Sellers = () => {
       })
     }
 
-  }, [activeTab])
+  }, [activeTab, updateStatus])
 
   useEffect(() => {
     console.log(sellers)
@@ -208,7 +263,7 @@ const Sellers = () => {
         date_registered: <p className="text-[#555F7E] text-[13px]">{data.date_registered}</p>,
         total_listed_items: <p className="text-[#555F7E] text-[13px]">{data.total_listed_items}</p>,
         total_products_sold: <p className="text-[#555F7E] text-[13px]">{data.total_products_sold}</p>,
-        action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
+        action: <Action actions={ActionObj} id={data.id} />
 
       }
     })
@@ -331,6 +386,8 @@ const Sellers = () => {
 
     setBadgeData(badgeData)
   }, [totalSellersCount, last7DaysCount, unApprovedSellersCount, approvedSellersCount])
+
+
 
   return (
     <>

@@ -7,15 +7,12 @@ interface TableRowProps {
     onClick?: (id: string | number) => void;
 }
 
-const TableRow: React.FC<TableRowProps> = ({ row, onClick = () => { }, data }) => {
-    const handleRowClick = () => {
-        onClick(data.id)
-    }
+const TableRow: React.FC<TableRowProps> = ({ row, onClick = () => { }, data = {} }) => {
 
     return (
-        <tr onClick={handleRowClick} className='hover:cursor-pointer border-b'>
+        <tr className='border-b'>
             {row.map((cell: ReactNode, index: number) => (
-                <TableCell key={index}>
+                <TableCell cellKey={Object.keys(data)[index + 1]} onClick={onClick} id={data.id} key={index}>
                     {cell}
                 </TableCell>
             ))}

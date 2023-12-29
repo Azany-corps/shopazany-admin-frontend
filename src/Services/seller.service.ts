@@ -138,11 +138,27 @@ const approveSeller = (id: string | undefined) => {
 };
 
 const suspendSeller = (id: string | undefined) => {
-  return sendRequest("post", `suspend/${id}`, '', {}, true);
+  return sendRequest("delete", `suspend/${id}`, '', {}, true);
+};
+
+const blockSeller = (id: string | undefined) => {
+  return sendRequest("post", `block/${id}`, '', {}, true);
+};
+
+const deleteSeller = (id: string | undefined) => {
+  return sendRequest("delete", `delete/${id}`, '', {}, true);
 };
 
 const deleteAttribute = (id: number | string | undefined) => {
   return sendRequest("delete", `delete_attribute/${id}`);
+};
+
+const approveProduct = (id: string | undefined) => {
+  return sendRequest("post", `products/approve/${id}`, '', {}, true);
+};
+
+const blockProduct = (id: string | undefined) => {
+  return sendRequest("post", `products/block/${id}`, '', {}, true);
 };
 
 export {
@@ -151,6 +167,8 @@ export {
   getSellerProducts,
   approveSeller,
   suspendSeller,
+  blockSeller,
+  deleteSeller,
   getApprovedSellersCount,
   getUnApprovedSellersCount,
   getSellersCount,
@@ -164,5 +182,7 @@ export {
   getDeletedSellers,
   getPendingSellers,
   getSuspendedSellers,
-  searchSellers
+  searchSellers,
+  approveProduct,
+  blockProduct
 }

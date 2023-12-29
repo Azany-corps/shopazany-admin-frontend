@@ -8,12 +8,15 @@ import Subscription from "../../components/Sellers/Subscription";
 import Feedback from "../../components/Sellers/Feedback";
 import Table from "../../components/Core/Table/Table";
 import { useParams } from "react-router-dom";
-import { approveSeller, getSellerActiveProducts, getSellerBlockedProducts, getSellerPendingProducts, getSellerRejectedProducts, suspendSeller } from "../../Services/seller.service";
+import { approveProduct, approveSeller, blockProduct, getSellerActiveProducts, getSellerBlockedProducts, getSellerPendingProducts, getSellerRejectedProducts, suspendSeller } from "../../Services/seller.service";
 import { error } from "console";
 import { parseStatus, parseStatusColor } from "../../Utils/status";
 import { ITableCol } from "../../components/Core/Table/types";
+import { IAction } from "../../types/types";
+import Action from "../../components/UI/Action";
 
 interface IProduct {
+  id: string
   product_name: string;
   category: string;
   status: string;
@@ -27,6 +30,8 @@ const Seller = () => {
   const [products, setProducts] = useState<IProduct[]>([])
   const [rowData, setRowData] = useState<any>([])
   const [status, setStatus] = useState<string>('')
+  const [updateStatus, setUpdateStatus] = useState<boolean>(false);
+
   const headers: ITableCol[] = [
     { field: 'product_name', headerName: 'Product name' },
     { field: 'category', headerName: 'Category' },
@@ -37,9 +42,35 @@ const Seller = () => {
     setActiveTab(index)
   }
 
+  const ActionObj: IAction[] = [
+    {
+      action: "Approve",
+      api: (id: string) => {
+        approveProduct(id).then((res: any) => {
+          console.log(res)
+          setUpdateStatus(!updateStatus)
+        }).catch((err: any) => {
+          console.log(err)
+        })
+      }
+    },
+    {
+      action: "Block",
+      api: (id: string) => {
+        blockProduct(id).then((res: any) => {
+          console.log(res)
+          setUpdateStatus(!updateStatus)
+        }).catch((err: any) => {
+          console.log(err)
+        })
+      }
+    }
+  ]
+
   useEffect(() => {
     const rowData = products.map((data, index) => {
       return {
+        id: data.id,
         product_name: (
           <div className="flex items-center gap-3">
             <span className=" h-[35px] rounded-full overflow-hidden bg-red-400 w-[35px]">
@@ -48,9 +79,9 @@ const Seller = () => {
             <p className="text-[13px] font-medium">{data.product_name}</p>
           </div>
         ),
-        category_name: <p className="text-[#555F7E] text-[13px]">{data.category}</p>,
+        category: <p className="text-[#555F7E] text-[13px]">{data.category}</p>,
         status: <p className={`text-[${parseStatusColor(data.status)}] text-[13px]`}>{parseStatus(data.status)}</p>,
-        action: <span className="bg-[#0F60FF29] text-[#0F60FF] font-semibold rounded-lg py-1 px-4 text-[11px] ">{data.action}</span>
+        action: <Action actions={ActionObj} id={data.id} />
       }
     })
     setRowData(rowData);
@@ -61,6 +92,7 @@ const Seller = () => {
       getSellerPendingProducts(id).then((response: any) => {
         const products: IProduct[] = response.data.user_pending_products.map((product: IProduct, index: number) => {
           return {
+            id: product.id,
             product_name: product.product_name,
             category: product.category,
             status: product.status,
@@ -75,6 +107,7 @@ const Seller = () => {
       getSellerActiveProducts(id).then((response: any) => {
         const products: IProduct[] = response.data.user_active_products.map((product: IProduct, index: number) => {
           return {
+            id: product.id,
             product_name: product.product_name,
             category: product.category,
             status: product.status,
@@ -89,6 +122,7 @@ const Seller = () => {
       getSellerBlockedProducts(id).then((response: any) => {
         const products: IProduct[] = response.data.user_blocked_products.map((product: IProduct, index: number) => {
           return {
+            id: product.id,
             product_name: product.product_name,
             category: product.category,
             status: product.status,
@@ -103,6 +137,7 @@ const Seller = () => {
       getSellerRejectedProducts(id).then((response: any) => {
         const products: IProduct[] = response.data.user_rejected_products.map((product: IProduct, index: number) => {
           return {
+            id: product.id,
             product_name: product.product_name,
             category: product.category,
             status: product.status,
@@ -113,7 +148,7 @@ const Seller = () => {
         setProducts(products);
       })
     }
-  }, [activeTab])
+  }, [activeTab, updateStatus])
 
   useEffect(() => {
     getSellerDetails(id);
@@ -151,6 +186,7 @@ const Seller = () => {
       .then((response) => {
         const products: IProduct[] = response.data.all_user_products.map((product: IProduct, index: number) => {
           return {
+            id: product.id,
             product_name: product.product_name,
             category: product.category,
             status: product.status,
